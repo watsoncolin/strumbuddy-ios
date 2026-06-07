@@ -28,6 +28,10 @@ Launched from the **Practice** tab.
   chord(B), tempoHold(bpm)]`, context `inSequence` — feeding [[The Coach]]. This is
   what lets it say *"your C is fine; it's the change into it under tempo."*
 
-## Known refinement
-Timing uses a fixed `inputLatency` (~0.09s) to estimate capture time. It's coarse
-and calibratable by ear; precise on-beat grading may need tuning. See [[Decisions]].
+## Timing calibration
+`inputLatency` (the capture→detection delay subtracted from strum timestamps) is now
+**user-calibrated**, not a fixed guess. From the drill setup → "Calibrate timing":
+the metronome runs, you strum on the beat, and a live "X ms early/late" readout
+(strum onset vs nearest beat) updates while a slider adjusts latency — saved via
+`Calibration` (UserDefaults). Onset resolution is limited by the analysis buffer
+(~93 ms), so it's a feel-based dial more than a precise meter.

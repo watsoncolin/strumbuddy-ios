@@ -20,10 +20,11 @@ loop for chords** (observations → consistency mastery → live recommendations
 - ✅ **Beginner tips** + contextual hints (sore fingers etc.).
 - ✅ **[[Songs]]** — first play-along songs (chords-only, guided by the metronome).
 
+- ✅ **Timing calibration** — user-calibrated `inputLatency` (drill setup → Calibrate timing).
+
 **Next:**
-1. **Timing calibration** — tune `inputLatency` so on-beat grading is accurate.
-2. **Reminders/notifications** — the deferred habit cue.
-3. **Per-chord grading in songs**, then v2 bring-your-own-song.
+1. **Reminders/notifications** — the deferred habit cue.
+2. **Per-chord grading in songs**, then v2 bring-your-own-song.
 
 _Recital mode: dropped — the consistency-based practice grading covers that ground._
 
