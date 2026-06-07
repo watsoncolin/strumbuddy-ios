@@ -17,7 +17,8 @@ final class AudioEngine: ObservableObject {
     /// Minimum YIN clarity for a frame to count as a real pitch detection (vs. noise).
     private static let minClarity = 0.5
     /// RMS above which a buffer is treated as "actively playing" (gates chord scoring).
-    private static let playingRMS: Float = 0.01
+    /// Kept fairly low so normal-volume strumming registers, not just loud playing.
+    private static let playingRMS: Float = 0.006
 
     // Monophonic outputs (tuner).
     @Published private(set) var state: State = .idle

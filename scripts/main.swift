@@ -167,11 +167,14 @@ do {
           "got \(r.stringQuality[.fSharp].map(String.init(describing:)) ?? "nil")")
 }
 
-// ChordScoreSmoother: holds through quiet frames, clears after sustained silence.
+// ChordScoreSmoother (peak-hold): keeps the best strum, holds through quiet, clears.
 do {
-    let sm = ChordScoreSmoother(holdFrames: 3, alpha: 1.0)
-    let r = chordDetector.score(.c, chroma(of: [0, 4, 7]))
-    check("smoother emits when energetic", sm.push(r, energetic: true) != nil)
+    let sm = ChordScoreSmoother(holdFrames: 3)
+    let clean = chordDetector.score(.c, chroma(of: [0, 4, 7]))        // high quality
+    let poor  = chordDetector.score(.c, chroma(of: [0]))             // only root → low quality
+    check("smoother emits when energetic", sm.push(clean, energetic: true) != nil)
+    check("peak-hold keeps best over a worse later frame",
+          sm.push(poor, energetic: true)?.cleanliness == clean.cleanliness)
     check("smoother holds on quiet 1", sm.push(nil, energetic: false) != nil)
     check("smoother holds on quiet 2", sm.push(nil, energetic: false) != nil)
     check("smoother clears after holdFrames", sm.push(nil, energetic: false) == nil)

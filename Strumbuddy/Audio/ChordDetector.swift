@@ -10,7 +10,9 @@ import Foundation
 ///     is every expected note ringing, is anything missing (muted) or extra (buzz)?
 struct ChordDetector {
     /// Normalized energy above which an expected pitch class counts as "present."
-    var presenceThreshold: Float = 0.35
+    /// Lower = more forgiving of quieter strings (so you don't have to play loud),
+    /// but too low lets harmonic leakage read a muted string as ringing.
+    var presenceThreshold: Float = 0.28
     /// Higher bar for flagging an *unexpected* pitch class as a buzz/wrong note, so
     /// ordinary harmonic leakage isn't mistaken for a mistake.
     var buzzThreshold: Float = 0.5
@@ -85,47 +87,45 @@ struct ChordDetector {
     }
 }
 
-/// Stabilizes a stream of per-buffer chord scores for a steady live readout.
-/// EMA-smooths the scalar axes (so they don't twitch), takes per-string quality
-/// from the latest energetic frame, and holds the last result through a strum's
-/// decay — clearing only after sustained silence. Reference type: lives on the
-/// audio thread across buffers.
+/// Stabilizes a stream of per-buffer chord scores for a steady live readout using
+/// PEAK-HOLD: it keeps the *best* result of the current strum and holds it through
+/// the note's natural decay, clearing only after sustained silence.
+///
+/// Why peak-hold (vs. a running average): a plucked chord is cleanest right after
+/// the attack and degrades as strings die at different rates. Averaging punishes
+/// that decay, forcing you to play loud and continuously. Peak-hold rewards a
+/// single good strum — yet stays honest, because a persistently muted string never
+/// rings in *any* frame, so it's still flagged. Reference type: lives on the audio
+/// thread across buffers.
 final class ChordScoreSmoother {
-    private var emaConfidence = 0.0
-    private var emaCleanliness = 0.0
-    private var last: ChordDetector.Result?
+    private var best: ChordDetector.Result?
     private var quietFrames = 0
-
     private let holdFrames: Int
-    private let alpha: Double
 
-    init(holdFrames: Int = 13, alpha: Double = 0.4) {
+    init(holdFrames: Int = 18) {   // ~1.6s at ~11 buffers/sec
         self.holdFrames = holdFrames
-        self.alpha = alpha
+    }
+
+    /// Combined quality used to pick the best frame: identity + cleanliness.
+    private func quality(_ r: ChordDetector.Result) -> Double {
+        (r.confidence + r.cleanliness) / 2
     }
 
     /// `energetic` = the buffer actually contains playing (above an RMS floor).
-    /// Quiet buffers hold the last reading, then clear after `holdFrames`.
+    /// Quiet buffers hold the best reading, then clear after `holdFrames`.
     func push(_ result: ChordDetector.Result?, energetic: Bool) -> ChordDetector.Result? {
-        guard energetic, let result else {
+        if energetic, let result {
+            quietFrames = 0
+            if best == nil || quality(result) > quality(best!) { best = result }
+        } else {
             quietFrames += 1
-            if quietFrames >= holdFrames { reset() }
-            return last
+            if quietFrames >= holdFrames { best = nil }
         }
-        quietFrames = 0
-        emaConfidence += alpha * (result.confidence - emaConfidence)
-        emaCleanliness += alpha * (result.cleanliness - emaCleanliness)
-        last = ChordDetector.Result(chord: result.chord,
-                                    confidence: emaConfidence,
-                                    cleanliness: emaCleanliness,
-                                    stringQuality: result.stringQuality)
-        return last
+        return best
     }
 
     func reset() {
-        emaConfidence = 0
-        emaCleanliness = 0
-        last = nil
+        best = nil
         quietFrames = 0
     }
 }
