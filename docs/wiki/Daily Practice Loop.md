@@ -6,7 +6,8 @@ updated: 2026-06-07
 
 The **keystone retention feature** (see [[Learning Philosophy]]): a short daily
 ritual that bundles everything we've built into one repeatable, rewarding session.
-Status: **session runner + streak built (the "Today" home tab); onboarding next.**
+Status: **built** — "Today" home tab (runner + streak) and first-run onboarding.
+Verify on device; reminders/notifications deferred.
 
 ## The session — "Today"
 One tap from launch → a short (~5 min, ~4–5 blocks) guided sequence the app picks
@@ -54,5 +55,6 @@ This both **seeds the coach** (cold-start priors) and delivers the early win.
 1. ✅ Session generator + streak logic (pure) — harness-tested.
 2. ✅ "Today" session runner UI (`TodayView`, home tab) + streak persistence
    (`PracticeTracker`). Blocks launch pre-targeted tools; ends on a completion card.
-3. First-session onboarding flow — **next**.
+3. ✅ First-run onboarding (`OnboardingView`) — welcome → hear-you → first chord
+   (Em) win → ready; gated by `@AppStorage("onboardingComplete")`.
 4. Reminders/notifications (later).
