@@ -324,6 +324,36 @@ do {
     check("rep implicates the tempo hold", ids.contains("tempo.60"))
 }
 
+// MARK: - SkillDetail (four-axis breakdown)
+
+print("\n== SkillDetail ==")
+do {
+    func obs(acc: Double, clean: Double, timing: Double, inSeq: Bool, t: Double) -> Observation {
+        Observation(timestamp: Date(timeIntervalSince1970: t),
+            implicatedSkills: [.chord(.c)],
+            context: .init(isolation: inSeq ? .inSequence : .isolated, bpm: inSeq ? 60 : nil, source: .practice),
+            scores: ScoreAxes(accuracy: acc, cleanliness: clean, timing: timing))
+    }
+    // Newest first: one clean untimed, one poor untimed, one clean timed drill rep.
+    let observations = [
+        obs(acc: 0.9, clean: 0.9, timing: 0.9, inSeq: false, t: 300),   // overall 0.9 → clean
+        obs(acc: 0.4, clean: 0.4, timing: 0.4, inSeq: false, t: 200),   // overall 0.4 → not clean
+        obs(acc: 0.8, clean: 0.8, timing: 0.7, inSeq: true,  t: 100),   // overall ~0.77 → clean, timed
+    ]
+    let d = SkillDetail.make(observations: observations, state: nil, mastered: false,
+                             masteryThreshold: 0.75, now: Date(timeIntervalSince1970: 400))
+    check("counts all attempts", d.attempts == 3)
+    check("averages accuracy", abs(d.accuracy - (0.9 + 0.4 + 0.8) / 3) < 1e-9)
+    check("timing only from timed reps", abs(d.timing - 0.7) < 1e-9)
+    check("hasTiming true when a drill rep exists", d.hasTiming)
+    check("consistency = fraction clean", abs(d.consistency - (2.0 / 3.0)) < 1e-9)
+
+    // Untimed-only → no timing dimension.
+    let untimed = [obs(acc: 0.9, clean: 0.9, timing: 0.0, inSeq: false, t: 100)]
+    check("no timing without drill reps", SkillDetail.make(observations: untimed, state: nil,
+        mastered: false, masteryThreshold: 0.75, now: Date(timeIntervalSince1970: 200)).hasTiming == false)
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

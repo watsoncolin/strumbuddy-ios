@@ -23,6 +23,7 @@
 		4BD58E00D245B89C5AD1D379 /* CreditAssignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA970FA59414C54252A73ED /* CreditAssignment.swift */; };
 		4E4CEE058B4FEDFBA7CC3CA0 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEE6F70220F34A3ED92F60 /* Database.swift */; };
 		591A898B4AB30C444FE952DE /* MasteryState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140E2E1536E336CEAA1ABD24 /* MasteryState.swift */; };
+		593D64FCEC0D51A0455F130F /* SkillDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EE0B351D82DF78140B362C /* SkillDetail.swift */; };
 		634A1DBEE7F313723FE26DAF /* TransitionDrill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF72318A025078438E7D14DF /* TransitionDrill.swift */; };
 		71D428473494CEEA163F8A10 /* Coach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AA48711B270161E6892315 /* Coach.swift */; };
 		7223DB6042E7D8DF0D5FABFA /* TransitionDrillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A4D9559C3CE8F55E1E8B93 /* TransitionDrillView.swift */; };
@@ -32,6 +33,7 @@
 		8D9A9E661FDD6B69F892E512 /* ScoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EDBF96308E46028E444DA3 /* ScoringService.swift */; };
 		8E173847DD37E4E39B626942 /* Skill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548B91A02E8B955BFD942C83 /* Skill.swift */; };
 		971A5F068F360D7183A92BAD /* ChordShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402FD93D5C22C0687A40C468 /* ChordShape.swift */; };
+		9B00727E6F7FFE43CFAF718E /* ChordDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5593203B04F73D5DF4901DD6 /* ChordDetailView.swift */; };
 		9D5D4DC69903B14A62FB90D1 /* SelectionPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97D51C737AC21FCD52FA1BB8 /* SelectionPolicy.swift */; };
 		A0CA59ABEFACABD159CC5116 /* DrillSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7368139CB3C8E72512284CD2 /* DrillSession.swift */; };
 		B697ED23D79EC162181F016D /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92EFEA2ED450CA40625CA0A /* AudioEngine.swift */; };
@@ -54,6 +56,7 @@
 		47C744AD96BD47F29C6C169A /* Strumbuddy.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Strumbuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52584A027A05E2AEBBDE71D8 /* MetronomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeView.swift; sourceTree = "<group>"; };
 		548B91A02E8B955BFD942C83 /* Skill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skill.swift; sourceTree = "<group>"; };
+		5593203B04F73D5DF4901DD6 /* ChordDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordDetailView.swift; sourceTree = "<group>"; };
 		56B7EA871950B14503B18847 /* Chord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chord.swift; sourceTree = "<group>"; };
 		598EC9AAF229C96EB1076FF6 /* ChordCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordCheckView.swift; sourceTree = "<group>"; };
 		66FEE6F70220F34A3ED92F60 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -69,6 +72,7 @@
 		873DCA8F4881AFB1CED1DEC8 /* StructuredPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructuredPathView.swift; sourceTree = "<group>"; };
 		8CFCB59418483E2BCCEEA224 /* MasteryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryStore.swift; sourceTree = "<group>"; };
 		97D51C737AC21FCD52FA1BB8 /* SelectionPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionPolicy.swift; sourceTree = "<group>"; };
+		A3EE0B351D82DF78140B362C /* SkillDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillDetail.swift; sourceTree = "<group>"; };
 		B92EFEA2ED450CA40625CA0A /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
 		C052F56AE6FB5BE845C5F46E /* Metronome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metronome.swift; sourceTree = "<group>"; };
 		C751EDCE5F489A1C43E94A5E /* Chromagram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chromagram.swift; sourceTree = "<group>"; };
@@ -95,6 +99,7 @@
 				E6FB7762DD6AD4E3A7DC1157 /* Observation.swift */,
 				F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */,
 				548B91A02E8B955BFD942C83 /* Skill.swift */,
+				A3EE0B351D82DF78140B362C /* SkillDetail.swift */,
 				CF72318A025078438E7D14DF /* TransitionDrill.swift */,
 			);
 			path = Models;
@@ -219,6 +224,7 @@
 		CFDE155AE3D26B421417838B /* PracticeCoach */ = {
 			isa = PBXGroup;
 			children = (
+				5593203B04F73D5DF4901DD6 /* ChordDetailView.swift */,
 				F7D7B561B4260D06526E4D00 /* PracticeCoachView.swift */,
 			);
 			path = PracticeCoach;
@@ -323,6 +329,7 @@
 				000504DCDCDC6F3FE7FB3837 /* BeatClock.swift in Sources */,
 				46F066DE40A907FB457C7F87 /* Chord.swift in Sources */,
 				1F978C34F368EC381C85D222 /* ChordCheckView.swift in Sources */,
+				9B00727E6F7FFE43CFAF718E /* ChordDetailView.swift in Sources */,
 				3980976E19E6862B9F03733C /* ChordDetector.swift in Sources */,
 				FEC16499436E409048855D6B /* ChordDiagramView.swift in Sources */,
 				971A5F068F360D7183A92BAD /* ChordShape.swift in Sources */,
@@ -345,6 +352,7 @@
 				8D9A9E661FDD6B69F892E512 /* ScoringService.swift in Sources */,
 				9D5D4DC69903B14A62FB90D1 /* SelectionPolicy.swift in Sources */,
 				8E173847DD37E4E39B626942 /* Skill.swift in Sources */,
+				593D64FCEC0D51A0455F130F /* SkillDetail.swift in Sources */,
 				028B0B9408A8AD05082122E7 /* SkillGraph.swift in Sources */,
 				4B950ADDB3531B5F1CBCBE5C /* StructuredPathView.swift in Sources */,
 				72E251FBD8B4F2B46EAAD60F /* StrumbuddyApp.swift in Sources */,

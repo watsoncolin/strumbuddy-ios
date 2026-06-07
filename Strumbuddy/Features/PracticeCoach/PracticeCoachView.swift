@@ -30,8 +30,12 @@ struct PracticeCoachView: View {
 
                 Section("Your chords") {
                     ForEach(Chord.allCases) { chord in
-                        ChordMasteryRow(name: chord.displayName,
-                                        proficiency: coach.proficiency(.chord(chord)))
+                        NavigationLink {
+                            ChordDetailView(chord: chord, coach: coach)
+                        } label: {
+                            ChordMasteryRow(name: chord.displayName,
+                                            proficiency: coach.proficiency(.chord(chord)))
+                        }
                     }
                 }
             }

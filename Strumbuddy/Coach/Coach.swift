@@ -43,4 +43,14 @@ final class Coach: ObservableObject {
     func proficiency(_ id: SkillID, now: Date = Date()) -> Double {
         mastery[id]?.retrievability(at: now) ?? 0
     }
+
+    /// Per-skill detail (four axes + mastery context) for the detail screen.
+    func detail(for id: SkillID, now: Date = Date()) -> SkillDetail {
+        SkillDetail.make(
+            observations: log.observations(for: id),
+            state: mastery[id],
+            mastered: store.isMastered(id, in: mastery, now: now),
+            masteryThreshold: store.masteryThreshold,
+            now: now)
+    }
 }
