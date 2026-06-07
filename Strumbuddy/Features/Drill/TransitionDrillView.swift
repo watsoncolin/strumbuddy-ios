@@ -30,39 +30,47 @@ struct TransitionDrillView: View {
     // MARK: Setup
 
     private var setupView: some View {
-        VStack(spacing: Theme.Spacing.l) {
-            Text("Pick two chords to switch between in time.")
-                .font(.subheadline).foregroundStyle(.secondary)
+        ScrollView {
+            VStack(spacing: Theme.Spacing.l) {
+                Text("Take a moment to find both shapes, then Start.")
+                    .font(.subheadline).foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
 
-            HStack(spacing: Theme.Spacing.l) {
-                chordMenu("From", selection: $session.fromChord)
-                Image(systemName: "arrow.left.arrow.right").foregroundStyle(.secondary)
-                chordMenu("To", selection: $session.toChord)
+                // Diagrams shown up front so you can rehearse the two shapes first.
+                HStack(alignment: .top, spacing: Theme.Spacing.l) {
+                    chordColumn("From", selection: $session.fromChord)
+                    Image(systemName: "arrow.left.arrow.right")
+                        .foregroundStyle(.secondary)
+                        .padding(.top, Theme.Spacing.xl)
+                    chordColumn("To", selection: $session.toChord)
+                }
+
+                VStack {
+                    Text("\(session.bpm) BPM").font(.headline)
+                    Slider(value: Binding(get: { Double(session.bpm) },
+                                          set: { session.bpm = Int($0) }), in: 40...160, step: 1)
+                }
+
+                Stepper("Reps: \(session.totalReps)", value: $session.totalReps, in: 4...16, step: 2)
+
+                Button("Start") { session.start() }
+                    .buttonStyle(.borderedProminent)
             }
-
-            VStack {
-                Text("\(session.bpm) BPM").font(.headline)
-                Slider(value: Binding(get: { Double(session.bpm) },
-                                      set: { session.bpm = Int($0) }), in: 40...160, step: 1)
-            }
-
-            Stepper("Reps: \(session.totalReps)", value: $session.totalReps, in: 4...16, step: 2)
-
-            Button("Start") { session.start() }
-                .buttonStyle(.borderedProminent)
-            Spacer()
+            .padding(.bottom, Theme.Spacing.l)
         }
     }
 
-    private func chordMenu(_ label: String, selection: Binding<Chord>) -> some View {
-        VStack(spacing: Theme.Spacing.xs) {
+    private func chordColumn(_ label: String, selection: Binding<Chord>) -> some View {
+        VStack(spacing: Theme.Spacing.s) {
             Text(label).font(.caption).foregroundStyle(.secondary)
             Menu(selection.wrappedValue.displayName) {
                 ForEach(Chord.allCases) { chord in
                     Button(chord.displayName) { selection.wrappedValue = chord }
                 }
             }
-            .font(.title2).bold()
+            .font(.title3).bold()
+            ChordDiagramView(chord: selection.wrappedValue)
+                .frame(width: 110, height: 150)
         }
     }
 
