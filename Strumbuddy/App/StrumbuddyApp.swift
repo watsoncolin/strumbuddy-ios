@@ -26,11 +26,13 @@ struct StrumbuddyApp: App {
 final class AppEnvironment: ObservableObject {
     let audioEngine: AudioEngine
     let coach: Coach
+    let metronome: Metronome
 
     init() {
         let log = ObservationLog()
         let graph = SkillGraph.beginnerGraph()
         self.audioEngine = AudioEngine()
         self.coach = Coach(graph: graph, log: log)
+        self.metronome = Metronome()
     }
 }

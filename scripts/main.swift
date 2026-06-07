@@ -280,6 +280,24 @@ do {
           recs.allSatisfy { r in graph.prerequisitesMet(r.id) { store.isMastered($0, in: st, now: now) } })
 }
 
+// MARK: - BeatClock (metronome / timing grid)
+
+print("\n== BeatClock ==")
+do {
+    let clock = BeatClock(bpm: 60)   // 1.0s per beat
+    check("60 bpm → 1.0s beat", abs(clock.beatInterval - 1.0) < 1e-9)
+    check("on the beat → alignment 1.0", abs(clock.alignment(elapsed: 0) - 1.0) < 1e-9)
+    check("on a later beat → alignment 1.0", abs(clock.alignment(elapsed: 3.0) - 1.0) < 1e-9)
+    check("half-beat off → alignment 0", clock.alignment(elapsed: 0.5) < 0.01)
+    check("quarter-beat off → ~0.5", abs(clock.alignment(elapsed: 0.25) - 0.5) < 0.01)
+    check("slightly late → high alignment", clock.alignment(elapsed: 0.95) > 0.85)
+    check("beat index", clock.beatIndex(elapsed: 2.5) == 2)
+
+    let fast = BeatClock(bpm: 120)   // 0.5s per beat
+    check("120 bpm → 0.5s beat", abs(fast.beatInterval - 0.5) < 1e-9)
+    check("120 bpm on beat → 1.0", abs(fast.alignment(elapsed: 1.0) - 1.0) < 1e-9)
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

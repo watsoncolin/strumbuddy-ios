@@ -9,7 +9,8 @@ struct FreePlayView: View {
 
     enum Tool: String, CaseIterable, Identifiable {
         case tuner = "Tuner"
-        case chords = "Chord Check"
+        case chords = "Chords"
+        case metronome = "Metro"
         var id: String { rawValue }
     }
     @State private var tool: Tool = .tuner
@@ -24,8 +25,9 @@ struct FreePlayView: View {
                 .padding(.horizontal)
 
                 switch tool {
-                case .tuner:  TunerView(engine: env.audioEngine)
-                case .chords: ChordCheckView(engine: env.audioEngine, coach: env.coach)
+                case .tuner:     TunerView(engine: env.audioEngine)
+                case .chords:    ChordCheckView(engine: env.audioEngine, coach: env.coach)
+                case .metronome: MetronomeView(metronome: env.metronome)
                 }
 
                 Spacer()
