@@ -14,6 +14,9 @@ import Combine
 final class AudioEngine: ObservableObject {
     enum State: Equatable { case idle, running, denied, failed(String) }
 
+    /// Minimum YIN clarity for a frame to count as a real detection (vs. noise).
+    private static let minClarity = 0.5
+
     @Published private(set) var state: State = .idle
     /// Latest smoothed fundamental (Hz), or nil when no clear pitch. Drives the tuner.
     @Published private(set) var fundamental: Double?
@@ -62,12 +65,15 @@ final class AudioEngine: ObservableObject {
         input.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, _ in
             guard let self else { return }
             let pitch = self.pitchTracker.detect(buffer)
-            let smoothed = self.pitchSmoother.push(pitch?.frequency)
-            let clarity = pitch?.clarity ?? 0
+            // Only feed confident detections into the smoother; ambiguous/noisy frames
+            // count as a "miss" and are absorbed by the smoother's hold, so a stable
+            // note doesn't blink out on a single bad buffer.
+            let confident = (pitch?.clarity ?? 0) >= Self.minClarity ? pitch : nil
+            let smoothed = self.pitchSmoother.push(confident?.frequency)
             let chroma = self.chromagram.compute(buffer)
             Task { @MainActor in
                 self.fundamental = smoothed
-                self.clarity = clarity
+                if let confident { self.clarity = confident.clarity }
                 self.chroma = chroma
             }
         }

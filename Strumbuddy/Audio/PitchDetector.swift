@@ -17,8 +17,9 @@ struct PitchDetector {
     /// Guitar-oriented bounds: low E is 82.4 Hz, high E 329.6 Hz; headroom for melody.
     var minFrequency: Double = 70
     var maxFrequency: Double = 1000
-    /// Skip silence below this RMS.
-    var minRMS: Float = 0.006
+    /// Skip silence below this RMS. Kept low so a decaying plucked note keeps
+    /// registering while it's still audibly ringing.
+    var minRMS: Float = 0.003
 
     struct Result: Equatable {
         let frequency: Double
@@ -100,32 +101,57 @@ struct PitchDetector {
 }
 
 /// Smooths a stream of noisy per-buffer pitch estimates into a stable readout.
-/// A median over a short window rejects single-buffer outliers (a stray octave jump
-/// or a transient) without the lag of a long average. Reference type so the audio
-/// thread can keep state across buffers.
+///
+/// Two jobs:
+///  • A median over a short window rejects single-buffer outliers (a stray octave
+///    jump or transient) without the lag of a long average.
+///  • A hold/hysteresis keeps reporting the last stable pitch for a short grace
+///    period after detection drops, so a ringing-but-decaying note doesn't blink
+///    out the instant one buffer fails to detect. Only after `holdFrames`
+///    consecutive misses does the readout actually clear.
+///
+/// Reference type so the audio thread can keep state across buffers.
 final class PitchSmoother {
     private var window: [Double] = []
+    private var missCount = 0
+    private var lastOutput: Double?
+
     private let capacity: Int
     private let minSamples: Int
+    /// Consecutive misses tolerated before the readout clears. At ~11 buffers/sec a
+    /// value of 6 is roughly a half-second of grace.
+    private let holdFrames: Int
 
-    init(capacity: Int = 5, minSamples: Int = 3) {
+    init(capacity: Int = 5, minSamples: Int = 3, holdFrames: Int = 6) {
         self.capacity = capacity
         self.minSamples = minSamples
+        self.holdFrames = holdFrames
     }
 
-    /// Push the latest estimate (nil = silence/no pitch this buffer); get the smoothed
-    /// value, or nil until enough recent estimates have accumulated.
+    /// Push the latest estimate (nil = no confident pitch this buffer); get the
+    /// smoothed value, the held value during the grace period, or nil once cleared.
     func push(_ value: Double?) -> Double? {
         if let value {
+            missCount = 0
             window.append(value)
             if window.count > capacity { window.removeFirst() }
-        } else if !window.isEmpty {
-            window.removeFirst()   // decay toward "no pitch" on silence
+            guard window.count >= minSamples else { return lastOutput }
+            let sorted = window.sorted()
+            lastOutput = sorted[sorted.count / 2]
+            return lastOutput
+        } else {
+            missCount += 1
+            if missCount >= holdFrames {
+                window.removeAll()
+                lastOutput = nil
+            }
+            return lastOutput   // hold the last reading during the grace period
         }
-        guard window.count >= minSamples else { return nil }
-        let sorted = window.sorted()
-        return sorted[sorted.count / 2]
     }
 
-    func reset() { window.removeAll() }
+    func reset() {
+        window.removeAll()
+        missCount = 0
+        lastOutput = nil
+    }
 }

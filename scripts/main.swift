@@ -92,6 +92,21 @@ check("A4 -12¢ → flat reading", flatA.noteName == "A" && flatA.cents < -5 && 
       "got \(flatA.noteName) \(flatA.cents)¢")
 check("A4 -12¢ → 'Tune up'", flatA.directionLabel.contains("Tune up"), "got \(flatA.directionLabel)")
 
+// MARK: - PitchSmoother: median + hold/hysteresis
+
+print("\n== PitchSmoother ==")
+do {
+    let sm = PitchSmoother(capacity: 5, minSamples: 3, holdFrames: 3)
+    check("warms up (1st frame nil)", sm.push(100) == nil)
+    check("warms up (2nd frame nil)", sm.push(100) == nil)
+    check("emits after minSamples", sm.push(100) == 100)
+    check("rejects single outlier (median)", sm.push(200) == 100)
+    // Hold: misses within grace keep the last reading, then it clears.
+    check("hold miss 1 keeps reading", sm.push(nil) == 100)
+    check("hold miss 2 keeps reading", sm.push(nil) == 100)
+    check("clears after holdFrames", sm.push(nil) == nil)
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

@@ -6,9 +6,6 @@ import SwiftUI
 struct TunerView: View {
     @ObservedObject var engine: AudioEngine
 
-    /// Clarity below this is treated as "no confident pitch" to avoid flicker.
-    private let clarityGate = 0.4
-
     var body: some View {
         VStack(spacing: Theme.Spacing.l) {
             switch engine.state {
@@ -83,8 +80,9 @@ struct TunerView: View {
     }
 
     private var reading: TunerReading? {
-        guard engine.clarity >= clarityGate else { return nil }
-        return TunerReading(frequency: engine.fundamental)
+        // The engine + smoother already gate on clarity and hold a decaying note,
+        // so a present fundamental means we have something worth showing.
+        TunerReading(frequency: engine.fundamental)
     }
 }
 
