@@ -82,6 +82,9 @@ From one detected timeline, produce tiers:
 - ✅ **Difficulty tiers** (`SongSimplifier`, pure): full / capo / campfire. Campfire
   substitutes any un-cappable chord with the nearest easy open chord (vocabulary
   reduction). Wired into the Analyze results as a Campfire/Capo/Full picker.
+- ✅ **Synth-guitar reconstruction** (`ChordSynth` + `SynthPlayer`): play the detected
+  timeline back as strummed synth guitar ("Hear it" on the Analyze results) to judge
+  accuracy by ear. Efficient overlap-add render. Pure renderer, harness-tested.
 
 - ✅ **Device analyze harness** (`AnalyzeView`, Songs tab → "Analyze your own song
   (beta)"): three input paths — **pick a file** (`AudioFileLoader`, first 90s),
