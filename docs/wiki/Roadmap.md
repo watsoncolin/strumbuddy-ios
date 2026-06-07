@@ -12,12 +12,15 @@ loop for chords** (observations → consistency mastery → live recommendations
 **Also done & on device:** [[Rhythm Mode]] — metronome + transition drill
 (records transition/timing observations).
 
-**Next (reprioritized — retention-first, see [[Learning Philosophy]]):**
-1. **[[Daily Practice Loop]]** — the keystone: a short daily session generator +
-   streaks/forgiveness. The habit engine the whole thesis rests on.
-2. **First-session onboarding** — seed the coach + guarantee a session-one win.
-3. **Structured path** as a Couch-to-5K-style ladder, wrapped around the daily loop.
-4. **Timing calibration** — tune `inputLatency` so on-beat grading is accurate.
+**Done (retention-first, see [[Learning Philosophy]]):**
+- ✅ **[[Daily Practice Loop]]** — "Today" session generator + streaks/forgiveness.
+- ✅ **First-run onboarding** — manufactures the session-one win.
+- ✅ **[[Structured Path]]** — Couch-to-5K-style gated, actionable ladder.
+
+**Next:**
+1. **Timing calibration** — tune `inputLatency` so on-beat grading is accurate.
+2. **A first real song** — the motivation payoff (even a 2-chord tune).
+3. **Reminders/notifications** — the deferred habit cue.
 
 _Recital mode: dropped — the consistency-based practice grading covers that ground._
 
