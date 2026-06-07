@@ -445,6 +445,14 @@ do {
     check("clean attempt → no hint", Tip.contextualHint(hasRingingMuted: false, hasMuted: false, hasBuzzing: false) == nil)
 }
 
+// MARK: - Songs
+
+print("\n== Songs ==")
+check("library non-empty", !Song.library.isEmpty)
+check("every song has chords", Song.library.allSatisfy { !$0.flatChords.isEmpty })
+check("no barre chords (beginner-friendly)", Song.library.allSatisfy { !$0.allChords.contains(.f) })
+check("allChords dedupes", Song.library.allSatisfy { $0.allChords.count <= $0.flatChords.count })
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

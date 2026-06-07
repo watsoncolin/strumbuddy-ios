@@ -9,10 +9,11 @@ Songs tab with built-in play-along songs. Status: **v1 built.**
 
 ## Model & licensing
 `Song` = sections of **one chord per bar**, using only the supported [[Chord Library|chords]].
-**Chords only, no lyrics, no recordings** — the licensing-safe model (design-doc §7):
-chord progressions aren't copyrightable; lyrics/recordings are. Built-in library:
-Tom Dooley (G/D, the 2-chord starter), Knockin' on Heaven's Door, Stand By Me,
-Three Little Birds.
+**Chords only, no lyrics, no recordings** ([[Licensing]]). Built-in library is
+**public-domain / traditional only**: Tom Dooley (G/D, the 2-chord starter), When the
+Saints Go Marching In, Drunken Sailor (Em/D), Swing Low Sweet Chariot, Oh! Susanna.
+A harness guard keeps new songs barre-free (beginner-friendly). Recognizable hits
+come via v2 bring-your-own-song.
 
 ## Play-along
 - `SongDetailView`: chord chart (chords-in-song diagrams + a per-section chip grid)

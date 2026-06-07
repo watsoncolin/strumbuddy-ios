@@ -26,18 +26,24 @@ struct Song: Identifiable {
     /// The whole progression flattened to one chord per bar, for the play-along.
     var flatChords: [Chord] { sections.flatMap(\.chords) }
 
+    // Public-domain / traditional songs only — see wiki: Licensing. Chord progressions
+    // are not copyrightable and these compositions are out of copyright, so the built-in
+    // library carries no licensing risk. Recognizable hits move to v2 bring-your-own-song.
     static let library: [Song] = [
         Song(id: 0, title: "Tom Dooley", artist: "Traditional", bpm: 90, sections: [
             Section(id: 0, name: "Verse", chords: [.g, .g, .d, .d, .d, .d, .g, .g]),
         ]),
-        Song(id: 1, title: "Knockin' on Heaven's Door", artist: "Bob Dylan", bpm: 70, sections: [
-            Section(id: 0, name: "Verse", chords: [.g, .d, .am, .am, .g, .d, .c, .c]),
+        Song(id: 1, title: "When the Saints Go Marching In", artist: "Traditional", bpm: 100, sections: [
+            Section(id: 0, name: "Verse", chords: [.g, .g, .c, .c, .g, .d, .g, .g]),
         ]),
-        Song(id: 2, title: "Stand By Me", artist: "Ben E. King", bpm: 118, sections: [
-            Section(id: 0, name: "Verse", chords: [.g, .g, .em, .em, .c, .d, .g, .g]),
+        Song(id: 2, title: "Drunken Sailor", artist: "Traditional", bpm: 100, sections: [
+            Section(id: 0, name: "Verse", chords: [.em, .em, .d, .d, .em, .em, .d, .em]),
         ]),
-        Song(id: 3, title: "Three Little Birds", artist: "Bob Marley", bpm: 75, sections: [
-            Section(id: 0, name: "Chorus", chords: [.a, .a, .d, .a, .a, .e, .a, .a]),
+        Song(id: 3, title: "Swing Low, Sweet Chariot", artist: "Traditional", bpm: 72, sections: [
+            Section(id: 0, name: "Chorus", chords: [.g, .c, .g, .d, .g, .c, .g, .g]),
+        ]),
+        Song(id: 4, title: "Oh! Susanna", artist: "Stephen Foster (1848)", bpm: 110, sections: [
+            Section(id: 0, name: "Verse", chords: [.g, .g, .c, .g, .g, .d, .g, .g]),
         ]),
     ]
 }
