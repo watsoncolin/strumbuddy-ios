@@ -73,6 +73,7 @@ struct ChordCheckView: View {
                 axisBar("Accuracy", score.confidence)
                 axisBar("Cleanliness", score.cleanliness)
                 qualityRow(score)
+                if let hint = hint(for: score) { hintCard(hint) }
             } else {
                 Text("Strum the chord…")
                     .foregroundStyle(.secondary)
@@ -93,6 +94,27 @@ struct ChordCheckView: View {
             }
             ProgressView(value: min(max(value, 0), 1)).tint(barColor(value))
         }
+    }
+
+    /// A contextual tip for the current attempt's problem (buzz / dead / extra string).
+    private func hint(for score: ChordDetector.Result) -> Tip? {
+        Tip.contextualHint(
+            hasRingingMuted: !score.ringingMutedStrings.isEmpty,
+            hasMuted: target.expectedPitchClasses.contains { score.stringQuality[$0] == .muted },
+            hasBuzzing: score.stringQuality.values.contains(.buzzing))
+    }
+
+    private func hintCard(_ tip: Tip) -> some View {
+        HStack(alignment: .top, spacing: Theme.Spacing.s) {
+            Image(systemName: "lightbulb.fill").font(.caption).foregroundStyle(.orange)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(tip.title).font(.caption).bold()
+                Text(tip.body).font(.caption2).foregroundStyle(.secondary)
+            }
+        }
+        .padding(Theme.Spacing.s)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: Theme.Radius.card))
     }
 
     private func qualityRow(_ score: ChordDetector.Result) -> some View {

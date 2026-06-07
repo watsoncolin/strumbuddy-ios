@@ -427,6 +427,12 @@ do {
     check("daily cycles over the library", Tip.daily(day: 0).id == Tip.daily(day: n).id)
     check("consecutive days differ", Tip.daily(day: 3).id != Tip.daily(day: 4).id)
     check("negative day ordinal is safe", Tip.daily(day: -1).id == Tip.library[n - 1].id)
+
+    // Contextual hints map the right problem to the right tip (feedback priority).
+    check("buzzing → buzz tip", Tip.contextualHint(hasRingingMuted: false, hasMuted: false, hasBuzzing: true)?.key == .buzzing)
+    check("dead note → arch-fingers tip", Tip.contextualHint(hasRingingMuted: false, hasMuted: true, hasBuzzing: true)?.key == .deadString)
+    check("ringing muted string wins priority", Tip.contextualHint(hasRingingMuted: true, hasMuted: true, hasBuzzing: true)?.key == .muteSkipped)
+    check("clean attempt → no hint", Tip.contextualHint(hasRingingMuted: false, hasMuted: false, hasBuzzing: false) == nil)
 }
 
 // MARK: - Summary
