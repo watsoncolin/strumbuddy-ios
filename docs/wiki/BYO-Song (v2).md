@@ -71,6 +71,12 @@ From one detected timeline, produce tiers:
   (compute cost meters naturally into a subscription).
 
 ## Progress
+- ✅ **Chord-recognition spike** (`ChordRecognizer`, pure & harness-tested): window
+  audio → chroma frames → cosine-match 24 maj/min templates → self-transition Viterbi
+  → chord timeline. On a synthesized C→G→Am→F it recovers **100%**, distinguishing Am
+  from A major. **Finding:** the algorithm is sound on *clean* input (upper bound).
+  The real unknown — accuracy on full mixes (drums/vocals/bass) — still needs **real
+  recordings on a device** to measure. That's the gate before committing to v2.0.
 - ✅ **Capo simplifier built** (`CapoSimplifier` + `ChordSymbol`, pure & harness-tested):
   scores capo 0–7 by how much of a song lands on easy open shapes, lowest-capo
   tie-break, personalizable to the player's known shapes. Not yet wired to UI (waits
