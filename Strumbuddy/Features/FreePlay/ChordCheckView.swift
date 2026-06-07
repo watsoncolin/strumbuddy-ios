@@ -21,12 +21,13 @@ struct ChordCheckView: View {
             scoreDisplay
             Spacer()
         }
+        .task { await engine.start() }
         .onAppear {
             if let initialChord { target = initialChord }
             engine.setTargetChord(initialChord ?? target)
         }
         .onChange(of: target) { engine.setTargetChord($0) }
-        .onDisappear { engine.setTargetChord(nil) }
+        .onDisappear { engine.setTargetChord(nil); engine.stop() }
         // Each completed strum becomes one observation the coach learns from.
         .onChange(of: engine.finalizedAttempt?.id) { _ in recordAttempt() }
     }

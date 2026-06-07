@@ -35,12 +35,8 @@ struct FreePlayView: View {
             .padding(.top)
             .navigationTitle("Tuner & Chords")
             .navigationBarTitleDisplayMode(.inline)
-            .task { await env.audioEngine.start() }
-            .onDisappear { env.audioEngine.stop() }
-            .onChange(of: tool) { newTool in
-                // Leaving chords clears scoring; the Chord Check view also manages this.
-                if newTool != .chords { env.audioEngine.setTargetChord(nil) }
-            }
+            // Each audio tool (Tuner / Chord Check) owns the engine lifecycle now, so
+            // they work whether launched here or from a daily-session / path block.
         }
     }
 }

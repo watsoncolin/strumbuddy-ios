@@ -26,6 +26,8 @@ struct TunerView: View {
         }
         .frame(maxWidth: .infinity)
         .animation(.easeOut(duration: 0.12), value: reading?.cents)
+        .task { await engine.start() }
+        .onDisappear { engine.stop() }
     }
 
     // MARK: - Readout
