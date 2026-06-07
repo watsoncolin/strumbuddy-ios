@@ -14,6 +14,7 @@ rationale lives in the [design doc](../design-doc.md).
 - [[Daily Practice Loop]] — the keystone habit feature (next build)
 - [[Architecture]] — three modes, one engine
 - [[Roadmap]] — v0.1 scope and what's deferred
+- [[BYO-Song (v2)]] — the v2 headline feature (scoping)
 
 ## The engine — built & working on device
 - [[Audio Engine]]
