@@ -70,8 +70,15 @@ From one detected timeline, produce tiers:
 - **v2.3** — coach integration (goal-relevant skills) + premium gating of analysis
   (compute cost meters naturally into a subscription).
 
-## Recommended first steps
-1. **Build the capo/simplifier now** — it's pure, testable, high-value, and needs no
-   audio pipeline. De-risks and delivers the satisfying part early.
-2. **A chord-recognition accuracy spike** — prototype the offline chroma→chord→smooth
+## Progress
+- ✅ **Capo simplifier built** (`CapoSimplifier` + `ChordSymbol`, pure & harness-tested):
+  scores capo 0–7 by how much of a song lands on easy open shapes, lowest-capo
+  tie-break, personalizable to the player's known shapes. Not yet wired to UI (waits
+  on the analysis pipeline). Still TODO: vocabulary reduction (strip 7ths/slash) and
+  difficulty tiers (Campfire/Standard/Full) on top of it.
+
+## Recommended next steps
+1. **A chord-recognition accuracy spike** — prototype the offline chroma→chord→smooth
    path on a few known recordings to measure real accuracy before committing to v2.0.
+   This is the make-or-break unknown.
+2. Vocabulary reduction + difficulty tiers (pure, builds on the simplifier).
