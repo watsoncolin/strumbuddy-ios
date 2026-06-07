@@ -9,14 +9,15 @@ updated: 2026-06-07
 [[Muted-String Detection]], [[Chord Library]] diagrams, **engine → [[The Coach]]
 loop for chords** (observations → consistency mastery → live recommendations).
 
+**Also done & on device:** [[Rhythm Mode]] — metronome + transition drill
+(records transition/timing observations).
+
 **Next (in order):**
-1. **Metronome + transition drill** — generate timing & transition observations
-   (where beginners stall); makes credit assignment real. A *rhythm mode* alongside
-   the untimed Chord Check.
-2. **Recital mode** — deliberate assessment posture (vs. forgiving practice) that
+1. **Recital mode** — deliberate assessment posture (vs. forgiving practice) that
    gates milestones with high-signal observations.
-3. **Structured path** milestones reading coach mastery.
-4. **Onboarding calibration** — seed the coach + guarantee a session-one "win".
+2. **Structured path** milestones reading coach mastery.
+3. **Onboarding calibration** — seed the coach + guarantee a session-one "win".
+4. **Timing calibration** — tune `inputLatency` so on-beat grading is accurate.
 
 **Thesis to validate:** does explainable adaptive coaching keep a beginner
 practicing longer than a generic lesson plan?

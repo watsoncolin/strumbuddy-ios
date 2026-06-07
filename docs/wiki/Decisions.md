@@ -6,6 +6,13 @@ updated: 2026-06-07
 
 Running log of choices and *why*, newest first.
 
+- **Drill timing via peak-hold landing + a latency constant.** Timing is graded from
+  when the bar's best strum landed (`targetScoreTime`) vs the beat, with a fixed
+  `inputLatency` (~0.09s) approximating capture latency. Coarse but cheap and
+  calibratable; avoids fragile real-time onset detection. See [[Rhythm Mode]].
+- **Metronome click in a separate audio engine.** The click runs on its own
+  `AVAudioPlayerNode`; bleed into the mic is harmless because grading keys off
+  detected chords, not raw onsets.
 - **Consistency-based mastery, not last-attempt.** The coach masters a skill on ≥3
   of the last 4 clean attempts, with a gentle EMA (0.3) for proficiency — so a fumble
   doesn't undo progress and a lucky strum doesn't earn mastery. Matches how a teacher

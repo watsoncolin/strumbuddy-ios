@@ -19,6 +19,7 @@ rationale lives in the [design doc](../design-doc.md).
     - [[Chord Detection]]
     - [[Cleanliness Scoring]]
     - [[Muted-String Detection]]
+- [[Rhythm Mode]] — metronome + transition drill
 - [[Chord Library]]
 
 ## The coach — loop closed for chords
@@ -32,5 +33,5 @@ rationale lives in the [design doc](../design-doc.md).
 Engine validated on a real guitar (tuner, chord identity, cleanliness, muted-string
 detection) **and wired into [[The Coach]]**: Chord Check records each strum, the
 Practice tab shows live recommendations + per-chord mastery (consistency-based).
-**Next:** metronome + transition drill (timing/transition observations), then
-recital mode.
+**Next:** [[Rhythm Mode]] (metronome + transition drill) is built — verify on
+device — then recital mode and the structured path.
