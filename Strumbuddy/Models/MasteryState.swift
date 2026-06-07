@@ -20,13 +20,19 @@ struct MasteryState: Codable, Hashable {
     var lastPracticed: Date
     var observationCount: Int
 
+    /// The most recent per-attempt overall scores (newest last), capped to a short
+    /// window. Drives the consistency-based mastery check — "you've got it when you
+    /// can play it cleanly *reliably*, not perfectly and not once."
+    var recentScores: [Double]
+
     static func seed(_ skill: SkillID, prior: Double = 0.0, now: Date) -> MasteryState {
         MasteryState(skill: skill,
                      proficiencyAtLastPractice: prior,
                      stabilityDays: 1.0,
                      confidence: 0.0,
                      lastPracticed: now,
-                     observationCount: 0)
+                     observationCount: 0,
+                     recentScores: [])
     }
 
     /// Current retrievability, decayed from `lastPracticed` to `now`.

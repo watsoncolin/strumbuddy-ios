@@ -4,6 +4,7 @@ import SwiftUI
 struct ContentView: View {
     enum Tab: Hashable { case path, practice, freePlay }
 
+    @EnvironmentObject private var env: AppEnvironment
     @State private var selection: Tab = .practice
 
     var body: some View {
@@ -12,7 +13,7 @@ struct ContentView: View {
                 .tabItem { Label("Path", systemImage: "map") }
                 .tag(Tab.path)
 
-            PracticeCoachView()
+            PracticeCoachView(coach: env.coach)
                 .tabItem { Label("Practice", systemImage: "figure.strengthtraining.traditional") }
                 .tag(Tab.practice)
 

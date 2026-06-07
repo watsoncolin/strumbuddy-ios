@@ -25,7 +25,7 @@ struct FreePlayView: View {
 
                 switch tool {
                 case .tuner:  TunerView(engine: env.audioEngine)
-                case .chords: ChordCheckView(engine: env.audioEngine)
+                case .chords: ChordCheckView(engine: env.audioEngine, coach: env.coach)
                 }
 
                 Spacer()

@@ -157,22 +157,34 @@ final class ChordScoreSmoother {
         self.holdFrames = holdFrames
     }
 
+    /// One push's output: the held `current` best (for live display) and, on the
+    /// frame a strum completes (silence past the hold), the `finalized` best — the
+    /// single attempt to record as an observation.
+    struct Update {
+        let current: ChordDetector.Result?
+        let finalized: ChordDetector.Result?
+    }
+
     /// Combined quality used to pick the best frame: identity + cleanliness.
     private func quality(_ r: ChordDetector.Result) -> Double {
         (r.confidence + r.cleanliness) / 2
     }
 
     /// `energetic` = the buffer actually contains playing (above an RMS floor).
-    /// Quiet buffers hold the best reading, then clear after `holdFrames`.
-    func push(_ result: ChordDetector.Result?, energetic: Bool) -> ChordDetector.Result? {
+    /// Quiet buffers hold the best reading; once silence passes `holdFrames` the
+    /// strum is finalized (emitted once) and the hold clears.
+    func push(_ result: ChordDetector.Result?, energetic: Bool) -> Update {
         if energetic, let result {
             quietFrames = 0
             if best == nil || quality(result) > quality(best!) { best = result }
-        } else {
-            quietFrames += 1
-            if quietFrames >= holdFrames { best = nil }
+            return Update(current: best, finalized: nil)
         }
-        return best
+        quietFrames += 1
+        if quietFrames >= holdFrames, let finished = best {
+            best = nil
+            return Update(current: nil, finalized: finished)
+        }
+        return Update(current: best, finalized: nil)
     }
 
     func reset() {

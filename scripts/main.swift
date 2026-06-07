@@ -191,12 +191,14 @@ do {
     let sm = ChordScoreSmoother(holdFrames: 3)
     let clean = chordDetector.score(.c, chroma(of: [0, 4, 7]))        // high quality
     let poor  = chordDetector.score(.c, chroma(of: [0]))             // only root → low quality
-    check("smoother emits when energetic", sm.push(clean, energetic: true) != nil)
+    check("smoother emits when energetic", sm.push(clean, energetic: true).current != nil)
     check("peak-hold keeps best over a worse later frame",
-          sm.push(poor, energetic: true)?.cleanliness == clean.cleanliness)
-    check("smoother holds on quiet 1", sm.push(nil, energetic: false) != nil)
-    check("smoother holds on quiet 2", sm.push(nil, energetic: false) != nil)
-    check("smoother clears after holdFrames", sm.push(nil, energetic: false) == nil)
+          sm.push(poor, energetic: true).current?.cleanliness == clean.cleanliness)
+    check("smoother holds on quiet 1", sm.push(nil, energetic: false).current != nil)
+    check("smoother holds on quiet 2", sm.push(nil, energetic: false).current != nil)
+    let finalUpdate = sm.push(nil, energetic: false)   // holdFrames=3 → clears here
+    check("smoother clears after holdFrames", finalUpdate.current == nil)
+    check("finalizes the best attempt on clear", finalUpdate.finalized?.cleanliness == clean.cleanliness)
 }
 
 // MARK: - ChordShape fingerings (data correctness)
@@ -216,6 +218,66 @@ do {
     check("G: open D string sounds D", g.soundingPitchClass(forString: 2) == PitchClass.d.rawValue)
     let c = ChordShape.library[.c]!
     check("C: D string at 2nd fret sounds E", c.soundingPitchClass(forString: 2) == PitchClass.e.rawValue)
+}
+
+// MARK: - Coach mastery (consistency, forgiving of fumbles)
+
+print("\n== Coach mastery ==")
+do {
+    let store = MasteryStore()
+    let graph = SkillGraph.beginnerGraph()
+    let cId = SkillID.chord(.c)
+
+    func states(_ scores: [Double]) -> ([SkillID: MasteryState], Date) {
+        var obs: [Observation] = []
+        var t = 1_000_000.0
+        for s in scores {
+            obs.append(Observation(timestamp: Date(timeIntervalSince1970: t),
+                implicatedSkills: [cId],
+                context: .init(isolation: .isolated, bpm: nil, source: .practice),
+                scores: ScoreAxes(accuracy: s, cleanliness: s, timing: s)))
+            t += 60
+        }
+        let now = Date(timeIntervalSince1970: t)
+        return (store.project(obs, graph: graph, now: now), now)
+    }
+    func mastered(_ scores: [Double]) -> Bool {
+        let (st, now) = states(scores); return store.isMastered(cId, in: st, now: now)
+    }
+
+    check("2 clean reps → not yet mastered", !mastered([0.9, 0.9]))
+    check("3 clean reps → mastered", mastered([0.9, 0.9, 0.9]))
+    check("one fumble keeps mastery (3 of last 4 clean)", mastered([0.9, 0.9, 0.9, 0.4]))
+    check("two recent fumbles → not mastered", !mastered([0.9, 0.9, 0.9, 0.4, 0.4]))
+    check("sustained poor → never mastered", !mastered([0.4, 0.5, 0.4, 0.5]))
+    check("recovers after a bad streak", mastered([0.4, 0.4, 0.9, 0.9, 0.9]))
+
+    // Forgiving sensitivity: one fumble only dents the smoothed proficiency.
+    let good = states([0.8, 0.8, 0.8]).0[cId]!.proficiencyAtLastPractice
+    let dipped = states([0.8, 0.8, 0.8, 0.4]).0[cId]!.proficiencyAtLastPractice
+    check("one fumble only dents proficiency", good - dipped < 0.12,
+          String(format: "Δ %.3f", good - dipped))
+}
+
+// Selection policy produces attemptable recommendations from real observations.
+do {
+    let store = MasteryStore()
+    let graph = SkillGraph.beginnerGraph()
+    var obs: [Observation] = []
+    var t = 2_000_000.0
+    for s in [0.4, 0.45, 0.4] {
+        obs.append(Observation(timestamp: Date(timeIntervalSince1970: t),
+            implicatedSkills: [.chord(.c)],
+            context: .init(isolation: .isolated, bpm: nil, source: .practice),
+            scores: ScoreAxes(accuracy: s, cleanliness: s, timing: s)))
+        t += 60
+    }
+    let now = Date(timeIntervalSince1970: t)
+    let st = store.project(obs, graph: graph, now: now)
+    let recs = SelectionPolicy().recommend(graph: graph, states: st, store: store, now: now)
+    check("coach produces recommendations", !recs.isEmpty)
+    check("recommendations are attemptable (prereqs met)",
+          recs.allSatisfy { r in graph.prerequisitesMet(r.id) { store.isMastered($0, in: st, now: now) } })
 }
 
 // MARK: - Summary

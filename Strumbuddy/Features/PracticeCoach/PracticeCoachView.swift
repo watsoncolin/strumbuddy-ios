@@ -1,37 +1,42 @@
 import SwiftUI
 
 /// The adaptive-coach surface — the "work on…" screen (design-doc §3 mode 2, §5).
-/// Shows the coach's ranked recommendations, each with its reasoning (explainability).
+/// Observes the `Coach` directly so recommendations and mastery update live as you
+/// record attempts in Chord Check.
 struct PracticeCoachView: View {
-    @EnvironmentObject private var env: AppEnvironment
+    @ObservedObject var coach: Coach
 
     var body: some View {
         NavigationStack {
             List {
-                if env.coach.recommendations.isEmpty {
-                    VStack(spacing: Theme.Spacing.s) {
-                        Image(systemName: "waveform")
-                            .font(.largeTitle)
-                            .foregroundStyle(.secondary)
-                        Text("Let's find your starting point")
-                            .font(.headline)
-                        Text("Play a little and Strumbuddy will spot what to work on next.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
+                Section("Work on this next") {
+                    if coach.recommendations.isEmpty {
+                        emptyState
+                    } else {
+                        ForEach(coach.recommendations) { RecommendationRow(rec: $0) }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, Theme.Spacing.xl)
-                } else {
-                    Section("Work on this next") {
-                        ForEach(env.coach.recommendations) { rec in
-                            RecommendationRow(rec: rec)
-                        }
+                }
+
+                Section("Your chords") {
+                    ForEach(Chord.allCases) { chord in
+                        ChordMasteryRow(name: chord.displayName,
+                                        proficiency: coach.proficiency(.chord(chord)))
                     }
                 }
             }
             .navigationTitle("Practice")
         }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: Theme.Spacing.s) {
+            Image(systemName: "waveform").font(.largeTitle).foregroundStyle(.secondary)
+            Text("Let's find your starting point").font(.headline)
+            Text("Play a few chords in Chord Check and Strumbuddy will spot what to work on next.")
+                .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Theme.Spacing.l)
     }
 }
 
@@ -41,17 +46,31 @@ private struct RecommendationRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-            Text(rec.skill.displayName)
-                .font(.headline)
+            Text(rec.skill.displayName).font(.headline)
             Text("Because \(rec.reason).")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.subheadline).foregroundStyle(.secondary)
+        }
+        .padding(.vertical, Theme.Spacing.xs)
+    }
+}
+
+/// Per-chord mastery so practice visibly counts.
+private struct ChordMasteryRow: View {
+    let name: String
+    let proficiency: Double
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.m) {
+            Text(name).font(.headline).frame(width: 44, alignment: .leading)
+            ProgressView(value: min(max(proficiency, 0), 1)).tint(Theme.accent)
+            Text("\(Int(proficiency * 100))%")
+                .font(.caption).monospacedDigit().foregroundStyle(.secondary)
+                .frame(width: 40, alignment: .trailing)
         }
         .padding(.vertical, Theme.Spacing.xs)
     }
 }
 
 #Preview {
-    PracticeCoachView()
-        .environmentObject(AppEnvironment())
+    PracticeCoachView(coach: AppEnvironment().coach)
 }

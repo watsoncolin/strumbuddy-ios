@@ -8,6 +8,7 @@ import SwiftUI
 /// the parent owns the engine's start/stop lifecycle.
 struct ChordCheckView: View {
     @ObservedObject var engine: AudioEngine
+    @ObservedObject var coach: Coach
     @State private var target: Chord = .em
 
     var body: some View {
@@ -21,6 +22,20 @@ struct ChordCheckView: View {
         .onAppear { engine.targetChord = target }
         .onChange(of: target) { engine.targetChord = $0 }
         .onDisappear { engine.targetChord = nil }
+        // Each completed strum becomes one observation the coach learns from.
+        .onChange(of: engine.finalizedAttempt?.id) { _ in recordAttempt() }
+    }
+
+    private func recordAttempt() {
+        guard let attempt = engine.finalizedAttempt else { return }
+        let r = attempt.result
+        let axes = ScoreAxes(accuracy: r.confidence, cleanliness: r.cleanliness, timing: r.confidence)
+        let observation = Observation(
+            timestamp: Date(),
+            implicatedSkills: [.chord(r.chord)],
+            context: .init(isolation: .isolated, bpm: nil, source: .practice),
+            scores: axes)
+        coach.record(observation)
     }
 
     private var chordPicker: some View {

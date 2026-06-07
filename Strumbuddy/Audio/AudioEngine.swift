@@ -33,9 +33,19 @@ final class AudioEngine: ObservableObject {
     /// Smoothed score against `targetChord` — chord identity, cleanliness, per-string
     /// quality. Nil when no target is set or nothing is being played.
     @Published private(set) var targetScore: ChordDetector.Result?
+    /// Set once each time a strum completes — the single attempt to record as an
+    /// observation. The `id` lets observers react exactly once via `onChange`.
+    @Published private(set) var finalizedAttempt: FinalizedAttempt?
+
+    struct FinalizedAttempt: Equatable {
+        let id: Int
+        let result: ChordDetector.Result
+    }
 
     /// The chord the user is currently trying to play. Set by the UI; nil = no scoring.
     var targetChord: Chord?
+
+    private var attemptCounter = 0
 
     private let engine = AVAudioEngine()
     private let chromagram = Chromagram()
@@ -65,6 +75,7 @@ final class AudioEngine: ObservableObject {
         fundamental = nil
         clarity = 0
         targetScore = nil
+        finalizedAttempt = nil
         state = .idle
     }
 
@@ -101,13 +112,17 @@ final class AudioEngine: ObservableObject {
             let rawScore = self.targetChord.map {
                 self.chordDetector.score($0, spectrum.chroma, spectrum: spectrum)
             }
-            let score = self.chordScoreSmoother.push(rawScore, energetic: energetic)
+            let update = self.chordScoreSmoother.push(rawScore, energetic: energetic)
 
             Task { @MainActor in
                 self.fundamental = smoothedPitch
                 if let confident { self.clarity = confident.clarity }
                 self.chroma = spectrum.chroma
-                self.targetScore = score
+                self.targetScore = update.current
+                if let finalized = update.finalized {
+                    self.attemptCounter += 1
+                    self.finalizedAttempt = FinalizedAttempt(id: self.attemptCounter, result: finalized)
+                }
             }
         }
         engine.prepare()
