@@ -7,9 +7,11 @@ struct TransitionDrillView: View {
     @StateObject private var session: DrillSession
     private let engine: AudioEngine
 
-    init(metronome: Metronome, engine: AudioEngine, coach: Coach) {
+    init(metronome: Metronome, engine: AudioEngine, coach: Coach,
+         from: Chord = .c, to: Chord = .g) {
         self.engine = engine
-        _session = StateObject(wrappedValue: DrillSession(metronome: metronome, engine: engine, coach: coach))
+        _session = StateObject(wrappedValue: DrillSession(metronome: metronome, engine: engine,
+                                                          coach: coach, from: from, to: to))
     }
 
     var body: some View {

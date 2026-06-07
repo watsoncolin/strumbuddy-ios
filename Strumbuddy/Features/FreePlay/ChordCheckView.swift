@@ -9,6 +9,8 @@ import SwiftUI
 struct ChordCheckView: View {
     @ObservedObject var engine: AudioEngine
     @ObservedObject var coach: Coach
+    /// Optional starting chord (e.g. when launched from a daily-session block).
+    var initialChord: Chord? = nil
     @State private var target: Chord = .em
 
     var body: some View {
@@ -19,7 +21,10 @@ struct ChordCheckView: View {
             scoreDisplay
             Spacer()
         }
-        .onAppear { engine.setTargetChord(target) }
+        .onAppear {
+            if let initialChord { target = initialChord }
+            engine.setTargetChord(initialChord ?? target)
+        }
         .onChange(of: target) { engine.setTargetChord($0) }
         .onDisappear { engine.setTargetChord(nil) }
         // Each completed strum becomes one observation the coach learns from.

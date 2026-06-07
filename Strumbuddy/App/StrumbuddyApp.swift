@@ -27,6 +27,7 @@ final class AppEnvironment: ObservableObject {
     let audioEngine: AudioEngine
     let coach: Coach
     let metronome: Metronome
+    let tracker: PracticeTracker
 
     init() {
         let log = ObservationLog()
@@ -34,5 +35,6 @@ final class AppEnvironment: ObservableObject {
         self.audioEngine = AudioEngine()
         self.coach = Coach(graph: graph, log: log)
         self.metronome = Metronome()
+        self.tracker = PracticeTracker()
     }
 }

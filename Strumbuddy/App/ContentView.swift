@@ -2,13 +2,17 @@ import SwiftUI
 
 /// The three modes, one engine (design-doc §3).
 struct ContentView: View {
-    enum Tab: Hashable { case path, practice, freePlay }
+    enum Tab: Hashable { case today, path, practice, freePlay }
 
     @EnvironmentObject private var env: AppEnvironment
-    @State private var selection: Tab = .practice
+    @State private var selection: Tab = .today
 
     var body: some View {
         TabView(selection: $selection) {
+            TodayView(coach: env.coach, tracker: env.tracker)
+                .tabItem { Label("Today", systemImage: "sun.max") }
+                .tag(Tab.today)
+
             StructuredPathView()
                 .tabItem { Label("Path", systemImage: "map") }
                 .tag(Tab.path)

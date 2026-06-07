@@ -14,6 +14,7 @@ final class Coach: ObservableObject {
 
     private let store = MasteryStore()
     private var policy = SelectionPolicy()
+    private let sessionGenerator = SessionGenerator()
 
     init(graph: SkillGraph, log: ObservationLog) {
         self.graph = graph
@@ -42,6 +43,11 @@ final class Coach: ObservableObject {
     /// Convenience read for views: mastery 0…1 for a skill, decayed to now.
     func proficiency(_ id: SkillID, now: Date = Date()) -> Double {
         mastery[id]?.retrievability(at: now) ?? 0
+    }
+
+    /// The coach-built daily session (Tune → Review → Focus → Stretch → win).
+    func todaySession(now: Date = Date()) -> [SessionBlock] {
+        sessionGenerator.plan(graph: graph, states: mastery, store: store, now: now)
     }
 
     /// Per-skill detail (four axes + mastery context) for the detail screen.
