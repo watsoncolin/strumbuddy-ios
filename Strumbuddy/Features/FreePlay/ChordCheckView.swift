@@ -94,6 +94,14 @@ struct ChordCheckView: View {
                     }
                 }
             }
+            if !score.ringingMutedStrings.isEmpty {
+                HStack(spacing: Theme.Spacing.s) {
+                    Text("Silence:").font(.caption).foregroundStyle(.secondary)
+                    ForEach(score.ringingMutedStrings, id: \.self) { s in
+                        notePill(ChordShape.stringNames[s], quality: .muted)
+                    }
+                }
+            }
             Text(feedback(score))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
@@ -115,7 +123,11 @@ struct ChordCheckView: View {
         let muted = target.expectedPitchClasses
             .filter { score.stringQuality[$0] == .muted }
             .sorted { $0.rawValue < $1.rawValue }
-        if score.cleanliness >= 0.9, muted.isEmpty { return "Clean! Every note is ringing." }
+        let clean = score.cleanliness >= 0.9 && muted.isEmpty && score.ringingMutedStrings.isEmpty
+        if clean { return "Clean! Every note is ringing." }
+        if let s = score.ringingMutedStrings.first {
+            return "You're letting the \(ChordShape.stringNames[s]) string (\(ordinal(6 - s))) ring — it should stay silent. Lean a finger against it to mute it."
+        }
         if let first = muted.first { return mutedAdvice(for: first) }
         if score.stringQuality.values.contains(.buzzing) {
             return "An extra note is ringing — mute the stray string."

@@ -95,15 +95,18 @@ final class AudioEngine: ObservableObject {
             let confident = (pitch?.clarity ?? 0) >= Self.minClarity ? pitch : nil
             let smoothedPitch = self.pitchSmoother.push(confident?.frequency)
 
-            // Polyphonic: chroma → score against the target chord (if any) → smoother.
-            let chroma = self.chromagram.compute(samples, sampleRate: Float(sampleRate))
-            let rawScore = self.targetChord.map { self.chordDetector.score($0, chroma) }
+            // Polyphonic: spectrum → score against the target chord (if any) → smoother.
+            // The full spectrum lets the detector catch muted strings ringing.
+            let spectrum = self.chromagram.compute(samples, sampleRate: Float(sampleRate))
+            let rawScore = self.targetChord.map {
+                self.chordDetector.score($0, spectrum.chroma, spectrum: spectrum)
+            }
             let score = self.chordScoreSmoother.push(rawScore, energetic: energetic)
 
             Task { @MainActor in
                 self.fundamental = smoothedPitch
                 if let confident { self.clarity = confident.clarity }
-                self.chroma = chroma
+                self.chroma = spectrum.chroma
                 self.targetScore = score
             }
         }

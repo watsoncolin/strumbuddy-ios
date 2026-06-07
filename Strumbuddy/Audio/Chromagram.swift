@@ -24,10 +24,21 @@ final class Chromagram {
 
     deinit { vDSP_destroy_fftsetup(fftSetup) }
 
-    /// 12 normalized pitch-class energies (index 0 = C … 11 = B) for the first
-    /// `fftSize` samples. Returns all-zero if there aren't enough samples.
-    func compute(_ samples: [Float], sampleRate: Float) -> [Float] {
-        guard samples.count >= fftSize else { return zero }
+    /// The output of one analysis: the octave-folded chroma plus the raw FFT
+    /// magnitudes (squared) and bin width, so callers can also inspect specific
+    /// frequencies (e.g. a muted string's fundamental) that the chroma folds away.
+    struct Spectrum {
+        let chroma: [Float]        // 12 normalized pitch-class energies
+        let magnitudes: [Float]    // raw |X|² per bin, low→high frequency
+        let binWidth: Float        // Hz per bin
+    }
+
+    /// Compute the chroma + raw spectrum for the first `fftSize` samples.
+    /// Returns an empty spectrum if there aren't enough samples.
+    func compute(_ samples: [Float], sampleRate: Float) -> Spectrum {
+        guard samples.count >= fftSize else {
+            return Spectrum(chroma: zero, magnitudes: [], binWidth: 0)
+        }
 
         // Window the first fftSize samples.
         var windowed = [Float](repeating: 0, count: fftSize)
@@ -69,7 +80,9 @@ final class Chromagram {
         var maxVal: Float = 0
         vDSP_maxv(chroma, 1, &maxVal, 12)
         if maxVal > 0 { vDSP_vsdiv(chroma, 1, &maxVal, &chroma, 1, 12) }
-        return chroma
+
+        return Spectrum(chroma: chroma, magnitudes: magnitudes,
+                        binWidth: sampleRate / Float(fftSize))
     }
 
     private var zero: [Float] { Array(repeating: 0, count: 12) }

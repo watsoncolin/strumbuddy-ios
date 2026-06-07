@@ -16,6 +16,9 @@ struct ChordDetector {
     /// Higher bar for flagging an *unexpected* pitch class as a buzz/wrong note, so
     /// ordinary harmonic leakage isn't mistaken for a mistake.
     var buzzThreshold: Float = 0.5
+    /// Amplitude ratio (vs. the loudest in-range bin) above which a string that
+    /// should be muted counts as "ringing." Requires a Spectrum to evaluate.
+    var mutedRingThreshold: Float = 0.3
 
     struct Result: Equatable {
         let chord: Chord
@@ -26,6 +29,10 @@ struct ChordDetector {
         /// Per-pitch-class quality: clean/muted for expected notes, buzzing for
         /// unexpected notes ringing loudly. The basis of teacher-grade feedback.
         let stringQuality: [PitchClass: StringQuality]
+        /// String indices (0 = low E) that the chord says to mute but are ringing —
+        /// caught via their actual fundamental frequency, even when that note is a
+        /// chord tone (e.g. a ringing low E in a C chord). Empty without a Spectrum.
+        let ringingMutedStrings: [Int]
     }
 
     /// Best-matching chord for a chromagram, or nil if nothing matches well.
@@ -43,9 +50,11 @@ struct ChordDetector {
 
     /// Score a specific expected chord — used when we already know what the user is
     /// supposed to be playing (structured path / chord drills), the common case.
-    func score(_ chord: Chord, _ chroma: [Float]) -> Result {
+    /// Pass `spectrum` to also detect muted strings ringing (needs the raw FFT).
+    func score(_ chord: Chord, _ chroma: [Float], spectrum: Chromagram.Spectrum? = nil) -> Result {
         guard chroma.count == 12 else {
-            return Result(chord: chord, confidence: 0, cleanliness: 0, stringQuality: [:])
+            return Result(chord: chord, confidence: 0, cleanliness: 0,
+                          stringQuality: [:], ringingMutedStrings: [])
         }
         let expected = chord.expectedPitchClasses
         var present = 0
@@ -71,6 +80,10 @@ struct ChordDetector {
             }
         }
 
+        // Muted strings that are actually ringing (checked by their fundamental
+        // frequency, so "right note on the wrong string" is caught).
+        let ringingMuted = spectrum.map { ringingMutedStrings(for: chord, spectrum: $0) } ?? []
+
         let count = max(expected.count, 1)
         let coverage = Double(present) / Double(count)
 
@@ -78,12 +91,50 @@ struct ChordDetector {
         let identityNoise = Double(min(allUnexpectedEnergy / Float(count), 1))
         let confidence = max(0, coverage - 0.5 * identityNoise)
 
-        // Cleanliness: all expected notes ringing, penalized by loud extra notes.
+        // Cleanliness: all expected notes ringing, penalized by loud extra notes
+        // and by any string that should be muted but is ringing.
         let buzzPenalty = Double(min(buzzEnergy / Float(count), 1))
-        let cleanliness = max(0, coverage - 0.4 * buzzPenalty)
+        let mutedPenalty = min(Double(ringingMuted.count) * 0.3, 0.6)
+        let cleanliness = max(0, coverage - 0.4 * buzzPenalty - mutedPenalty)
 
         return Result(chord: chord, confidence: confidence, cleanliness: cleanliness,
-                      stringQuality: quality)
+                      stringQuality: quality, ringingMutedStrings: ringingMuted)
+    }
+
+    /// Which strings the chord mutes are nonetheless ringing, found by looking for
+    /// energy at each muted string's open fundamental (info the chroma folds away).
+    private func ringingMutedStrings(for chord: Chord, spectrum: Chromagram.Spectrum) -> [Int] {
+        guard let shape = ChordShape.library[chord],
+              spectrum.binWidth > 0, !spectrum.magnitudes.isEmpty else { return [] }
+        let maxMag = inRangeMax(spectrum)
+        guard maxMag > 0 else { return [] }
+
+        var ringing: [Int] = []
+        for i in 0..<6 where shape.frets[i] == -1 {
+            let peak = bandPeak(spectrum, around: ChordShape.openStringFrequencies[i])
+            if sqrt(peak / maxMag) >= mutedRingThreshold { ringing.append(i) }
+        }
+        return ringing
+    }
+
+    /// Peak |X|² within ±1 semitone of `freq`.
+    private func bandPeak(_ s: Chromagram.Spectrum, around freq: Float) -> Float {
+        let lo = max(1, Int((freq / 1.06) / s.binWidth))
+        let hi = min(s.magnitudes.count - 1, Int((freq * 1.06) / s.binWidth))
+        guard lo <= hi else { return 0 }
+        var peak: Float = 0
+        for b in lo...hi { peak = max(peak, s.magnitudes[b]) }
+        return peak
+    }
+
+    /// Loudest |X|² bin within the guitar range (70–2000 Hz), avoiding DC skew.
+    private func inRangeMax(_ s: Chromagram.Spectrum) -> Float {
+        let lo = max(1, Int(70 / s.binWidth))
+        let hi = min(s.magnitudes.count - 1, Int(2000 / s.binWidth))
+        guard lo <= hi else { return 0 }
+        var m: Float = 0
+        for b in lo...hi { m = max(m, s.magnitudes[b]) }
+        return m
     }
 }
 

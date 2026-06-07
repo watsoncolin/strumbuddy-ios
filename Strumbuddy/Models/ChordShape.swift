@@ -35,6 +35,10 @@ struct ChordShape {
 
     /// Open-string pitch classes in standard tuning, low E (index 0) → high E (5).
     static let openStringPitchClasses = [4, 9, 2, 7, 11, 4]   // E A D G B E
+    /// Open-string fundamental frequencies (Hz), same order. Used to detect a muted
+    /// string ringing by looking for energy at its actual pitch (which the octave-
+    /// folded chromagram can't see).
+    static let openStringFrequencies: [Float] = [82.41, 110.0, 146.83, 196.0, 246.94, 329.63]
     /// Display names for the open strings, same order.
     static let stringNames = ["E", "A", "D", "G", "B", "e"]
 

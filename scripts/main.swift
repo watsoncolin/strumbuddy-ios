@@ -114,11 +114,12 @@ print("\n== Chromagram + ChordDetector ==")
 func midiFreq(_ midi: Int) -> Double { 440 * pow(2.0, (Double(midi) - 69) / 12) }
 
 /// Synthesize a chord as a harmonic-rich triad in octave 3 (pitch class p → C3+p),
-/// optionally with extra out-of-chord notes. Mimics the harmonic leakage a real
-/// guitar produces, so the detector is tested against a realistic chromagram.
-func chordTone(_ pitchClasses: [Int], extra: [Int] = [],
+/// optionally with extra out-of-chord pitch classes, or extra absolute MIDI notes
+/// (e.g. a low E string at MIDI 40). Mimics the harmonic leakage a real guitar
+/// produces, so the detector is tested against a realistic chromagram.
+func chordTone(_ pitchClasses: [Int], extra: [Int] = [], extraMidi: [Int] = [],
                harmonics: Int = 5, amplitude: Double = 0.2) -> [Float] {
-    let notes = (pitchClasses + extra).map { 48 + $0 }
+    let notes = (pitchClasses + extra).map { 48 + $0 } + extraMidi
     return (0..<frameCount).map { n in
         let t = Double(n) / sampleRate
         var s = 0.0
@@ -132,9 +133,10 @@ func chordTone(_ pitchClasses: [Int], extra: [Int] = [],
 
 let chromagram = Chromagram(fftSize: 4096)
 let chordDetector = ChordDetector()
-func chroma(of pcs: [Int], extra: [Int] = []) -> [Float] {
-    chromagram.compute(chordTone(pcs, extra: extra), sampleRate: Float(sampleRate))
+func spec(of pcs: [Int], extra: [Int] = [], extraMidi: [Int] = []) -> Chromagram.Spectrum {
+    chromagram.compute(chordTone(pcs, extra: extra, extraMidi: extraMidi), sampleRate: Float(sampleRate))
 }
+func chroma(of pcs: [Int], extra: [Int] = []) -> [Float] { spec(of: pcs, extra: extra).chroma }
 
 // Identity: each chord's full triad should be recognized as itself.
 for chord in Chord.allCases {
@@ -165,6 +167,23 @@ do {
     let r = chordDetector.score(.c, chroma(of: [0, 4, 7], extra: [6]))  // + F#
     check("C + F#: F# buzzing", r.stringQuality[.fSharp] == .buzzing,
           "got \(r.stringQuality[.fSharp].map(String.init(describing:)) ?? "nil")")
+}
+
+// Muted-string detection: a ringing low-E string on a C chord. E is a chord tone,
+// so the pitch-class path can't catch it — but the fundamental-frequency check can.
+do {
+    let s = spec(of: [0, 4, 7], extraMidi: [40])   // C triad + ringing low E string (E2 ~82 Hz)
+    let r = chordDetector.score(.c, s.chroma, spectrum: s)
+    check("C + ringing low E: 6th string flagged", r.ringingMutedStrings.contains(0),
+          "got \(r.ringingMutedStrings)")
+    check("C + ringing low E: cleanliness penalized", r.cleanliness < 0.8,
+          String(format: "%.2f", r.cleanliness))
+}
+do {
+    let s = spec(of: [0, 4, 7])                      // proper C, low E not played
+    let r = chordDetector.score(.c, s.chroma, spectrum: s)
+    check("clean C: no muted strings flagged", r.ringingMutedStrings.isEmpty,
+          "got \(r.ringingMutedStrings)")
 }
 
 // ChordScoreSmoother (peak-hold): keeps the best strum, holds through quiet, clears.
