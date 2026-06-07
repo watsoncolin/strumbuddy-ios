@@ -128,6 +128,14 @@ struct TodayView: View {
             Text(tracker.streak > 0 ? "Day \(tracker.streak) 🔥 — come back tomorrow."
                                     : "Nice work — come back tomorrow.")
                 .foregroundStyle(.secondary).multilineTextAlignment(.center)
+
+            if let tip = Tip.forHint(.soreFingers) {
+                TipRow(tip: tip)
+                    .padding(Theme.Spacing.m)
+                    .background(Theme.accent.opacity(0.06),
+                                in: RoundedRectangle(cornerRadius: Theme.Radius.card))
+            }
+
             Button("Practice again") { generate() }
                 .buttonStyle(.bordered)
         }
