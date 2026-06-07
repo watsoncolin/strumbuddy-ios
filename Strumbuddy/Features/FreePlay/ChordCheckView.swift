@@ -116,11 +116,43 @@ struct ChordCheckView: View {
             .filter { score.stringQuality[$0] == .muted }
             .sorted { $0.rawValue < $1.rawValue }
         if score.cleanliness >= 0.9, muted.isEmpty { return "Clean! Every note is ringing." }
-        if let first = muted.first { return "\(first.name) isn't ringing — check that finger." }
+        if let first = muted.first { return mutedAdvice(for: first) }
         if score.stringQuality.values.contains(.buzzing) {
             return "An extra note is ringing — mute the stray string."
         }
         return "Getting there…"
+    }
+
+    /// Map a dead note to the specific string + finger to check (the actionable bit).
+    private func mutedAdvice(for pc: PitchClass) -> String {
+        guard let loc = locate(pc) else { return "\(pc.name) isn't ringing — check that finger." }
+        let stringDesc = "\(loc.name) string (\(ordinal(loc.number)))"
+        if loc.open {
+            return "Your \(stringDesc) isn't ringing — let it ring out; a finger may be muting it."
+        }
+        if let finger = loc.finger {
+            return "Your \(stringDesc) isn't ringing — press your \(fingerName(finger)) finger down firmer, just behind the fret."
+        }
+        return "Your \(stringDesc) isn't ringing — press it down firmer."
+    }
+
+    /// Which string (and finger) produces `pc` in the current shape. Prefers a
+    /// fretted string with a finger, since that's the one to actually press harder.
+    private func locate(_ pc: PitchClass) -> (name: String, number: Int, finger: Int?, open: Bool)? {
+        let shape = ChordShape.library[target] ?? .unknown
+        let candidates = (0..<6).filter { shape.soundingPitchClass(forString: $0) == pc.rawValue }
+        let chosen = candidates.first { shape.frets[$0] > 0 } ?? candidates.first
+        guard let i = chosen else { return nil }
+        return (ChordShape.stringNames[i], 6 - i, shape.fingers[i], shape.frets[i] == 0)
+    }
+
+    private func fingerName(_ f: Int) -> String {
+        let names = ["index", "middle", "ring", "pinky"]
+        return (1...4).contains(f) ? names[f - 1] : "finger \(f)"
+    }
+
+    private func ordinal(_ n: Int) -> String {
+        [1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", 6: "6th"][n] ?? "\(n)th"
     }
 
     private func qualityColor(_ q: StringQuality) -> Color {

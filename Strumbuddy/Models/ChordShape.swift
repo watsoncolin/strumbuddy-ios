@@ -32,4 +32,16 @@ struct ChordShape {
 
     static let unknown = ChordShape(frets: [-1, -1, -1, -1, -1, -1],
                                     fingers: [nil, nil, nil, nil, nil, nil], barre: nil)
+
+    /// Open-string pitch classes in standard tuning, low E (index 0) → high E (5).
+    static let openStringPitchClasses = [4, 9, 2, 7, 11, 4]   // E A D G B E
+    /// Display names for the open strings, same order.
+    static let stringNames = ["E", "A", "D", "G", "B", "e"]
+
+    /// The pitch class a given string sounds with its current fret, or nil if muted.
+    func soundingPitchClass(forString i: Int) -> Int? {
+        let fret = frets[i]
+        guard fret >= 0 else { return nil }
+        return (ChordShape.openStringPitchClasses[i] + fret) % 12
+    }
 }

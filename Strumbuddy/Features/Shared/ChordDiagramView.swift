@@ -20,8 +20,8 @@ struct ChordDiagramView: View {
 
     private func draw(_ ctx: inout GraphicsContext, size: CGSize) {
         let strings = 6
-        let top = size.height * 0.16          // room for ○ / ✕ markers
-        let bottom = size.height * 0.97
+        let top = size.height * 0.15          // room for ○ / ✕ markers
+        let bottom = size.height * 0.86        // room below for string-name labels
         let left = size.width * 0.13
         let right = size.width * 0.87
         let colSpacing = (right - left) / CGFloat(strings - 1)
@@ -78,6 +78,10 @@ struct ChordDiagramView: View {
                           size: radius * 1.3, color: Color(.systemBackground))
                 }
             }
+
+            // String-name label at the bottom (E A D G B e) — standard chart convention.
+            label(&ctx, ChordShape.stringNames[s], at: CGPoint(x: sx, y: size.height * 0.95),
+                  size: top * 0.5, color: .secondary)
         }
     }
 

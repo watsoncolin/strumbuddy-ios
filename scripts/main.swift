@@ -177,6 +177,25 @@ do {
     check("smoother clears after holdFrames", sm.push(nil, energetic: false) == nil)
 }
 
+// MARK: - ChordShape fingerings (data correctness)
+
+print("\n== ChordShape fingerings ==")
+for chord in Chord.allCases {
+    guard let shape = ChordShape.library[chord] else { check("shape \(chord.displayName)", false); continue }
+    var sounded = Set<Int>()
+    for i in 0..<6 { if let pc = shape.soundingPitchClass(forString: i) { sounded.insert(pc) } }
+    let expected = Set(chord.expectedPitchClasses.map { $0.rawValue })
+    check("\(chord.displayName) shape sounds all its notes", expected.isSubset(of: sounded),
+          "expected \(expected.sorted()), sounds \(sounded.sorted())")
+}
+// Spot-check the string→note mapping used by the muted-note feedback.
+do {
+    let g = ChordShape.library[.g]!
+    check("G: open D string sounds D", g.soundingPitchClass(forString: 2) == PitchClass.d.rawValue)
+    let c = ChordShape.library[.c]!
+    check("C: D string at 2nd fret sounds E", c.soundingPitchClass(forString: 2) == PitchClass.e.rawValue)
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")
