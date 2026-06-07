@@ -10,10 +10,11 @@ struct ChordDetailView: View {
         let detail = coach.detail(for: .chord(chord))
         List {
             Section {
-                HStack {
-                    Spacer()
-                    ChordDiagramView(chord: chord).frame(width: 120, height: 156)
-                    Spacer()
+                HStack(alignment: .center, spacing: Theme.Spacing.m) {
+                    ChordDiagramView(chord: chord).frame(width: 100, height: 130)
+                    RadarChartView(axes: radarAxes(detail))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 180)
                 }
             }
 
@@ -50,6 +51,18 @@ struct ChordDetailView: View {
         }
         .navigationTitle("\(chord.displayName) chord")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// Build radar axes; include Timing only once the drill has produced data so we
+    /// don't draw a misleading 0% dent.
+    private func radarAxes(_ d: SkillDetail) -> [RadarChartView.Axis] {
+        var axes: [RadarChartView.Axis] = [
+            .init(label: "Accuracy", value: d.accuracy),
+            .init(label: "Clean", value: d.cleanliness),
+        ]
+        if d.hasTiming { axes.append(.init(label: "Timing", value: d.timing)) }
+        axes.append(.init(label: "Consistency", value: d.consistency))
+        return axes
     }
 
     private func axisRow(_ label: String, _ value: Double, _ caption: String) -> some View {

@@ -36,6 +36,7 @@
 		9B00727E6F7FFE43CFAF718E /* ChordDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5593203B04F73D5DF4901DD6 /* ChordDetailView.swift */; };
 		9D5D4DC69903B14A62FB90D1 /* SelectionPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97D51C737AC21FCD52FA1BB8 /* SelectionPolicy.swift */; };
 		A0CA59ABEFACABD159CC5116 /* DrillSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7368139CB3C8E72512284CD2 /* DrillSession.swift */; };
+		A26E3E6CAA52E24792CD60DE /* RadarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF102D0DE9EBF3613D7088AE /* RadarChartView.swift */; };
 		B697ED23D79EC162181F016D /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92EFEA2ED450CA40625CA0A /* AudioEngine.swift */; };
 		B782763469CD8C762BF4CCE3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7162E19E87FECBAD4027A767 /* ContentView.swift */; };
 		C0BBC4B53E7EC92E77500E9A /* TunerReading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8C192C9B707E0CBB7781B0 /* TunerReading.swift */; };
@@ -80,6 +81,7 @@
 		CF72318A025078438E7D14DF /* TransitionDrill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionDrill.swift; sourceTree = "<group>"; };
 		D9EDBF96308E46028E444DA3 /* ScoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringService.swift; sourceTree = "<group>"; };
 		DD4455F25CBCC2DA58094A1A /* TunerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerView.swift; sourceTree = "<group>"; };
+		DF102D0DE9EBF3613D7088AE /* RadarChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarChartView.swift; sourceTree = "<group>"; };
 		DF2D87CCE1F204D57951EADB /* ChordDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordDetector.swift; sourceTree = "<group>"; };
 		E6FB7762DD6AD4E3A7DC1157 /* Observation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observation.swift; sourceTree = "<group>"; };
 		F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreAxes.swift; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 			children = (
 				F27543EE781A340A864F0A23 /* ChordDiagramView.swift */,
 				52584A027A05E2AEBBDE71D8 /* MetronomeView.swift */,
+				DF102D0DE9EBF3613D7088AE /* RadarChartView.swift */,
 				6C8C192C9B707E0CBB7781B0 /* TunerReading.swift */,
 				DD4455F25CBCC2DA58094A1A /* TunerView.swift */,
 			);
@@ -348,6 +351,7 @@
 				46F50497F8262558641269ED /* ObservationLog.swift in Sources */,
 				311CE8ECCBD9ECD3A60CC871 /* PitchDetector.swift in Sources */,
 				D9475E2454FB39095ADEAE48 /* PracticeCoachView.swift in Sources */,
+				A26E3E6CAA52E24792CD60DE /* RadarChartView.swift in Sources */,
 				E1CC326EAEBFBF042F6AEB74 /* ScoreAxes.swift in Sources */,
 				8D9A9E661FDD6B69F892E512 /* ScoringService.swift in Sources */,
 				9D5D4DC69903B14A62FB90D1 /* SelectionPolicy.swift in Sources */,
