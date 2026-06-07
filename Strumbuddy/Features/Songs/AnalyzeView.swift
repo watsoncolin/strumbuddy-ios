@@ -34,6 +34,12 @@ struct AnalyzeView: View {
         }
     }
 
+    private let demos: [(label: String, resource: String)] = [
+        ("C · G · Am · F", "demo_cgamf"),
+        ("Em · D", "demo_emd"),
+        ("G · C · G · D", "demo_gcd"),
+    ]
+
     private var idle: some View {
         VStack(spacing: Theme.Spacing.m) {
             Image(systemName: "waveform.badge.magnifyingglass")
@@ -44,6 +50,15 @@ struct AnalyzeView: View {
                 .buttonStyle(.borderedProminent)
             Text("Best on sparse, slow songs; full mixes are hit-or-miss. First 90s analyzed.")
                 .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
+
+            Divider().padding(.vertical, Theme.Spacing.s)
+
+            Text("Or try a demo (synth)").font(.caption).foregroundStyle(.secondary)
+            ForEach(demos, id: \.resource) { demo in
+                if let url = Bundle.main.url(forResource: demo.resource, withExtension: "wav") {
+                    Button(demo.label) { analyze(url) }.buttonStyle(.bordered)
+                }
+            }
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
