@@ -15,14 +15,19 @@ final class AudioEngine: ObservableObject {
     enum State: Equatable { case idle, running, denied, failed(String) }
 
     @Published private(set) var state: State = .idle
-    /// Latest detected fundamental (Hz), or nil when no clear pitch. Drives the tuner.
+    /// Latest smoothed fundamental (Hz), or nil when no clear pitch. Drives the tuner.
     @Published private(set) var fundamental: Double?
+    /// Detection clarity 0…1 for the latest pitch — used to gate the readout so a
+    /// noisy/ambiguous frame doesn't flicker a wrong note onto the screen.
+    @Published private(set) var clarity: Double = 0
     /// Latest chromagram (12 pitch-class energies, normalized). Drives chord detection.
     @Published private(set) var chroma: [Float] = Array(repeating: 0, count: 12)
 
     private let engine = AVAudioEngine()
     private let chromagram = Chromagram()
     private let pitchTracker = PitchTracker()
+    /// Lives on the audio thread; smooths the per-buffer pitch into a stable readout.
+    private let pitchSmoother = PitchSmoother()
 
     /// Request mic permission and start capturing.
     func start() async {
@@ -39,6 +44,9 @@ final class AudioEngine: ObservableObject {
     func stop() {
         engine.inputNode.removeTap(onBus: 0)
         engine.stop()
+        pitchSmoother.reset()
+        fundamental = nil
+        clarity = 0
         state = .idle
     }
 
@@ -54,9 +62,12 @@ final class AudioEngine: ObservableObject {
         input.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, _ in
             guard let self else { return }
             let pitch = self.pitchTracker.detect(buffer)
+            let smoothed = self.pitchSmoother.push(pitch?.frequency)
+            let clarity = pitch?.clarity ?? 0
             let chroma = self.chromagram.compute(buffer)
             Task { @MainActor in
-                self.fundamental = pitch
+                self.fundamental = smoothed
+                self.clarity = clarity
                 self.chroma = chroma
             }
         }

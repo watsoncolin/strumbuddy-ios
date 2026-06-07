@@ -24,6 +24,20 @@ xcodebuild -project Strumbuddy.xcodeproj -scheme Strumbuddy \
 The mic only works on a real device; the tuner/engine will run but detect nothing
 in the simulator.
 
+### Off-device tests for pure audio/DSP math
+
+The pitch detector and tuner math are written as pure, dependency-light types so
+they can be tested on macOS without a device or simulator runtime:
+
+```sh
+swiftc -O Strumbuddy/Audio/PitchDetector.swift \
+       Strumbuddy/Features/Shared/TunerReading.swift \
+       scripts/main.swift -o /tmp/tunercheck && /tmp/tunercheck
+```
+
+`scripts/` is intentionally outside the app target. Keep DSP logic in pure types
+(no AVFoundation) so it stays testable this way.
+
 ## Conventions
 
 - SwiftUI, iOS 16+, MVVM-lite. `@MainActor` on the stateful services
