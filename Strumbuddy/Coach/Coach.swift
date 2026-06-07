@@ -1,0 +1,46 @@
+import Foundation
+import Combine
+
+/// The coach facade (design-doc §5). Ties together the skill graph, the observation
+/// log, the mastery projection, and the selection policy — and is the single object
+/// the UI talks to. Record attempts in; read recommendations and mastery out.
+@MainActor
+final class Coach: ObservableObject {
+    let graph: SkillGraph
+    let log: ObservationLog
+
+    @Published private(set) var mastery: [SkillID: MasteryState] = [:]
+    @Published private(set) var recommendations: [SelectionPolicy.Recommendation] = []
+
+    private let store = MasteryStore()
+    private var policy = SelectionPolicy()
+
+    init(graph: SkillGraph, log: ObservationLog) {
+        self.graph = graph
+        self.log = log
+        refresh()
+    }
+
+    /// Record a graded attempt and re-project. The audio side calls this.
+    func record(_ observation: Observation) {
+        log.append(observation)
+        refresh()
+    }
+
+    /// Skills tied to a user goal (v2 BYO-song feeds this).
+    func setGoalSkills(_ skills: Set<SkillID>) {
+        policy.goalSkills = skills
+        refresh()
+    }
+
+    /// Re-derive mastery and recommendations from the log (the §5.5 projection).
+    func refresh(now: Date = Date()) {
+        mastery = store.project(log.entries, graph: graph, now: now)
+        recommendations = policy.recommend(graph: graph, states: mastery, store: store, now: now)
+    }
+
+    /// Convenience read for views: mastery 0…1 for a skill, decayed to now.
+    func proficiency(_ id: SkillID, now: Date = Date()) -> Double {
+        mastery[id]?.retrievability(at: now) ?? 0
+    }
+}
