@@ -6,17 +6,29 @@ struct SongsView: View {
 
     var body: some View {
         NavigationStack {
-            List(Song.library) { song in
-                NavigationLink {
-                    SongDetailView(song: song, metronome: env.metronome)
-                } label: {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-                        Text(song.title).font(.headline)
-                        Text(song.artist).font(.subheadline).foregroundStyle(.secondary)
-                        Text(song.allChords.map(\.displayName).joined(separator: " · "))
-                            .font(.caption).foregroundStyle(Theme.accent)
+            List {
+                Section {
+                    NavigationLink {
+                        AnalyzeView()
+                    } label: {
+                        Label("Analyze your own song (beta)", systemImage: "waveform.badge.magnifyingglass")
                     }
-                    .padding(.vertical, Theme.Spacing.xs)
+                }
+
+                Section("Play-along") {
+                    ForEach(Song.library) { song in
+                        NavigationLink {
+                            SongDetailView(song: song, metronome: env.metronome)
+                        } label: {
+                            VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                                Text(song.title).font(.headline)
+                                Text(song.artist).font(.subheadline).foregroundStyle(.secondary)
+                                Text(song.allChords.map(\.displayName).joined(separator: " · "))
+                                    .font(.caption).foregroundStyle(Theme.accent)
+                            }
+                            .padding(.vertical, Theme.Spacing.xs)
+                        }
+                    }
                 }
             }
             .navigationTitle("Songs")
