@@ -83,10 +83,12 @@ From one detected timeline, produce tiers:
   on the analysis pipeline). Still TODO: vocabulary reduction (strip 7ths/slash) and
   difficulty tiers (Campfire/Standard/Full) on top of it.
 
-- ✅ **Device analyze harness** (`AnalyzeView` + `AudioFileLoader`, Songs tab →
-  "Analyze your own song (beta)"): pick an audio file → decode (first 90s) → run
-  `ChordRecognizer` → see the chord timeline + capo suggestion. This is the **gate
-  experiment** for v2.0 — run it on real clips to measure real-mix accuracy.
+- ✅ **Device analyze harness** (`AnalyzeView`, Songs tab → "Analyze your own song
+  (beta)"): three input paths — **pick a file** (`AudioFileLoader`, first 90s),
+  **Listen** via mic (`AudioRecorder`, play a song near the phone, capped 40s), and
+  bundled **demo files**. All run decode/record → `ChordRecognizer` → timeline + capo.
+  Demos verified (C·G·Am·F → capo 5 → G·D·Em·C; Em·D and G·C·D → no capo). This is the
+  **gate experiment** for v2.0 — run Listen/file on real audio to measure real-mix accuracy.
 
 ## Recommended next steps
 1. **Run the analyze harness on real recordings** (on device) and judge accuracy.
