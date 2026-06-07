@@ -20,3 +20,8 @@ Package.resolved
 # App data / secrets
 *.xcconfig.local
 GoogleService-Info.plist
+
+# Obsidian (wiki vault) — keep notes, ignore per-machine workspace/cache state
+docs/wiki/.obsidian/workspace*.json
+docs/wiki/.obsidian/cache
+docs/wiki/.trash/
