@@ -488,6 +488,54 @@ do {
     check("personalized → shapes within the known set", p.shapes.allSatisfy { limited.easyShapes.contains($0) })
 }
 
+// MARK: - Chord recognition spike (BYO-song v2)
+// Validates the offline chroma→chord→Viterbi pipeline on a synthesized progression.
+// Clean-input upper bound — real-mix accuracy is the open question (needs device).
+
+print("\n== Chord recognition spike ==")
+do {
+    let sr = 44_100.0
+    func segment(_ sym: ChordSymbol, seconds: Double) -> [Float] {
+        let count = Int(seconds * sr)
+        let midis = sym.pitchClasses.map { 48 + $0 }   // octave 3 triad
+        return (0..<count).map { i in
+            let t = Double(i) / sr
+            var s = 0.0
+            for midi in midis {
+                let f = 440 * pow(2.0, (Double(midi) - 69) / 12)
+                for k in 1...4 { s += (1.0 / Double(k)) * sin(2 * .pi * Double(k) * f * t) }
+            }
+            return Float(s * 0.2 / Double(midis.count))
+        }
+    }
+
+    let progression: [ChordSymbol] = [
+        ChordSymbol(root: 0, quality: .major),   // C
+        ChordSymbol(root: 7, quality: .major),   // G
+        ChordSymbol(root: 9, quality: .minor),   // Am
+        ChordSymbol(root: 5, quality: .major),   // F
+    ]
+    let segSeconds = 1.5
+    var audio: [Float] = []
+    for sym in progression { audio += segment(sym, seconds: segSeconds) }
+
+    let recognizer = ChordRecognizer()
+    let timeline = recognizer.recognize(audio, sampleRate: Float(sr))
+
+    // Check the chord at the middle of each segment.
+    var correct = 0
+    for (i, expected) in progression.enumerated() {
+        let mid = (Double(i) + 0.5) * segSeconds
+        let got = recognizer.chord(at: mid, in: timeline)
+        let ok = got == expected
+        if ok { correct += 1 }
+        check("segment \(i + 1): \(expected.displayName)", ok, "got \(got?.displayName ?? "nil")")
+    }
+    let pct = Int(Double(correct) / Double(progression.count) * 100)
+    print("  recovered timeline: \(timeline.map { $0.symbol.displayName }.joined(separator: " → "))")
+    print("  clean-input accuracy: \(pct)% (\(correct)/\(progression.count))")
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

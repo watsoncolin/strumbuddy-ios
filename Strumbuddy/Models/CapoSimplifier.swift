@@ -30,6 +30,12 @@ struct ChordSymbol: Hashable {
     private static let names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
     var displayName: String { Self.names[root] + (quality == .minor ? "m" : "") }
 
+    /// The three pitch classes of the triad (root, 3rd, 5th).
+    var pitchClasses: [Int] {
+        let third = quality == .major ? 4 : 3
+        return [root, (root + third) % 12, (root + 7) % 12]
+    }
+
     /// The shape you finger to sound this chord with a capo at `capo` — i.e. this chord
     /// transposed *down* by `capo` semitones.
     func shape(capo: Int) -> ChordSymbol {
