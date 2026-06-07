@@ -417,6 +417,18 @@ do {
     check("completed stage shows full progress", plans[0].progress == 1.0)
 }
 
+// MARK: - Tips (daily rotation)
+
+print("\n== Tips ==")
+do {
+    let n = Tip.library.count
+    check("library is non-empty", n > 0)
+    check("daily is stable within a day", Tip.daily(day: 42).id == Tip.daily(day: 42).id)
+    check("daily cycles over the library", Tip.daily(day: 0).id == Tip.daily(day: n).id)
+    check("consecutive days differ", Tip.daily(day: 3).id != Tip.daily(day: 4).id)
+    check("negative day ordinal is safe", Tip.daily(day: -1).id == Tip.library[n - 1].id)
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

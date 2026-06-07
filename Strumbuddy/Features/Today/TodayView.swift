@@ -17,6 +17,7 @@ struct TodayView: View {
             ScrollView {
                 VStack(spacing: Theme.Spacing.l) {
                     streakHeader
+                    tipCard
                     if sessionDone {
                         completionCard
                     } else {
@@ -46,6 +47,30 @@ struct TodayView: View {
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.clean)
             }
         }
+    }
+
+    private var tipCard: some View {
+        NavigationLink {
+            TipsView()
+        } label: {
+            VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                HStack {
+                    Label("Tip", systemImage: "lightbulb.fill").font(.caption).foregroundStyle(.orange)
+                    Spacer()
+                    Text("More tips").font(.caption).foregroundStyle(.secondary)
+                    Image(systemName: "chevron.right").font(.caption2).foregroundStyle(.secondary)
+                }
+                TipRow(tip: todaysTip)
+            }
+            .padding(Theme.Spacing.m)
+            .background(Theme.accent.opacity(0.06), in: RoundedRectangle(cornerRadius: Theme.Radius.card))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var todaysTip: Tip {
+        let day = Calendar.current.ordinality(of: .day, in: .era, for: Date()) ?? 0
+        return Tip.daily(day: day)
     }
 
     private var progressLabel: some View {

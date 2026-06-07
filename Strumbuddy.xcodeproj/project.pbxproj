@@ -24,6 +24,7 @@
 		4B950ADDB3531B5F1CBCBE5C /* StructuredPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873DCA8F4881AFB1CED1DEC8 /* StructuredPathView.swift */; };
 		4BD58E00D245B89C5AD1D379 /* CreditAssignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA970FA59414C54252A73ED /* CreditAssignment.swift */; };
 		4E4CEE058B4FEDFBA7CC3CA0 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEE6F70220F34A3ED92F60 /* Database.swift */; };
+		53A52E8CA0EC88B51798D224 /* TipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B432266AB6890FEB0131C76E /* TipsView.swift */; };
 		591A898B4AB30C444FE952DE /* MasteryState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140E2E1536E336CEAA1ABD24 /* MasteryState.swift */; };
 		593D64FCEC0D51A0455F130F /* SkillDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EE0B351D82DF78140B362C /* SkillDetail.swift */; };
 		634A1DBEE7F313723FE26DAF /* TransitionDrill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF72318A025078438E7D14DF /* TransitionDrill.swift */; };
@@ -47,6 +48,7 @@
 		CD6492363744F72519B05960 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6FB7762DD6AD4E3A7DC1157 /* Observation.swift */; };
 		D20120E00641DFE5B9FD7DB5 /* SessionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6AA62F829D3DCD3C5AB55F /* SessionGenerator.swift */; };
 		D9475E2454FB39095ADEAE48 /* PracticeCoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7B561B4260D06526E4D00 /* PracticeCoachView.swift */; };
+		E17CD65EA780775FAF41F368 /* Tip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6BE58B59A9584E89BAD694 /* Tip.swift */; };
 		E1CC326EAEBFBF042F6AEB74 /* ScoreAxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */; };
 		E2B6D0FE80B16D30D119D3E0 /* Chromagram.swift in Sources */ = {isa = PBXBuildFile; fileRef = C751EDCE5F489A1C43E94A5E /* Chromagram.swift */; };
 		E872995B125771C3582B86CC /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E542502A17F704180E65233 /* OnboardingView.swift */; };
@@ -57,6 +59,7 @@
 		068D968F8560E50AEE9583F2 /* ObservationLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationLog.swift; sourceTree = "<group>"; };
 		06A4D9559C3CE8F55E1E8B93 /* TransitionDrillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionDrillView.swift; sourceTree = "<group>"; };
 		140E2E1536E336CEAA1ABD24 /* MasteryState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryState.swift; sourceTree = "<group>"; };
+		1C6BE58B59A9584E89BAD694 /* Tip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tip.swift; sourceTree = "<group>"; };
 		3BCA79382C833EA8C856F88B /* StrumbuddyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrumbuddyApp.swift; sourceTree = "<group>"; };
 		402FD93D5C22C0687A40C468 /* ChordShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordShape.swift; sourceTree = "<group>"; };
 		40E82CD4AA1037EFA30471DE /* PracticeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeTracker.swift; sourceTree = "<group>"; };
@@ -84,6 +87,7 @@
 		8FF9BAD26BE6A80DAA69117E /* Stage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stage.swift; sourceTree = "<group>"; };
 		97D51C737AC21FCD52FA1BB8 /* SelectionPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionPolicy.swift; sourceTree = "<group>"; };
 		A3EE0B351D82DF78140B362C /* SkillDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillDetail.swift; sourceTree = "<group>"; };
+		B432266AB6890FEB0131C76E /* TipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsView.swift; sourceTree = "<group>"; };
 		B92EFEA2ED450CA40625CA0A /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
 		C052F56AE6FB5BE845C5F46E /* Metronome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metronome.swift; sourceTree = "<group>"; };
 		C751EDCE5F489A1C43E94A5E /* Chromagram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chromagram.swift; sourceTree = "<group>"; };
@@ -116,6 +120,7 @@
 				A3EE0B351D82DF78140B362C /* SkillDetail.swift */,
 				8FF9BAD26BE6A80DAA69117E /* Stage.swift */,
 				CA5CAA5B39BA7AC6629B19A2 /* StreakCalculator.swift */,
+				1C6BE58B59A9584E89BAD694 /* Tip.swift */,
 				CF72318A025078438E7D14DF /* TransitionDrill.swift */,
 			);
 			path = Models;
@@ -195,6 +200,7 @@
 				CFDE155AE3D26B421417838B /* PracticeCoach */,
 				A21BA8A936975B6D18318342 /* Shared */,
 				47FF94833C253E625A393689 /* StructuredPath */,
+				C916ED5B6FA7CE7BCBA3A187 /* Tips */,
 				262494593E7F7796E0A5F47C /* Today */,
 			);
 			path = Features;
@@ -256,6 +262,14 @@
 				66FEE6F70220F34A3ED92F60 /* Database.swift */,
 			);
 			path = Persistence;
+			sourceTree = "<group>";
+		};
+		C916ED5B6FA7CE7BCBA3A187 /* Tips */ = {
+			isa = PBXGroup;
+			children = (
+				B432266AB6890FEB0131C76E /* TipsView.swift */,
+			);
+			path = Tips;
 			sourceTree = "<group>";
 		};
 		CFDE155AE3D26B421417838B /* PracticeCoach */ = {
@@ -400,6 +414,8 @@
 				4B950ADDB3531B5F1CBCBE5C /* StructuredPathView.swift in Sources */,
 				72E251FBD8B4F2B46EAAD60F /* StrumbuddyApp.swift in Sources */,
 				3954D76D35B9B926CF88705A /* Theme.swift in Sources */,
+				E17CD65EA780775FAF41F368 /* Tip.swift in Sources */,
+				53A52E8CA0EC88B51798D224 /* TipsView.swift in Sources */,
 				1AE7A40D968F2921C17EF659 /* TodayView.swift in Sources */,
 				634A1DBEE7F313723FE26DAF /* TransitionDrill.swift in Sources */,
 				7223DB6042E7D8DF0D5FABFA /* TransitionDrillView.swift in Sources */,
