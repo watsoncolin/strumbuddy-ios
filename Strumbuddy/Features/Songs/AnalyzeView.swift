@@ -7,8 +7,9 @@ import UniformTypeIdentifiers
 struct AnalyzeView: View {
     @State private var phase: Phase = .idle
     @State private var picking = false
+    @StateObject private var recorder = AudioRecorder()
 
-    enum Phase { case idle, analyzing, done(Outcome), failed(String) }
+    enum Phase { case idle, listening, analyzing, done(Outcome), failed(String) }
     struct Outcome {
         let timeline: [TimedChord]
         let suggestion: CapoSimplifier.Suggestion
@@ -19,6 +20,7 @@ struct AnalyzeView: View {
         Group {
             switch phase {
             case .idle:               idle
+            case .listening:          listening
             case .analyzing:          ProgressView("Analyzing…").frame(maxWidth: .infinity, maxHeight: .infinity)
             case .done(let outcome):  results(outcome)
             case .failed(let msg):    failure(msg)
@@ -31,6 +33,9 @@ struct AnalyzeView: View {
             case .success(let url): analyze(url)
             case .failure(let error): phase = .failed(error.localizedDescription)
             }
+        }
+        .onChange(of: recorder.seconds) { secs in
+            if case .listening = phase, secs >= recorder.maxSeconds { finishListening() }
         }
     }
 
@@ -48,6 +53,10 @@ struct AnalyzeView: View {
                 .multilineTextAlignment(.center).foregroundStyle(.secondary)
             Button("Choose audio file") { picking = true }
                 .buttonStyle(.borderedProminent)
+            Button { listen() } label: {
+                Label("Listen (play a song near your phone)", systemImage: "mic")
+            }
+            .buttonStyle(.bordered)
             Text("Best on sparse, slow songs; full mixes are hit-or-miss. First 90s analyzed.")
                 .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
 
@@ -90,6 +99,24 @@ struct AnalyzeView: View {
         }
     }
 
+    private var listening: some View {
+        VStack(spacing: Theme.Spacing.l) {
+            Image(systemName: "waveform")
+                .font(.system(size: 52)).foregroundStyle(Theme.accent)
+            Text("Listening…").font(.title2).bold()
+            Text(String(format: "%.0fs", recorder.seconds))
+                .font(.title3).monospacedDigit().foregroundStyle(.secondary)
+            ProgressView(value: min(Double(recorder.level) * 6, 1))
+                .frame(maxWidth: 220)
+            Text("Play the song near your phone, then stop.")
+                .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
+            Button("Stop & analyze") { finishListening() }
+                .buttonStyle(.borderedProminent)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
     private func failure(_ message: String) -> some View {
         VStack(spacing: Theme.Spacing.m) {
             Image(systemName: "exclamationmark.triangle").font(.largeTitle).foregroundStyle(Theme.shaky)
@@ -103,22 +130,46 @@ struct AnalyzeView: View {
         phase = .analyzing
         Task {
             do {
-                let outcome = try await Task.detached(priority: .userInitiated) { () -> Outcome in
+                let (samples, sampleRate) = try await Task.detached(priority: .userInitiated) { () -> ([Float], Double) in
                     let access = url.startAccessingSecurityScopedResource()
                     defer { if access { url.stopAccessingSecurityScopedResource() } }
-
-                    let (samples, sampleRate) = try AudioFileLoader.loadMono(url: url)
-                    let timeline = ChordRecognizer().recognize(samples, sampleRate: Float(sampleRate))
-                    var seen = Set<ChordSymbol>()
-                    let chords = timeline.map(\.symbol).filter { seen.insert($0).inserted }
-                    let suggestion = CapoSimplifier().suggest(for: chords)
-                    return Outcome(timeline: timeline, suggestion: suggestion, chords: chords)
+                    return try AudioFileLoader.loadMono(url: url)
                 }.value
-                phase = .done(outcome)
+                await runRecognition(samples: samples, sampleRate: sampleRate)
             } catch {
                 phase = .failed(error.localizedDescription)
             }
         }
+    }
+
+    private func listen() {
+        Task {
+            await recorder.start()
+            switch recorder.status {
+            case .recording:        phase = .listening
+            case .denied:           phase = .failed("Microphone access needed — enable it in Settings.")
+            case .failed(let msg):  phase = .failed(msg)
+            case .idle:             break
+            }
+        }
+    }
+
+    private func finishListening() {
+        let (samples, sampleRate) = recorder.stop()
+        Task { await runRecognition(samples: samples, sampleRate: sampleRate) }
+    }
+
+    /// Shared: recognize → simplify → show. Heavy work runs off the main actor.
+    private func runRecognition(samples: [Float], sampleRate: Double) async {
+        phase = .analyzing
+        let outcome = await Task.detached(priority: .userInitiated) { () -> Outcome in
+            let timeline = ChordRecognizer().recognize(samples, sampleRate: Float(sampleRate))
+            var seen = Set<ChordSymbol>()
+            let chords = timeline.map(\.symbol).filter { seen.insert($0).inserted }
+            let suggestion = CapoSimplifier().suggest(for: chords)
+            return Outcome(timeline: timeline, suggestion: suggestion, chords: chords)
+        }.value
+        phase = .done(outcome)
     }
 
     private func uniqueShapes(_ suggestion: CapoSimplifier.Suggestion) -> [ChordSymbol] {
