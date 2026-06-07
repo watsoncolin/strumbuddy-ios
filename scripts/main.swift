@@ -488,6 +488,35 @@ do {
     check("personalized → shapes within the known set", p.shapes.allSatisfy { limited.easyShapes.contains($0) })
 }
 
+// MARK: - Difficulty tiers (BYO-song v2)
+
+print("\n== Difficulty tiers ==")
+do {
+    func sym(_ r: Int, _ q: ChordSymbol.Quality = .major) -> ChordSymbol {
+        ChordSymbol(root: r, quality: q)
+    }
+    let simp = SongSimplifier()
+    let cfg = [sym(0), sym(5), sym(7)]   // C F G (F is a barre)
+
+    let full = simp.arrange(cfg, tier: .full)
+    check("full → no capo", full.capo == 0)
+    check("full → F keeps it below full coverage", full.coverage < 1.0)
+
+    let capo = simp.arrange(cfg, tier: .capo)
+    check("capo → full coverage", capo.coverage == 1.0)
+    check("capo → uses a capo", capo.capo > 0)
+
+    let camp = simp.arrange(cfg, tier: .campfire)
+    check("campfire → all easy shapes", camp.shapes.allSatisfy { ChordSymbol.openShapes.contains($0) })
+    check("campfire → coverage 1.0", camp.coverage == 1.0)
+
+    // Two adjacent majors can't both be open at any single capo → campfire substitutes.
+    let adjacent = [sym(0), sym(1)]      // C, C#
+    check("capo can't cover both adjacent majors", simp.arrange(adjacent, tier: .capo).coverage < 1.0)
+    check("campfire substitutes the un-cappable chord",
+          simp.arrange(adjacent, tier: .campfire).shapes.allSatisfy { ChordSymbol.openShapes.contains($0) })
+}
+
 // MARK: - Chord recognition spike (BYO-song v2)
 // Validates the offline chroma→chord→Viterbi pipeline on a synthesized progression.
 // Clean-input upper bound — real-mix accuracy is the open question (needs device).

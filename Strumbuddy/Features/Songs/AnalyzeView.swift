@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 struct AnalyzeView: View {
     @State private var phase: Phase = .idle
     @State private var picking = false
+    @State private var tier: DifficultyTier = .campfire
     @StateObject private var recorder = AudioRecorder()
 
     enum Phase { case idle, listening, analyzing, done(Outcome), failed(String) }
@@ -74,13 +75,16 @@ struct AnalyzeView: View {
     }
 
     private func results(_ outcome: Outcome) -> some View {
-        List {
-            Section("Capo suggestion") {
-                Text(outcome.suggestion.capo == 0 ? "No capo" : "Capo \(outcome.suggestion.capo)")
-                    .font(.headline)
-                Text("Play: " + uniqueShapes(outcome.suggestion).map(\.displayName).joined(separator: " · "))
-                Text("\(Int(outcome.suggestion.coverage * 100))% playable as open shapes")
-                    .font(.caption).foregroundStyle(.secondary)
+        let arrangement = SongSimplifier().arrange(outcome.chords, tier: tier)
+        return List {
+            Section("Arrangement") {
+                Picker("Difficulty", selection: $tier) {
+                    ForEach(DifficultyTier.allCases) { Text($0.rawValue).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                Text(arrangement.capo == 0 ? "No capo" : "Capo \(arrangement.capo)").font(.headline)
+                Text("Play: " + uniqueShapes(arrangement.shapes).map(\.displayName).joined(separator: " · "))
+                Text(tier.blurb).font(.caption).foregroundStyle(.secondary)
             }
             Section("Chords found (\(outcome.chords.count))") {
                 Text(outcome.chords.map(\.displayName).joined(separator: " · "))
@@ -172,9 +176,9 @@ struct AnalyzeView: View {
         phase = .done(outcome)
     }
 
-    private func uniqueShapes(_ suggestion: CapoSimplifier.Suggestion) -> [ChordSymbol] {
+    private func uniqueShapes(_ shapes: [ChordSymbol]) -> [ChordSymbol] {
         var seen = Set<ChordSymbol>()
-        return suggestion.shapes.filter { seen.insert($0).inserted }
+        return shapes.filter { seen.insert($0).inserted }
     }
 
     private func timestamp(_ seconds: Double) -> String {
