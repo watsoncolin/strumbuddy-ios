@@ -21,12 +21,15 @@
 		3BC27A4439ECDFDE707F0D17 /* Metronome.swift in Sources */ = {isa = PBXBuildFile; fileRef = C052F56AE6FB5BE845C5F46E /* Metronome.swift */; };
 		46F066DE40A907FB457C7F87 /* Chord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B7EA871950B14503B18847 /* Chord.swift */; };
 		46F50497F8262558641269ED /* ObservationLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068D968F8560E50AEE9583F2 /* ObservationLog.swift */; };
+		4B4AD80786C17BA85BE1E777 /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25074E52CA474B9B27DB5B35 /* Song.swift */; };
 		4B950ADDB3531B5F1CBCBE5C /* StructuredPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873DCA8F4881AFB1CED1DEC8 /* StructuredPathView.swift */; };
 		4BD58E00D245B89C5AD1D379 /* CreditAssignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA970FA59414C54252A73ED /* CreditAssignment.swift */; };
 		4E4CEE058B4FEDFBA7CC3CA0 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEE6F70220F34A3ED92F60 /* Database.swift */; };
 		53A52E8CA0EC88B51798D224 /* TipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B432266AB6890FEB0131C76E /* TipsView.swift */; };
+		56802006B0E087D665AD658A /* SongPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383408B6D3434C0966281E11 /* SongPlayer.swift */; };
 		591A898B4AB30C444FE952DE /* MasteryState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140E2E1536E336CEAA1ABD24 /* MasteryState.swift */; };
 		593D64FCEC0D51A0455F130F /* SkillDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EE0B351D82DF78140B362C /* SkillDetail.swift */; };
+		5F724454D97873598E047482 /* SongsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB2D76F090D9BC096241C3B /* SongsView.swift */; };
 		634A1DBEE7F313723FE26DAF /* TransitionDrill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF72318A025078438E7D14DF /* TransitionDrill.swift */; };
 		71D428473494CEEA163F8A10 /* Coach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AA48711B270161E6892315 /* Coach.swift */; };
 		7223DB6042E7D8DF0D5FABFA /* TransitionDrillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A4D9559C3CE8F55E1E8B93 /* TransitionDrillView.swift */; };
@@ -36,6 +39,7 @@
 		8D9A9E661FDD6B69F892E512 /* ScoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EDBF96308E46028E444DA3 /* ScoringService.swift */; };
 		8E173847DD37E4E39B626942 /* Skill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548B91A02E8B955BFD942C83 /* Skill.swift */; };
 		971A5F068F360D7183A92BAD /* ChordShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402FD93D5C22C0687A40C468 /* ChordShape.swift */; };
+		9A97F96748A0156658C36820 /* SongDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67CE7FBA6D2ABB59F8270CB6 /* SongDetailView.swift */; };
 		9B00727E6F7FFE43CFAF718E /* ChordDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5593203B04F73D5DF4901DD6 /* ChordDetailView.swift */; };
 		9D5D4DC69903B14A62FB90D1 /* SelectionPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97D51C737AC21FCD52FA1BB8 /* SelectionPolicy.swift */; };
 		A0CA59ABEFACABD159CC5116 /* DrillSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7368139CB3C8E72512284CD2 /* DrillSession.swift */; };
@@ -59,7 +63,10 @@
 		068D968F8560E50AEE9583F2 /* ObservationLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationLog.swift; sourceTree = "<group>"; };
 		06A4D9559C3CE8F55E1E8B93 /* TransitionDrillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionDrillView.swift; sourceTree = "<group>"; };
 		140E2E1536E336CEAA1ABD24 /* MasteryState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryState.swift; sourceTree = "<group>"; };
+		1AB2D76F090D9BC096241C3B /* SongsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongsView.swift; sourceTree = "<group>"; };
 		1C6BE58B59A9584E89BAD694 /* Tip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tip.swift; sourceTree = "<group>"; };
+		25074E52CA474B9B27DB5B35 /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
+		383408B6D3434C0966281E11 /* SongPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongPlayer.swift; sourceTree = "<group>"; };
 		3BCA79382C833EA8C856F88B /* StrumbuddyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrumbuddyApp.swift; sourceTree = "<group>"; };
 		402FD93D5C22C0687A40C468 /* ChordShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordShape.swift; sourceTree = "<group>"; };
 		40E82CD4AA1037EFA30471DE /* PracticeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeTracker.swift; sourceTree = "<group>"; };
@@ -72,6 +79,7 @@
 		598EC9AAF229C96EB1076FF6 /* ChordCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordCheckView.swift; sourceTree = "<group>"; };
 		5E542502A17F704180E65233 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		66FEE6F70220F34A3ED92F60 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		67CE7FBA6D2ABB59F8270CB6 /* SongDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDetailView.swift; sourceTree = "<group>"; };
 		687BED834466E11EE516FD4B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6BA970FA59414C54252A73ED /* CreditAssignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditAssignment.swift; sourceTree = "<group>"; };
 		6C8C192C9B707E0CBB7781B0 /* TunerReading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerReading.swift; sourceTree = "<group>"; };
@@ -118,12 +126,23 @@
 				F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */,
 				548B91A02E8B955BFD942C83 /* Skill.swift */,
 				A3EE0B351D82DF78140B362C /* SkillDetail.swift */,
+				25074E52CA474B9B27DB5B35 /* Song.swift */,
 				8FF9BAD26BE6A80DAA69117E /* Stage.swift */,
 				CA5CAA5B39BA7AC6629B19A2 /* StreakCalculator.swift */,
 				1C6BE58B59A9584E89BAD694 /* Tip.swift */,
 				CF72318A025078438E7D14DF /* TransitionDrill.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		16B1C9E4D858B12B75415EA8 /* Songs */ = {
+			isa = PBXGroup;
+			children = (
+				67CE7FBA6D2ABB59F8270CB6 /* SongDetailView.swift */,
+				383408B6D3434C0966281E11 /* SongPlayer.swift */,
+				1AB2D76F090D9BC096241C3B /* SongsView.swift */,
+			);
+			path = Songs;
 			sourceTree = "<group>";
 		};
 		16D56AE2E6DBF016EA1315FD /* Coach */ = {
@@ -199,6 +218,7 @@
 				8CF592120260E98C6E8C0C32 /* Onboarding */,
 				CFDE155AE3D26B421417838B /* PracticeCoach */,
 				A21BA8A936975B6D18318342 /* Shared */,
+				16B1C9E4D858B12B75415EA8 /* Songs */,
 				47FF94833C253E625A393689 /* StructuredPath */,
 				C916ED5B6FA7CE7BCBA3A187 /* Tips */,
 				262494593E7F7796E0A5F47C /* Today */,
@@ -409,6 +429,10 @@
 				8E173847DD37E4E39B626942 /* Skill.swift in Sources */,
 				593D64FCEC0D51A0455F130F /* SkillDetail.swift in Sources */,
 				028B0B9408A8AD05082122E7 /* SkillGraph.swift in Sources */,
+				4B4AD80786C17BA85BE1E777 /* Song.swift in Sources */,
+				9A97F96748A0156658C36820 /* SongDetailView.swift in Sources */,
+				56802006B0E087D665AD658A /* SongPlayer.swift in Sources */,
+				5F724454D97873598E047482 /* SongsView.swift in Sources */,
 				2CD824ADED4988843C281EE3 /* Stage.swift in Sources */,
 				C8A3A2333BADF0E753696927 /* StreakCalculator.swift in Sources */,
 				4B950ADDB3531B5F1CBCBE5C /* StructuredPathView.swift in Sources */,
