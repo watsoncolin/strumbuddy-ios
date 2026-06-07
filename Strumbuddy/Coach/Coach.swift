@@ -50,6 +50,18 @@ final class Coach: ObservableObject {
         sessionGenerator.plan(graph: graph, states: mastery, store: store, now: now)
     }
 
+    /// Whether a skill is mastered (consistency criterion), for the structured path.
+    func isMastered(_ id: SkillID, now: Date = Date()) -> Bool {
+        store.isMastered(id, in: mastery, now: now)
+    }
+
+    /// The structured-path ladder with locked/active/complete states.
+    func stagePlans(now: Date = Date()) -> [StagePlan] {
+        computeStagePlans(Stage.beginnerStages,
+                          isMastered: { store.isMastered($0, in: mastery, now: now) },
+                          proficiency: { proficiency($0, now: now) })
+    }
+
     /// Per-skill detail (four axes + mastery context) for the detail screen.
     func detail(for id: SkillID, now: Date = Date()) -> SkillDetail {
         SkillDetail.make(

@@ -14,6 +14,7 @@
 		1F978C34F368EC381C85D222 /* ChordCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598EC9AAF229C96EB1076FF6 /* ChordCheckView.swift */; };
 		249DC2B1DB2E1306FD7E0522 /* MasteryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFCB59418483E2BCCEEA224 /* MasteryStore.swift */; };
 		2A2F2ED512D08EAF5AA6A021 /* FreePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429DFA35521BF75AB948E6B9 /* FreePlayView.swift */; };
+		2CD824ADED4988843C281EE3 /* Stage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF9BAD26BE6A80DAA69117E /* Stage.swift */; };
 		311CE8ECCBD9ECD3A60CC871 /* PitchDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C48BAA7BABD8F6A1B1C3E2B /* PitchDetector.swift */; };
 		3954D76D35B9B926CF88705A /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3A85B4DD7C854AD059ED03 /* Theme.swift */; };
 		3980976E19E6862B9F03733C /* ChordDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2D87CCE1F204D57951EADB /* ChordDetector.swift */; };
@@ -80,6 +81,7 @@
 		7C48BAA7BABD8F6A1B1C3E2B /* PitchDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchDetector.swift; sourceTree = "<group>"; };
 		873DCA8F4881AFB1CED1DEC8 /* StructuredPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructuredPathView.swift; sourceTree = "<group>"; };
 		8CFCB59418483E2BCCEEA224 /* MasteryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryStore.swift; sourceTree = "<group>"; };
+		8FF9BAD26BE6A80DAA69117E /* Stage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stage.swift; sourceTree = "<group>"; };
 		97D51C737AC21FCD52FA1BB8 /* SelectionPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionPolicy.swift; sourceTree = "<group>"; };
 		A3EE0B351D82DF78140B362C /* SkillDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillDetail.swift; sourceTree = "<group>"; };
 		B92EFEA2ED450CA40625CA0A /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 				F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */,
 				548B91A02E8B955BFD942C83 /* Skill.swift */,
 				A3EE0B351D82DF78140B362C /* SkillDetail.swift */,
+				8FF9BAD26BE6A80DAA69117E /* Stage.swift */,
 				CA5CAA5B39BA7AC6629B19A2 /* StreakCalculator.swift */,
 				CF72318A025078438E7D14DF /* TransitionDrill.swift */,
 			);
@@ -392,6 +395,7 @@
 				8E173847DD37E4E39B626942 /* Skill.swift in Sources */,
 				593D64FCEC0D51A0455F130F /* SkillDetail.swift in Sources */,
 				028B0B9408A8AD05082122E7 /* SkillGraph.swift in Sources */,
+				2CD824ADED4988843C281EE3 /* Stage.swift in Sources */,
 				C8A3A2333BADF0E753696927 /* StreakCalculator.swift in Sources */,
 				4B950ADDB3531B5F1CBCBE5C /* StructuredPathView.swift in Sources */,
 				72E251FBD8B4F2B46EAAD60F /* StrumbuddyApp.swift in Sources */,

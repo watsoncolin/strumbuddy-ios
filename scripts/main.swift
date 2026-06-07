@@ -397,6 +397,26 @@ do {
     check("win targets a mastered chord", warm.last?.activity == .chord(.c))
 }
 
+// MARK: - Structured path (gating ladder)
+
+print("\n== Structured path ==")
+do {
+    let stages = Stage.beginnerStages
+    // Nothing mastered: first stage active, rest locked.
+    let none = computeStagePlans(stages, isMastered: { _ in false }, proficiency: { _ in 0 })
+    check("first stage active at start", none[0].state == .active)
+    check("second stage locked at start", none[1].state == .locked)
+
+    // Master stage 1's skills → stage 1 complete, stage 2 unlocks.
+    let s1 = Set(stages[0].skills.map { $0.rawValue })
+    let plans = computeStagePlans(stages,
+        isMastered: { s1.contains($0.rawValue) }, proficiency: { s1.contains($0.rawValue) ? 1 : 0 })
+    check("stage 1 complete once its skills mastered", plans[0].state == .complete)
+    check("stage 2 becomes active", plans[1].state == .active)
+    check("stage 3 still locked", plans[2].state == .locked)
+    check("completed stage shows full progress", plans[0].progress == 1.0)
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

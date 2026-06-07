@@ -8,10 +8,10 @@ struct TransitionDrillView: View {
     private let engine: AudioEngine
 
     init(metronome: Metronome, engine: AudioEngine, coach: Coach,
-         from: Chord = .c, to: Chord = .g) {
+         from: Chord = .c, to: Chord = .g, bpm: Int = 60) {
         self.engine = engine
         _session = StateObject(wrappedValue: DrillSession(metronome: metronome, engine: engine,
-                                                          coach: coach, from: from, to: to))
+                                                          coach: coach, from: from, to: to, bpm: bpm))
     }
 
     var body: some View {

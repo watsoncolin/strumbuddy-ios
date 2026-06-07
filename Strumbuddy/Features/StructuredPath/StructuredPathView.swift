@@ -1,16 +1,17 @@
 import SwiftUI
 
-/// The structured path (design-doc §3 mode 1): staged milestones the user checks
-/// off via a test. Passing a milestone is a threshold on the engine's scores and
-/// gates the next stage. v0.1 scaffold: renders the stages and their lock state.
+/// The structured path (design-doc §3 mode 1): a Couch-to-5K-style ladder. Stages
+/// unlock in sequence; a stage completes when its skills are mastered (consistency).
+/// The active stage is actionable — each skill launches the right pre-targeted tool.
 struct StructuredPathView: View {
+    @ObservedObject var coach: Coach
     @EnvironmentObject private var env: AppEnvironment
 
     var body: some View {
         NavigationStack {
             List {
-                ForEach(Stage.beginnerStages) { stage in
-                    StageRow(stage: stage, coach: env.coach)
+                ForEach(coach.stagePlans()) { plan in
+                    StageRow(plan: plan, coach: coach)
                 }
             }
             .navigationTitle("Your Path")
@@ -18,52 +19,85 @@ struct StructuredPathView: View {
     }
 }
 
-/// A milestone stage. Mastery of its skills (per the coach) decides completion.
-struct Stage: Identifiable {
-    let id: Int
-    let title: String
-    let blurb: String
-    let skills: [SkillID]
-
-    static let beginnerStages: [Stage] = [
-        Stage(id: 1, title: "First chords", blurb: "Em, C, and G — clean and ringing.",
-              skills: [.chord(.em), .chord(.c), .chord(.g)]),
-        Stage(id: 2, title: "First changes", blurb: "Switch between them in time.",
-              skills: [.transition(from: .em, to: .c), .transition(from: .c, to: .g)]),
-        Stage(id: 3, title: "Keep the beat", blurb: "Hold a change at 60 bpm.",
-              skills: [.tempoHold(60)]),
-        Stage(id: 4, title: "Widen the vocabulary", blurb: "Add D and A.",
-              skills: [.chord(.d), .chord(.a), .transition(from: .g, to: .d)]),
-    ]
-}
-
 private struct StageRow: View {
-    let stage: Stage
+    let plan: StagePlan
     @ObservedObject var coach: Coach
-
-    private var progress: Double {
-        guard !stage.skills.isEmpty else { return 0 }
-        let total = stage.skills.reduce(0.0) { $0 + coach.proficiency($1) }
-        return total / Double(stage.skills.count)
-    }
+    @EnvironmentObject private var env: AppEnvironment
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.s) {
             HStack {
-                Text(stage.title).font(.headline)
+                Image(systemName: icon).foregroundStyle(iconColor)
+                Text(plan.stage.title).font(.headline)
+                    .foregroundStyle(plan.state == .locked ? .secondary : .primary)
                 Spacer()
-                if progress >= 0.75 {
-                    Image(systemName: "checkmark.seal.fill").foregroundStyle(Theme.clean)
-                }
             }
-            Text(stage.blurb).font(.subheadline).foregroundStyle(.secondary)
-            ProgressView(value: progress).tint(Theme.accent)
+            Text(plan.stage.blurb).font(.subheadline).foregroundStyle(.secondary)
+
+            if plan.state != .locked {
+                ProgressView(value: plan.progress).tint(Theme.accent)
+            }
+
+            // The active stage is actionable: practice each of its skills.
+            if plan.state == .active {
+                VStack(spacing: Theme.Spacing.xs) {
+                    ForEach(plan.stage.skills, id: \.rawValue) { skill in
+                        skillRow(skill)
+                    }
+                }
+                .padding(.top, Theme.Spacing.xs)
+            }
         }
         .padding(.vertical, Theme.Spacing.xs)
+        .opacity(plan.state == .locked ? 0.5 : 1)
     }
-}
 
-#Preview {
-    StructuredPathView()
-        .environmentObject(AppEnvironment())
+    @ViewBuilder
+    private func skillRow(_ id: SkillID) -> some View {
+        HStack {
+            Image(systemName: coach.isMastered(id) ? "checkmark.circle.fill" : "circle")
+                .foregroundStyle(coach.isMastered(id) ? Theme.clean : .secondary)
+            Text(coach.graph.skill(id)?.displayName ?? "")
+                .font(.subheadline)
+            Spacer()
+            NavigationLink {
+                practiceDestination(for: id)
+            } label: {
+                Text("Practice").font(.subheadline)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func practiceDestination(for id: SkillID) -> some View {
+        switch coach.graph.skill(id)?.kind {
+        case .chord(let c):
+            ChordCheckView(engine: env.audioEngine, coach: env.coach, initialChord: c)
+                .padding(.top).navigationTitle(c.displayName).navigationBarTitleDisplayMode(.inline)
+        case .transition(let a, let b):
+            TransitionDrillView(metronome: env.metronome, engine: env.audioEngine,
+                                coach: env.coach, from: a, to: b)
+        case .tempoHold(let bpm):
+            TransitionDrillView(metronome: env.metronome, engine: env.audioEngine,
+                                coach: env.coach, bpm: bpm)
+        default:
+            Text("Coming soon")
+        }
+    }
+
+    private var icon: String {
+        switch plan.state {
+        case .complete: return "checkmark.seal.fill"
+        case .active:   return "play.circle.fill"
+        case .locked:   return "lock.fill"
+        }
+    }
+
+    private var iconColor: Color {
+        switch plan.state {
+        case .complete: return Theme.clean
+        case .active:   return Theme.accent
+        case .locked:   return .secondary
+        }
+    }
 }

@@ -31,12 +31,13 @@ final class DrillSession: ObservableObject {
     private var cancellable: AnyCancellable?
 
     init(metronome: Metronome, engine: AudioEngine, coach: Coach,
-         from: Chord = .c, to: Chord = .g) {
+         from: Chord = .c, to: Chord = .g, bpm: Int = 60) {
         self.metronome = metronome
         self.engine = engine
         self.coach = coach
         self.fromChord = from
         self.toChord = to
+        self.bpm = bpm
     }
 
     /// Average per-axis score across recorded reps, for the summary.

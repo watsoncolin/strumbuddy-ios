@@ -24,7 +24,7 @@ struct ContentView: View {
                 .tabItem { Label("Today", systemImage: "sun.max") }
                 .tag(Tab.today)
 
-            StructuredPathView()
+            StructuredPathView(coach: env.coach)
                 .tabItem { Label("Path", systemImage: "map") }
                 .tag(Tab.path)
 
