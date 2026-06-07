@@ -1,39 +1,51 @@
 import Foundation
 import AVFoundation
+import Accelerate
 import Combine
 
 /// The shared audio engine (design-doc §4). Captures the mic via AVAudioEngine and
-/// fans the buffer out to two analysis paths:
+/// fans ONE sample buffer out to two analysis paths:
 ///
-///   • Monophonic path (`Tuner` / pitch) → single fundamental → tuner, riffs, melody.
+///   • Monophonic path (`PitchDetector`) → single fundamental → tuner, riffs, melody.
 ///   • Polyphonic path (`Chromagram` → `ChordDetector`) → chord identity + cleanliness.
 ///
-/// Both run off the SAME input tap. v0.1 uses AVFoundation + Accelerate only — no
-/// third-party audio deps (see §4 licensing note).
+/// v0.1 uses AVFoundation + Accelerate only — no third-party audio deps (§4).
 @MainActor
 final class AudioEngine: ObservableObject {
     enum State: Equatable { case idle, running, denied, failed(String) }
 
-    /// Minimum YIN clarity for a frame to count as a real detection (vs. noise).
+    /// Minimum YIN clarity for a frame to count as a real pitch detection (vs. noise).
     private static let minClarity = 0.5
+    /// RMS above which a buffer is treated as "actively playing" (gates chord scoring).
+    private static let playingRMS: Float = 0.01
 
+    // Monophonic outputs (tuner).
     @Published private(set) var state: State = .idle
-    /// Latest smoothed fundamental (Hz), or nil when no clear pitch. Drives the tuner.
+    /// Latest smoothed fundamental (Hz), or nil when no clear pitch.
     @Published private(set) var fundamental: Double?
-    /// Detection clarity 0…1 for the latest pitch — used to gate the readout so a
-    /// noisy/ambiguous frame doesn't flicker a wrong note onto the screen.
+    /// Clarity 0…1 for the latest pitch — gates the tuner readout.
     @Published private(set) var clarity: Double = 0
-    /// Latest chromagram (12 pitch-class energies, normalized). Drives chord detection.
+
+    // Polyphonic outputs (chords).
+    /// Latest chromagram (12 normalized pitch-class energies). Exposed for debugging.
     @Published private(set) var chroma: [Float] = Array(repeating: 0, count: 12)
+    /// Smoothed score against `targetChord` — chord identity, cleanliness, per-string
+    /// quality. Nil when no target is set or nothing is being played.
+    @Published private(set) var targetScore: ChordDetector.Result?
+
+    /// The chord the user is currently trying to play. Set by the UI; nil = no scoring.
+    var targetChord: Chord?
 
     private let engine = AVAudioEngine()
     private let chromagram = Chromagram()
-    private let pitchTracker = PitchTracker()
-    /// Lives on the audio thread; smooths the per-buffer pitch into a stable readout.
+    private let chordDetector = ChordDetector()
+    // The following live on the audio thread, keeping state across buffers.
     private let pitchSmoother = PitchSmoother()
+    private let chordScoreSmoother = ChordScoreSmoother()
 
     /// Request mic permission and start capturing.
     func start() async {
+        guard state != .running else { return }
         guard await Self.requestMicPermission() else { state = .denied; return }
         do {
             try configureSession()
@@ -48,8 +60,10 @@ final class AudioEngine: ObservableObject {
         engine.inputNode.removeTap(onBus: 0)
         engine.stop()
         pitchSmoother.reset()
+        chordScoreSmoother.reset()
         fundamental = nil
         clarity = 0
+        targetScore = nil
         state = .idle
     }
 
@@ -62,19 +76,34 @@ final class AudioEngine: ObservableObject {
     private func installTapAndStart() throws {
         let input = engine.inputNode
         let format = input.outputFormat(forBus: 0)
+        let sampleRate = format.sampleRate
+
         input.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, _ in
-            guard let self else { return }
-            let pitch = self.pitchTracker.detect(buffer)
-            // Only feed confident detections into the smoother; ambiguous/noisy frames
-            // count as a "miss" and are absorbed by the smoother's hold, so a stable
-            // note doesn't blink out on a single bad buffer.
+            guard let self,
+                  let channel = buffer.floatChannelData?[0] else { return }
+            let samples = Array(UnsafeBufferPointer(start: channel, count: Int(buffer.frameLength)))
+
+            // Energy gate (shared by both paths).
+            var rms: Float = 0
+            vDSP_rmsqv(samples, 1, &rms, vDSP_Length(samples.count))
+            let energetic = rms >= Self.playingRMS
+
+            // Monophonic: pitch → smoother. Only confident frames count; the rest are
+            // absorbed by the smoother's hold so a stable note doesn't blink out.
+            let pitch = PitchDetector(sampleRate: sampleRate).detect(samples)
             let confident = (pitch?.clarity ?? 0) >= Self.minClarity ? pitch : nil
-            let smoothed = self.pitchSmoother.push(confident?.frequency)
-            let chroma = self.chromagram.compute(buffer)
+            let smoothedPitch = self.pitchSmoother.push(confident?.frequency)
+
+            // Polyphonic: chroma → score against the target chord (if any) → smoother.
+            let chroma = self.chromagram.compute(samples, sampleRate: Float(sampleRate))
+            let rawScore = self.targetChord.map { self.chordDetector.score($0, chroma) }
+            let score = self.chordScoreSmoother.push(rawScore, energetic: energetic)
+
             Task { @MainActor in
-                self.fundamental = smoothed
+                self.fundamental = smoothedPitch
                 if let confident { self.clarity = confident.clarity }
                 self.chroma = chroma
+                self.targetScore = score
             }
         }
         engine.prepare()

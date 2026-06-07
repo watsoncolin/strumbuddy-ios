@@ -3,19 +3,31 @@ import Foundation
 /// Template-matching chord detector over the constrained beginner set (design-doc §4).
 /// Matches a chromagram against the expected pitch classes of each supported chord —
 /// far more accurate than universal recognition because the candidate set is tiny.
+///
+/// Produces the two distinct things the app needs from one analysis:
+///   • identity + `confidence` (the accuracy axis): which chord, how sure.
+///   • `cleanliness` + per-pitch-class `stringQuality` (the differentiating axis):
+///     is every expected note ringing, is anything missing (muted) or extra (buzz)?
 struct ChordDetector {
-    /// Energy threshold above which a pitch class counts as "present."
+    /// Normalized energy above which an expected pitch class counts as "present."
     var presenceThreshold: Float = 0.35
+    /// Higher bar for flagging an *unexpected* pitch class as a buzz/wrong note, so
+    /// ordinary harmonic leakage isn't mistaken for a mistake.
+    var buzzThreshold: Float = 0.5
 
-    struct Result {
+    struct Result: Equatable {
         let chord: Chord
-        /// Match confidence 0…1 — how well the chroma fit this chord's template.
+        /// Identity confidence 0…1 — how well the chroma fit this chord (accuracy axis).
         let confidence: Double
-        /// Per-expected-note quality, the basis of the cleanliness axis (§4).
+        /// How cleanly all expected strings ring 0…1 (cleanliness axis).
+        let cleanliness: Double
+        /// Per-pitch-class quality: clean/muted for expected notes, buzzing for
+        /// unexpected notes ringing loudly. The basis of teacher-grade feedback.
         let stringQuality: [PitchClass: StringQuality]
     }
 
     /// Best-matching chord for a chromagram, or nil if nothing matches well.
+    /// Use when we don't know what the user intends to play (free detection).
     func detect(_ chroma: [Float]) -> Result? {
         guard chroma.count == 12 else { return nil }
         var best: Result?
@@ -27,32 +39,93 @@ struct ChordDetector {
         return best
     }
 
-    /// Score a specific expected chord — used when we already know what the user
-    /// is supposed to be playing (structured path / drills), which is the common case.
+    /// Score a specific expected chord — used when we already know what the user is
+    /// supposed to be playing (structured path / chord drills), the common case.
     func score(_ chord: Chord, _ chroma: [Float]) -> Result {
+        guard chroma.count == 12 else {
+            return Result(chord: chord, confidence: 0, cleanliness: 0, stringQuality: [:])
+        }
         let expected = chord.expectedPitchClasses
         var present = 0
         var quality: [PitchClass: StringQuality] = [:]
+        var allUnexpectedEnergy: Float = 0   // for identity confidence
+        var buzzEnergy: Float = 0            // only strong unexpected notes, for cleanliness
 
-        for pc in expected {
+        for pc in PitchClass.allCases {
             let energy = chroma[pc.rawValue]
-            if energy >= presenceThreshold {
-                present += 1
-                quality[pc] = .clean
+            if expected.contains(pc) {
+                if energy >= presenceThreshold {
+                    present += 1
+                    quality[pc] = .clean
+                } else {
+                    quality[pc] = .muted   // expected note missing → muted / dead string
+                }
             } else {
-                quality[pc] = .muted   // expected note missing → muted/dead string
+                allUnexpectedEnergy += energy
+                if energy >= buzzThreshold {
+                    quality[pc] = .buzzing  // unexpected note ringing → buzz / wrong fret
+                    buzzEnergy += energy
+                }
             }
         }
 
-        // Unexpected energy → buzz / wrong fret. Penalizes accuracy.
-        var unexpectedEnergy: Float = 0
-        for pc in PitchClass.allCases where !expected.contains(pc) {
-            unexpectedEnergy += chroma[pc.rawValue]
-        }
+        let count = max(expected.count, 1)
+        let coverage = Double(present) / Double(count)
 
-        let coverage = Double(present) / Double(expected.count)
-        let noise = Double(min(unexpectedEnergy / Float(max(expected.count, 1)), 1))
-        let confidence = max(0, coverage - 0.5 * noise)
-        return Result(chord: chord, confidence: confidence, stringQuality: quality)
+        // Identity: high coverage, penalized by any out-of-chord energy.
+        let identityNoise = Double(min(allUnexpectedEnergy / Float(count), 1))
+        let confidence = max(0, coverage - 0.5 * identityNoise)
+
+        // Cleanliness: all expected notes ringing, penalized by loud extra notes.
+        let buzzPenalty = Double(min(buzzEnergy / Float(count), 1))
+        let cleanliness = max(0, coverage - 0.4 * buzzPenalty)
+
+        return Result(chord: chord, confidence: confidence, cleanliness: cleanliness,
+                      stringQuality: quality)
+    }
+}
+
+/// Stabilizes a stream of per-buffer chord scores for a steady live readout.
+/// EMA-smooths the scalar axes (so they don't twitch), takes per-string quality
+/// from the latest energetic frame, and holds the last result through a strum's
+/// decay — clearing only after sustained silence. Reference type: lives on the
+/// audio thread across buffers.
+final class ChordScoreSmoother {
+    private var emaConfidence = 0.0
+    private var emaCleanliness = 0.0
+    private var last: ChordDetector.Result?
+    private var quietFrames = 0
+
+    private let holdFrames: Int
+    private let alpha: Double
+
+    init(holdFrames: Int = 13, alpha: Double = 0.4) {
+        self.holdFrames = holdFrames
+        self.alpha = alpha
+    }
+
+    /// `energetic` = the buffer actually contains playing (above an RMS floor).
+    /// Quiet buffers hold the last reading, then clear after `holdFrames`.
+    func push(_ result: ChordDetector.Result?, energetic: Bool) -> ChordDetector.Result? {
+        guard energetic, let result else {
+            quietFrames += 1
+            if quietFrames >= holdFrames { reset() }
+            return last
+        }
+        quietFrames = 0
+        emaConfidence += alpha * (result.confidence - emaConfidence)
+        emaCleanliness += alpha * (result.cleanliness - emaCleanliness)
+        last = ChordDetector.Result(chord: result.chord,
+                                    confidence: emaConfidence,
+                                    cleanliness: emaCleanliness,
+                                    stringQuality: result.stringQuality)
+        return last
+    }
+
+    func reset() {
+        emaConfidence = 0
+        emaCleanliness = 0
+        last = nil
+        quietFrames = 0
     }
 }

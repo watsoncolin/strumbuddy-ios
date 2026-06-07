@@ -30,9 +30,10 @@ The pitch detector and tuner math are written as pure, dependency-light types so
 they can be tested on macOS without a device or simulator runtime:
 
 ```sh
-swiftc -O Strumbuddy/Audio/PitchDetector.swift \
-       Strumbuddy/Features/Shared/TunerReading.swift \
-       scripts/main.swift -o /tmp/tunercheck && /tmp/tunercheck
+swiftc -O Strumbuddy/Models/Chord.swift Strumbuddy/Models/ScoreAxes.swift \
+       Strumbuddy/Audio/Chromagram.swift Strumbuddy/Audio/ChordDetector.swift \
+       Strumbuddy/Audio/PitchDetector.swift Strumbuddy/Features/Shared/TunerReading.swift \
+       scripts/main.swift -o /tmp/check && /tmp/check
 ```
 
 `scripts/` is intentionally outside the app target. Keep DSP logic in pure types
@@ -51,10 +52,12 @@ swiftc -O Strumbuddy/Audio/PitchDetector.swift \
 
 ## Map
 
-- `Audio/` — the shared engine. `AudioEngine` fans the mic buffer to `PitchTracker`
-  (monophonic) and `Chromagram` (polyphonic). `ChordDetector` template-matches the
-  constrained chord set; `ScoringService` produces the four-axis `ScoreAxes` and
-  builds `Observation`s.
+- `Audio/` — the shared engine. `AudioEngine` extracts one sample buffer and fans it
+  to `PitchDetector` (monophonic YIN → tuner) and `Chromagram` → `ChordDetector`
+  (polyphonic → chord identity + cleanliness). `PitchSmoother` / `ChordScoreSmoother`
+  stabilize the live readouts. `ScoringService` produces the four-axis `ScoreAxes`
+  and builds `Observation`s. All DSP cores are pure (no AVFoundation) and tested via
+  `scripts/main.swift`.
 - `Coach/` — the heart. `SkillGraph` (transitions are first-class nodes),
   `ObservationLog` (append-only, the source of truth), `MasteryStore` (projects the
   log into `MasteryState` with FSRS decay), `CreditAssignment` (apportions blame),

@@ -1,11 +1,13 @@
 import Foundation
-import AVFoundation
 import Accelerate
 
 /// Polyphonic analysis (design-doc §4 polyphonic path). Computes a chromagram:
 /// energy in each of the 12 pitch classes, folded across octaves. This is the
 /// backbone of BOTH chord identity and cleanliness grading — built on Accelerate's
 /// vDSP FFT (first-party, no copyleft), per the §4 licensing note.
+///
+/// Pure (no AVFoundation): operates on raw `[Float]` samples so it's unit-testable
+/// off-device. Reference type because it owns an FFT setup reused across buffers.
 final class Chromagram {
     private let fftSize: Int
     private let log2n: vDSP_Length
@@ -22,16 +24,16 @@ final class Chromagram {
 
     deinit { vDSP_destroy_fftsetup(fftSetup) }
 
-    /// Returns 12 normalized pitch-class energies (index 0 = C … 11 = B).
-    func compute(_ buffer: AVAudioPCMBuffer) -> [Float] {
-        guard let channel = buffer.floatChannelData?[0] else { return zero }
-        let available = Int(buffer.frameLength)
-        guard available >= fftSize else { return zero }
-        let sampleRate = Float(buffer.format.sampleRate)
+    /// 12 normalized pitch-class energies (index 0 = C … 11 = B) for the first
+    /// `fftSize` samples. Returns all-zero if there aren't enough samples.
+    func compute(_ samples: [Float], sampleRate: Float) -> [Float] {
+        guard samples.count >= fftSize else { return zero }
 
         // Window the first fftSize samples.
         var windowed = [Float](repeating: 0, count: fftSize)
-        vDSP_vmul(channel, 1, window, 1, &windowed, 1, vDSP_Length(fftSize))
+        samples.withUnsafeBufferPointer { src in
+            vDSP_vmul(src.baseAddress!, 1, window, 1, &windowed, 1, vDSP_Length(fftSize))
+        }
 
         // Real FFT via split-complex packing.
         let half = fftSize / 2

@@ -11,15 +11,9 @@ struct ScoringService {
     /// for untimed attempts.
     func gradeChord(expected: Chord, chroma: [Float], timing: Double?) -> (ScoreAxes, [PitchClass: StringQuality]) {
         let r = detector.score(expected, chroma)
-
-        let accuracy = r.confidence
-        // Cleanliness = fraction of expected strings ringing clean.
-        let cleanCount = r.stringQuality.values.filter { $0 == .clean }.count
-        let cleanliness = Double(cleanCount) / Double(max(r.stringQuality.count, 1))
-
-        let axes = ScoreAxes(accuracy: accuracy,
-                             cleanliness: cleanliness,
-                             timing: timing ?? accuracy)  // fall back to accuracy when untimed
+        let axes = ScoreAxes(accuracy: r.confidence,
+                             cleanliness: r.cleanliness,
+                             timing: timing ?? r.confidence)  // fall back to accuracy when untimed
         return (axes, r.stringQuality)
     }
 

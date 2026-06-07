@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		028B0B9408A8AD05082122E7 /* SkillGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A730DDDCF56671F29DB67E /* SkillGraph.swift */; };
 		043F2FCB8F16F0908325A564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 687BED834466E11EE516FD4B /* Assets.xcassets */; };
+		1F978C34F368EC381C85D222 /* ChordCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598EC9AAF229C96EB1076FF6 /* ChordCheckView.swift */; };
 		249DC2B1DB2E1306FD7E0522 /* MasteryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFCB59418483E2BCCEEA224 /* MasteryStore.swift */; };
 		2A2F2ED512D08EAF5AA6A021 /* FreePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429DFA35521BF75AB948E6B9 /* FreePlayView.swift */; };
 		311CE8ECCBD9ECD3A60CC871 /* PitchDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C48BAA7BABD8F6A1B1C3E2B /* PitchDetector.swift */; };
@@ -20,7 +21,6 @@
 		4B950ADDB3531B5F1CBCBE5C /* StructuredPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873DCA8F4881AFB1CED1DEC8 /* StructuredPathView.swift */; };
 		4BD58E00D245B89C5AD1D379 /* CreditAssignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA970FA59414C54252A73ED /* CreditAssignment.swift */; };
 		4E4CEE058B4FEDFBA7CC3CA0 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEE6F70220F34A3ED92F60 /* Database.swift */; };
-		521FB3E267553099ECF3C1A7 /* PitchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3625C8BEF3737C4DB4B65414 /* PitchTracker.swift */; };
 		591A898B4AB30C444FE952DE /* MasteryState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140E2E1536E336CEAA1ABD24 /* MasteryState.swift */; };
 		71D428473494CEEA163F8A10 /* Coach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AA48711B270161E6892315 /* Coach.swift */; };
 		72E251FBD8B4F2B46EAAD60F /* StrumbuddyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCA79382C833EA8C856F88B /* StrumbuddyApp.swift */; };
@@ -40,12 +40,12 @@
 /* Begin PBXFileReference section */
 		068D968F8560E50AEE9583F2 /* ObservationLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationLog.swift; sourceTree = "<group>"; };
 		140E2E1536E336CEAA1ABD24 /* MasteryState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryState.swift; sourceTree = "<group>"; };
-		3625C8BEF3737C4DB4B65414 /* PitchTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchTracker.swift; sourceTree = "<group>"; };
 		3BCA79382C833EA8C856F88B /* StrumbuddyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrumbuddyApp.swift; sourceTree = "<group>"; };
 		429DFA35521BF75AB948E6B9 /* FreePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreePlayView.swift; sourceTree = "<group>"; };
 		47C744AD96BD47F29C6C169A /* Strumbuddy.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Strumbuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		548B91A02E8B955BFD942C83 /* Skill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skill.swift; sourceTree = "<group>"; };
 		56B7EA871950B14503B18847 /* Chord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chord.swift; sourceTree = "<group>"; };
+		598EC9AAF229C96EB1076FF6 /* ChordCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordCheckView.swift; sourceTree = "<group>"; };
 		66FEE6F70220F34A3ED92F60 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		687BED834466E11EE516FD4B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6BA970FA59414C54252A73ED /* CreditAssignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditAssignment.swift; sourceTree = "<group>"; };
@@ -151,6 +151,7 @@
 		6CF3C1D59A901327EFADCC7B /* FreePlay */ = {
 			isa = PBXGroup;
 			children = (
+				598EC9AAF229C96EB1076FF6 /* ChordCheckView.swift */,
 				429DFA35521BF75AB948E6B9 /* FreePlayView.swift */,
 			);
 			path = FreePlay;
@@ -164,7 +165,6 @@
 				C751EDCE5F489A1C43E94A5E /* Chromagram.swift */,
 				C052F56AE6FB5BE845C5F46E /* Metronome.swift */,
 				7C48BAA7BABD8F6A1B1C3E2B /* PitchDetector.swift */,
-				3625C8BEF3737C4DB4B65414 /* PitchTracker.swift */,
 				D9EDBF96308E46028E444DA3 /* ScoringService.swift */,
 			);
 			path = Audio;
@@ -292,6 +292,7 @@
 			files = (
 				B697ED23D79EC162181F016D /* AudioEngine.swift in Sources */,
 				46F066DE40A907FB457C7F87 /* Chord.swift in Sources */,
+				1F978C34F368EC381C85D222 /* ChordCheckView.swift in Sources */,
 				3980976E19E6862B9F03733C /* ChordDetector.swift in Sources */,
 				E2B6D0FE80B16D30D119D3E0 /* Chromagram.swift in Sources */,
 				71D428473494CEEA163F8A10 /* Coach.swift in Sources */,
@@ -305,7 +306,6 @@
 				CD6492363744F72519B05960 /* Observation.swift in Sources */,
 				46F50497F8262558641269ED /* ObservationLog.swift in Sources */,
 				311CE8ECCBD9ECD3A60CC871 /* PitchDetector.swift in Sources */,
-				521FB3E267553099ECF3C1A7 /* PitchTracker.swift in Sources */,
 				D9475E2454FB39095ADEAE48 /* PracticeCoachView.swift in Sources */,
 				E1CC326EAEBFBF042F6AEB74 /* ScoreAxes.swift in Sources */,
 				8D9A9E661FDD6B69F892E512 /* ScoringService.swift in Sources */,

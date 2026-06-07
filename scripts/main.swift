@@ -107,6 +107,76 @@ do {
     check("clears after holdFrames", sm.push(nil) == nil)
 }
 
+// MARK: - Chromagram + ChordDetector (identity + cleanliness)
+
+print("\n== Chromagram + ChordDetector ==")
+
+func midiFreq(_ midi: Int) -> Double { 440 * pow(2.0, (Double(midi) - 69) / 12) }
+
+/// Synthesize a chord as a harmonic-rich triad in octave 3 (pitch class p → C3+p),
+/// optionally with extra out-of-chord notes. Mimics the harmonic leakage a real
+/// guitar produces, so the detector is tested against a realistic chromagram.
+func chordTone(_ pitchClasses: [Int], extra: [Int] = [],
+               harmonics: Int = 5, amplitude: Double = 0.2) -> [Float] {
+    let notes = (pitchClasses + extra).map { 48 + $0 }
+    return (0..<frameCount).map { n in
+        let t = Double(n) / sampleRate
+        var s = 0.0
+        for midi in notes {
+            let f = midiFreq(midi)
+            for k in 1...harmonics { s += (1.0 / Double(k)) * sin(2 * .pi * Double(k) * f * t) }
+        }
+        return Float(s * amplitude / Double(notes.count))
+    }
+}
+
+let chromagram = Chromagram(fftSize: 4096)
+let chordDetector = ChordDetector()
+func chroma(of pcs: [Int], extra: [Int] = []) -> [Float] {
+    chromagram.compute(chordTone(pcs, extra: extra), sampleRate: Float(sampleRate))
+}
+
+// Identity: each chord's full triad should be recognized as itself.
+for chord in Chord.allCases {
+    let pcs = chord.expectedPitchClasses.map { $0.rawValue }
+    let r = chordDetector.detect(chroma(of: pcs))
+    check("identify \(chord.displayName)", r?.chord == chord,
+          "got \(r?.chord.displayName ?? "nil"), conf \(String(format: "%.2f", r?.confidence ?? 0))")
+}
+
+// Clean chord → high cleanliness, every expected note clean.
+do {
+    let r = chordDetector.score(.c, chroma(of: [0, 4, 7]))
+    check("clean C: high cleanliness", r.cleanliness >= 0.8, String(format: "%.2f", r.cleanliness))
+    check("clean C: all expected clean",
+          Chord.c.expectedPitchClasses.allSatisfy { r.stringQuality[$0] == .clean })
+}
+
+// Missing note (play C and G, omit E) → E flagged muted, cleanliness drops.
+do {
+    let r = chordDetector.score(.c, chroma(of: [0, 7]))   // C, G only
+    check("C missing E: E muted", r.stringQuality[.e] == .muted,
+          "got \(r.stringQuality[.e].map(String.init(describing:)) ?? "nil")")
+    check("C missing E: cleanliness drops", r.cleanliness < 0.8, String(format: "%.2f", r.cleanliness))
+}
+
+// Wrong note (C triad + an out-of-chord F#) → F# flagged buzzing.
+do {
+    let r = chordDetector.score(.c, chroma(of: [0, 4, 7], extra: [6]))  // + F#
+    check("C + F#: F# buzzing", r.stringQuality[.fSharp] == .buzzing,
+          "got \(r.stringQuality[.fSharp].map(String.init(describing:)) ?? "nil")")
+}
+
+// ChordScoreSmoother: holds through quiet frames, clears after sustained silence.
+do {
+    let sm = ChordScoreSmoother(holdFrames: 3, alpha: 1.0)
+    let r = chordDetector.score(.c, chroma(of: [0, 4, 7]))
+    check("smoother emits when energetic", sm.push(r, energetic: true) != nil)
+    check("smoother holds on quiet 1", sm.push(nil, energetic: false) != nil)
+    check("smoother holds on quiet 2", sm.push(nil, energetic: false) != nil)
+    check("smoother clears after holdFrames", sm.push(nil, energetic: false) == nil)
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")
