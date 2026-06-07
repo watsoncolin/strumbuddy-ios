@@ -6,12 +6,15 @@ updated: 2026-06-07
 
 ## v0.1 — engine + structured path + coach
 **Done & on device:** [[Tuner]], [[Chord Detection]], [[Cleanliness Scoring]],
-[[Muted-String Detection]], [[Chord Library]] diagrams.
+[[Muted-String Detection]], [[Chord Library]] diagrams, **engine → [[The Coach]]
+loop for chords** (observations → consistency mastery → live recommendations).
 
 **Next (in order):**
-1. **Wire engine → [[The Coach]]** — record graded strums as `Observation`s; bring
-   credit assignment + selection policy to life on real data.
-2. **Metronome** — completes the timing axis.
+1. **Metronome + transition drill** — generate timing & transition observations
+   (where beginners stall); makes credit assignment real. A *rhythm mode* alongside
+   the untimed Chord Check.
+2. **Recital mode** — deliberate assessment posture (vs. forgiving practice) that
+   gates milestones with high-signal observations.
 3. **Structured path** milestones reading coach mastery.
 4. **Onboarding calibration** — seed the coach + guarantee a session-one "win".
 

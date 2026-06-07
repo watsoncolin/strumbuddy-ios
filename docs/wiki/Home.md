@@ -21,7 +21,7 @@ rationale lives in the [design doc](../design-doc.md).
     - [[Muted-String Detection]]
 - [[Chord Library]]
 
-## The coach — designed, not yet wired
+## The coach — loop closed for chords
 - [[The Coach]]
 
 ## Reference
@@ -29,6 +29,8 @@ rationale lives in the [design doc](../design-doc.md).
 - [[Glossary]]
 
 ## Status — June 2026
-Engine validated on a real guitar: tuner, chord identity, per-note cleanliness,
-and muted-string detection all working. **Next:** wire scored attempts into
-[[The Coach]] as observations so it can actually learn and recommend.
+Engine validated on a real guitar (tuner, chord identity, cleanliness, muted-string
+detection) **and wired into [[The Coach]]**: Chord Check records each strum, the
+Practice tab shows live recommendations + per-chord mastery (consistency-based).
+**Next:** metronome + transition drill (timing/transition observations), then
+recital mode.

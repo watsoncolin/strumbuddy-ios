@@ -6,6 +6,15 @@ updated: 2026-06-07
 
 Running log of choices and *why*, newest first.
 
+- **Consistency-based mastery, not last-attempt.** The coach masters a skill on ≥3
+  of the last 4 clean attempts, with a gentle EMA (0.3) for proficiency — so a fumble
+  doesn't undo progress and a lucky strum doesn't earn mastery. Matches how a teacher
+  judges ("reliable, not perfect, not once"). See [[The Coach]].
+- **One observation per strum.** The peak-hold smoother emits a `finalized` best when
+  a strum ends; that single attempt is what's recorded — not every frame.
+- **Recital mode as a separate assessment posture.** Practice is forgiving/continuous;
+  recital is deliberate and gates milestones with high-signal observations. Same engine,
+  different `Observation.Context.source`.
 - **Wiki in the repo as an Obsidian vault** (`docs/wiki/`) — knowledge travels with
   the code, version-controlled. Pair with `kepano/obsidian-skills` for idiomatic edits.
 - **Muted-string detection via raw spectrum** — expose FFT magnitudes (already
