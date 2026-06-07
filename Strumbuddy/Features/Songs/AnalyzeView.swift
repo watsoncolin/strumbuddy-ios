@@ -9,6 +9,7 @@ struct AnalyzeView: View {
     @State private var picking = false
     @State private var tier: DifficultyTier = .campfire
     @StateObject private var recorder = AudioRecorder()
+    @StateObject private var synth = SynthPlayer()
 
     enum Phase { case idle, listening, analyzing, done(Outcome), failed(String) }
     struct Outcome {
@@ -38,6 +39,7 @@ struct AnalyzeView: View {
         .onChange(of: recorder.seconds) { secs in
             if case .listening = phase, secs >= recorder.maxSeconds { finishListening() }
         }
+        .onDisappear { synth.stop() }
     }
 
     private let demos: [(label: String, resource: String)] = [
@@ -85,6 +87,17 @@ struct AnalyzeView: View {
                 Text(arrangement.capo == 0 ? "No capo" : "Capo \(arrangement.capo)").font(.headline)
                 Text("Play: " + uniqueShapes(arrangement.shapes).map(\.displayName).joined(separator: " · "))
                 Text(tier.blurb).font(.caption).foregroundStyle(.secondary)
+            }
+
+            Section {
+                Button {
+                    if synth.isPlaying { synth.stop() } else { playback(outcome.timeline) }
+                } label: {
+                    Label(synth.isPlaying ? "Stop" : "Hear it (synth guitar)",
+                          systemImage: synth.isPlaying ? "stop.fill" : "play.fill")
+                }
+                Text("Plays back the chords it detected, so you can check by ear.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
             Section("Chords found (\(outcome.chords.count))") {
                 Text(outcome.chords.map(\.displayName).joined(separator: " · "))
@@ -161,6 +174,16 @@ struct AnalyzeView: View {
     private func finishListening() {
         let (samples, sampleRate) = recorder.stop()
         Task { await runRecognition(samples: samples, sampleRate: sampleRate) }
+    }
+
+    /// Synthesize and play back the detected timeline (off-main render).
+    private func playback(_ timeline: [TimedChord]) {
+        Task {
+            let samples = await Task.detached(priority: .userInitiated) {
+                ChordSynth().render(timeline, sampleRate: 44_100)
+            }.value
+            synth.play(samples, sampleRate: 44_100)
+        }
     }
 
     /// Shared: recognize → simplify → show. Heavy work runs off the main actor.

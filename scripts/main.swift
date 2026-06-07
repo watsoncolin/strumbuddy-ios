@@ -565,6 +565,23 @@ do {
     print("  clean-input accuracy: \(pct)% (\(correct)/\(progression.count))")
 }
 
+// MARK: - Chord synth (reconstruction)
+
+print("\n== Chord synth ==")
+do {
+    let timeline = [
+        TimedChord(symbol: ChordSymbol(root: 0, quality: .major), start: 0, end: 1.0),
+        TimedChord(symbol: ChordSymbol(root: 7, quality: .major), start: 1.0, end: 2.0),
+    ]
+    let sr = 44_100.0
+    let audio = ChordSynth().render(timeline, sampleRate: sr)
+    check("synth length ~ timeline duration", abs(Double(audio.count) - 2.0 * sr) < sr * 0.05)
+    var peak: Float = 0; for x in audio { peak = max(peak, abs(x)) }
+    check("synth produces sound", peak > 0.1)
+    check("synth normalized (<= 1)", peak <= 1.0001)
+    check("empty timeline → no audio", ChordSynth().render([], sampleRate: sr).isEmpty)
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")
