@@ -19,9 +19,9 @@ struct ChordCheckView: View {
             scoreDisplay
             Spacer()
         }
-        .onAppear { engine.targetChord = target }
-        .onChange(of: target) { engine.targetChord = $0 }
-        .onDisappear { engine.targetChord = nil }
+        .onAppear { engine.setTargetChord(target) }
+        .onChange(of: target) { engine.setTargetChord($0) }
+        .onDisappear { engine.setTargetChord(nil) }
         // Each completed strum becomes one observation the coach learns from.
         .onChange(of: engine.finalizedAttempt?.id) { _ in recordAttempt() }
     }

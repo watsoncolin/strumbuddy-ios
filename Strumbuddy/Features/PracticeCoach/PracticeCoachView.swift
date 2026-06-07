@@ -5,6 +5,7 @@ import SwiftUI
 /// record attempts in Chord Check.
 struct PracticeCoachView: View {
     @ObservedObject var coach: Coach
+    @EnvironmentObject private var env: AppEnvironment
 
     var body: some View {
         NavigationStack {
@@ -14,6 +15,16 @@ struct PracticeCoachView: View {
                         emptyState
                     } else {
                         ForEach(coach.recommendations) { RecommendationRow(rec: $0) }
+                    }
+                }
+
+                Section("Drills") {
+                    NavigationLink {
+                        TransitionDrillView(metronome: env.metronome,
+                                            engine: env.audioEngine,
+                                            coach: coach)
+                    } label: {
+                        Label("Transition drill", systemImage: "metronome")
                     }
                 }
 
@@ -73,4 +84,5 @@ private struct ChordMasteryRow: View {
 
 #Preview {
     PracticeCoachView(coach: AppEnvironment().coach)
+        .environmentObject(AppEnvironment())
 }

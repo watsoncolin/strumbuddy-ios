@@ -42,10 +42,25 @@ final class AudioEngine: ObservableObject {
         let result: ChordDetector.Result
     }
 
-    /// The chord the user is currently trying to play. Set by the UI; nil = no scoring.
-    var targetChord: Chord?
+    /// When the current `targetScore`'s best moment landed — for rhythm/timing
+    /// grading against `BeatClock`. Nil when there's no current score.
+    @Published private(set) var targetScoreTime: Date?
+
+    /// The chord the user is currently trying to play. Set via `setTargetChord`.
+    private(set) var targetChord: Chord?
+
+    /// Set the scored chord and reset the per-strum hold so each target (e.g. each
+    /// drill bar) is graded fresh. nil disables chord scoring.
+    func setTargetChord(_ chord: Chord?) {
+        targetChord = chord
+        chordScoreSmoother.reset()
+        targetScore = nil
+        targetScoreTime = nil
+    }
 
     private var attemptCounter = 0
+    /// Rough capture→callback latency, subtracted from landing timestamps. Tunable.
+    private static let inputLatency: TimeInterval = 0.09
 
     private let engine = AVAudioEngine()
     private let chromagram = Chromagram()
@@ -95,6 +110,8 @@ final class AudioEngine: ObservableObject {
                   let channel = buffer.floatChannelData?[0] else { return }
             let samples = Array(UnsafeBufferPointer(start: channel, count: Int(buffer.frameLength)))
 
+            let captureTime = Date().addingTimeInterval(-Self.inputLatency)
+
             // Energy gate (shared by both paths).
             var rms: Float = 0
             vDSP_rmsqv(samples, 1, &rms, vDSP_Length(samples.count))
@@ -119,6 +136,8 @@ final class AudioEngine: ObservableObject {
                 if let confident { self.clarity = confident.clarity }
                 self.chroma = spectrum.chroma
                 self.targetScore = update.current
+                if update.improved { self.targetScoreTime = captureTime }
+                if update.current == nil { self.targetScoreTime = nil }
                 if let finalized = update.finalized {
                     self.attemptCounter += 1
                     self.finalizedAttempt = FinalizedAttempt(id: self.attemptCounter, result: finalized)

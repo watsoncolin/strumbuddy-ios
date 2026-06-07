@@ -163,6 +163,9 @@ final class ChordScoreSmoother {
     struct Update {
         let current: ChordDetector.Result?
         let finalized: ChordDetector.Result?
+        /// True on the frame the peak-hold best improved — i.e. the strum's cleanest
+        /// moment so far, used to timestamp when the chord "landed" for timing.
+        let improved: Bool
     }
 
     /// Combined quality used to pick the best frame: identity + cleanliness.
@@ -176,15 +179,19 @@ final class ChordScoreSmoother {
     func push(_ result: ChordDetector.Result?, energetic: Bool) -> Update {
         if energetic, let result {
             quietFrames = 0
-            if best == nil || quality(result) > quality(best!) { best = result }
-            return Update(current: best, finalized: nil)
+            var improved = false
+            if best == nil || quality(result) > quality(best!) {
+                best = result
+                improved = true
+            }
+            return Update(current: best, finalized: nil, improved: improved)
         }
         quietFrames += 1
         if quietFrames >= holdFrames, let finished = best {
             best = nil
-            return Update(current: nil, finalized: finished)
+            return Update(current: nil, finalized: finished, improved: false)
         }
-        return Update(current: best, finalized: nil)
+        return Update(current: best, finalized: nil, improved: false)
     }
 
     func reset() {

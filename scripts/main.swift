@@ -298,6 +298,32 @@ do {
     check("120 bpm on beat → 1.0", abs(fast.alignment(elapsed: 1.0) - 1.0) < 1e-9)
 }
 
+// MARK: - Transition drill (schedule + observations)
+
+print("\n== Transition drill ==")
+do {
+    let sched = DrillSchedule(totalReps: 4)
+    check("downbeat 1 = count-in (nothing)", sched.step(downbeat: 1) == .init(recordRep: nil, startRep: nil, finished: false))
+    check("downbeat 2 starts rep 0", sched.step(downbeat: 2) == .init(recordRep: nil, startRep: 0, finished: false))
+    check("downbeat 3 records 0, starts 1", sched.step(downbeat: 3) == .init(recordRep: 0, startRep: 1, finished: false))
+    check("downbeat 6 records last & finishes", sched.step(downbeat: 6) == .init(recordRep: 3, startRep: nil, finished: true))
+
+    let seq = transitionSequence(from: .c, to: .g, reps: 4)
+    check("sequence alternates", seq == [.c, .g, .c, .g])
+
+    // A transition rep implicates the change, both chords, and the tempo.
+    let svc = ScoringService()
+    let obs = svc.observation(
+        for: .g, previous: .c,
+        axes: ScoreAxes(accuracy: 0.8, cleanliness: 0.8, timing: 0.7),
+        context: .init(isolation: .inSequence, bpm: 60, source: .practice),
+        now: Date(timeIntervalSince1970: 0))
+    let ids = Set(obs.implicatedSkills.map { $0.rawValue })
+    check("rep implicates the C→G transition", ids.contains("transition.C-G"))
+    check("rep implicates both chords", ids.contains("chord.G") && ids.contains("chord.C"))
+    check("rep implicates the tempo hold", ids.contains("tempo.60"))
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

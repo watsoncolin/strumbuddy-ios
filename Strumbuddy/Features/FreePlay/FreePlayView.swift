@@ -38,9 +38,8 @@ struct FreePlayView: View {
             .task { await env.audioEngine.start() }
             .onDisappear { env.audioEngine.stop() }
             .onChange(of: tool) { newTool in
-                // Leaving the tuner for chords (or vice versa): the Chord Check view
-                // sets/clears the target chord itself; nothing else to do here.
-                if newTool == .tuner { env.audioEngine.targetChord = nil }
+                // Leaving chords clears scoring; the Chord Check view also manages this.
+                if newTool != .chords { env.audioEngine.setTargetChord(nil) }
             }
         }
     }
