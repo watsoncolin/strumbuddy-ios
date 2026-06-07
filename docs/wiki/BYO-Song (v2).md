@@ -77,11 +77,11 @@ From one detected timeline, produce tiers:
   from A major. **Finding:** the algorithm is sound on *clean* input (upper bound).
   The real unknown — accuracy on full mixes (drums/vocals/bass) — still needs **real
   recordings on a device** to measure. That's the gate before committing to v2.0.
-- ✅ **Capo simplifier built** (`CapoSimplifier` + `ChordSymbol`, pure & harness-tested):
-  scores capo 0–7 by how much of a song lands on easy open shapes, lowest-capo
-  tie-break, personalizable to the player's known shapes. Not yet wired to UI (waits
-  on the analysis pipeline). Still TODO: vocabulary reduction (strip 7ths/slash) and
-  difficulty tiers (Campfire/Standard/Full) on top of it.
+- ✅ **Capo simplifier** (`CapoSimplifier` + `ChordSymbol`, pure): best capo for easy
+  open shapes, personalizable to known shapes.
+- ✅ **Difficulty tiers** (`SongSimplifier`, pure): full / capo / campfire. Campfire
+  substitutes any un-cappable chord with the nearest easy open chord (vocabulary
+  reduction). Wired into the Analyze results as a Campfire/Capo/Full picker.
 
 - ✅ **Device analyze harness** (`AnalyzeView`, Songs tab → "Analyze your own song
   (beta)"): three input paths — **pick a file** (`AudioFileLoader`, first 90s),
