@@ -21,7 +21,7 @@ struct RadarChartView: View {
         let n = axes.count
         guard n >= 3 else { return }
 
-        let labelInset: CGFloat = 30
+        let labelInset: CGFloat = 38
         let radius = (min(size.width, size.height) - labelInset * 2) / 2
         let center = CGPoint(x: size.width / 2, y: size.height / 2)
 

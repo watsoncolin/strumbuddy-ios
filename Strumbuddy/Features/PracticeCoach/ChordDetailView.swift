@@ -10,12 +10,14 @@ struct ChordDetailView: View {
         let detail = coach.detail(for: .chord(chord))
         List {
             Section {
-                HStack(alignment: .center, spacing: Theme.Spacing.m) {
-                    ChordDiagramView(chord: chord).frame(width: 100, height: 130)
+                VStack(spacing: Theme.Spacing.l) {
+                    ChordDiagramView(chord: chord).frame(width: 116, height: 150)
                     RadarChartView(axes: radarAxes(detail))
                         .frame(maxWidth: .infinity)
-                        .frame(height: 180)
+                        .frame(height: 240)
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Theme.Spacing.s)
             }
 
             Section("Mastery") {
