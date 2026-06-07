@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Live chord trainer — the v0.1 showcase of the app's differentiator (design-doc
 /// §2, §4): pick a target chord, strum, and see not just "right/wrong" but per-note
@@ -13,12 +14,39 @@ struct ChordCheckView: View {
     var body: some View {
         VStack(spacing: Theme.Spacing.l) {
             chordPicker
+            referenceRow
             scoreDisplay
             Spacer()
         }
         .onAppear { engine.targetChord = target }
         .onChange(of: target) { engine.targetChord = $0 }
         .onDisappear { engine.targetChord = nil }
+    }
+
+    /// The reliable instructional element (the chord diagram) plus, when available,
+    /// an AI-generated player's-POV hand reference for that chord.
+    private var referenceRow: some View {
+        HStack(alignment: .top, spacing: Theme.Spacing.l) {
+            VStack(spacing: Theme.Spacing.xs) {
+                ChordDiagramView(chord: target)
+                    .frame(width: 116, height: 150)
+                Text("Diagram").font(.caption2).foregroundStyle(.secondary)
+            }
+            if let image = handImage {
+                VStack(spacing: Theme.Spacing.xs) {
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 150, height: 150)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+                    Text("Hand (AI)").font(.caption2).foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private var handImage: Image? {
+        UIImage(named: "Hand\(target.rawValue)").map(Image.init(uiImage:))
     }
 
     private var chordPicker: some View {
