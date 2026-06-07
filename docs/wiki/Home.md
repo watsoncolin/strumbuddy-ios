@@ -33,7 +33,7 @@ rationale lives in the [design doc](../design-doc.md).
 
 ## Status — June 2026
 Engine validated on a real guitar (tuner, chord identity, cleanliness, muted-string
-detection) **and wired into [[The Coach]]**: Chord Check records each strum, the
-Practice tab shows live recommendations + per-chord mastery (consistency-based).
-**Next:** [[Rhythm Mode]] (metronome + transition drill) is built — verify on
-device — then recital mode and the structured path.
+detection) and wired into [[The Coach]]. [[Rhythm Mode]] (metronome + transition
+drill) built. The **[[Daily Practice Loop]]** is now live — a "Today" home tab that
+runs a coach-built session and tracks a streak. **Next:** first-session onboarding
+(manufacture the session-one win), then the [[Structured Path]] as a ladder.
