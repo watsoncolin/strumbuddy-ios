@@ -83,8 +83,13 @@ From one detected timeline, produce tiers:
   on the analysis pipeline). Still TODO: vocabulary reduction (strip 7ths/slash) and
   difficulty tiers (Campfire/Standard/Full) on top of it.
 
+- ✅ **Device analyze harness** (`AnalyzeView` + `AudioFileLoader`, Songs tab →
+  "Analyze your own song (beta)"): pick an audio file → decode (first 90s) → run
+  `ChordRecognizer` → see the chord timeline + capo suggestion. This is the **gate
+  experiment** for v2.0 — run it on real clips to measure real-mix accuracy.
+
 ## Recommended next steps
-1. **A chord-recognition accuracy spike** — prototype the offline chroma→chord→smooth
-   path on a few known recordings to measure real accuracy before committing to v2.0.
-   This is the make-or-break unknown.
+1. **Run the analyze harness on real recordings** (on device) and judge accuracy.
+   That decision gates whether v2.0 ships as designed or needs a stronger recognizer
+   (e.g. a Core ML chord model).
 2. Vocabulary reduction + difficulty tiers (pure, builds on the simplifier).
