@@ -453,6 +453,41 @@ check("every song has chords", Song.library.allSatisfy { !$0.flatChords.isEmpty 
 check("no barre chords (beginner-friendly)", Song.library.allSatisfy { !$0.allChords.contains(.f) })
 check("allChords dedupes", Song.library.allSatisfy { $0.allChords.count <= $0.flatChords.count })
 
+// MARK: - Capo simplifier (BYO-song v2)
+
+print("\n== Capo simplifier ==")
+do {
+    func sym(_ r: Int, _ q: ChordSymbol.Quality = .major) -> ChordSymbol {
+        ChordSymbol(root: r, quality: q)
+    }
+    check("F#m display name", ChordSymbol(root: 6, quality: .minor).displayName == "F#m")
+
+    let capo = CapoSimplifier()
+
+    // Already-open key (G C D Em) → no capo, full coverage.
+    let open = capo.suggest(for: [sym(7), sym(0), sym(2), sym(4, .minor)])
+    check("open key → capo 0", open.capo == 0)
+    check("open key → full coverage", open.coverage == 1.0)
+
+    // Bb Eb F (all barre) → capo 1 maps them to A D E open shapes.
+    let bb = capo.suggest(for: [sym(10), sym(3), sym(5)])
+    check("Bb/Eb/F → full coverage via capo", bb.coverage == 1.0)
+    check("Bb/Eb/F → lowest capo is 1 (A D E)", bb.capo == 1)
+    check("Bb shapes are all easy", bb.shapes.allSatisfy { ChordSymbol.openShapes.contains($0) })
+
+    // C F G → a capo removes the F barre (beats playing it open with a barre).
+    let cfg = capo.suggest(for: [sym(0), sym(5), sym(7)])
+    check("C/F/G → full coverage with a capo", cfg.coverage == 1.0)
+    check("C/F/G → prefers a capo over the F barre", cfg.capo > 0)
+
+    // Personalization: a user who only knows G, C, D, Em.
+    var limited = CapoSimplifier()
+    limited.easyShapes = Set([Chord.g, .c, .d, .em].map(ChordSymbol.init))
+    let p = limited.suggest(for: [sym(10), sym(3), sym(5)])   // Bb Eb F
+    check("personalized → capo 3 lands on G C D", p.capo == 3)
+    check("personalized → shapes within the known set", p.shapes.allSatisfy { limited.easyShapes.contains($0) })
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")
