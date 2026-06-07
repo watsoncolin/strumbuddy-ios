@@ -6,6 +6,12 @@ updated: 2026-06-07
 
 Running log of choices and *why*, newest first.
 
+- **Retention-first reprioritization.** Next build is the habit engine
+  ([[Daily Practice Loop]] + first-win onboarding), not more teaching — the thesis is
+  retention (~90% quit) and the behavior layer is under-built. Grounded in
+  [[Learning Philosophy]].
+- **Recital mode dropped.** Consistency-based practice grading already covers
+  "demonstrate it reliably"; a separate high-stakes assessment isn't worth it for v0.1.
 - **Drill timing via peak-hold landing + a latency constant.** Timing is graded from
   when the bar's best strum landed (`targetScoreTime`) vs the beat, with a fixed
   `inputLatency` (~0.09s) approximating capture latency. Coarse but cheap and

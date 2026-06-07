@@ -12,12 +12,14 @@ loop for chords** (observations → consistency mastery → live recommendations
 **Also done & on device:** [[Rhythm Mode]] — metronome + transition drill
 (records transition/timing observations).
 
-**Next (in order):**
-1. **Recital mode** — deliberate assessment posture (vs. forgiving practice) that
-   gates milestones with high-signal observations.
-2. **Structured path** milestones reading coach mastery.
-3. **Onboarding calibration** — seed the coach + guarantee a session-one "win".
+**Next (reprioritized — retention-first, see [[Learning Philosophy]]):**
+1. **[[Daily Practice Loop]]** — the keystone: a short daily session generator +
+   streaks/forgiveness. The habit engine the whole thesis rests on.
+2. **First-session onboarding** — seed the coach + guarantee a session-one win.
+3. **Structured path** as a Couch-to-5K-style ladder, wrapped around the daily loop.
 4. **Timing calibration** — tune `inputLatency` so on-beat grading is accurate.
+
+_Recital mode: dropped — the consistency-based practice grading covers that ground._
 
 **Thesis to validate:** does explainable adaptive coaching keep a beginner
 practicing longer than a generic lesson plan?

@@ -10,6 +10,8 @@ rationale lives in the [design doc](../design-doc.md).
 
 ## Start here
 - [[Vision and Strategy]] — what we're building and why
+- [[Learning Philosophy]] — 0 → consistent practice; retention-first
+- [[Daily Practice Loop]] — the keystone habit feature (next build)
 - [[Architecture]] — three modes, one engine
 - [[Roadmap]] — v0.1 scope and what's deferred
 
