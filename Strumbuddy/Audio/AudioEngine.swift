@@ -59,8 +59,16 @@ final class AudioEngine: ObservableObject {
     }
 
     private var attemptCounter = 0
-    /// Rough capture→callback latency, subtracted from landing timestamps. Tunable.
-    private static let inputLatency: TimeInterval = 0.09
+    /// Capture→callback latency subtracted from landing timestamps. Calibrated by the
+    /// user (persisted via `Calibration`); the calibration screen updates this live.
+    var inputLatency: TimeInterval = Calibration.inputLatency
+
+    /// A detected strum onset (raw timestamp, no latency correction) — used by the
+    /// calibration screen to measure how late detections land vs. the beat.
+    @Published private(set) var onset: Onset?
+    struct Onset: Equatable { let id: Int; let time: Date }
+    private var onsetCounter = 0
+    private var wasEnergetic = false
 
     private let engine = AVAudioEngine()
     private let chromagram = Chromagram()
@@ -91,6 +99,8 @@ final class AudioEngine: ObservableObject {
         clarity = 0
         targetScore = nil
         finalizedAttempt = nil
+        onset = nil
+        wasEnergetic = false
         state = .idle
     }
 
@@ -110,12 +120,15 @@ final class AudioEngine: ObservableObject {
                   let channel = buffer.floatChannelData?[0] else { return }
             let samples = Array(UnsafeBufferPointer(start: channel, count: Int(buffer.frameLength)))
 
-            let captureTime = Date().addingTimeInterval(-Self.inputLatency)
+            let rawTime = Date()
+            let captureTime = rawTime.addingTimeInterval(-self.inputLatency)
 
             // Energy gate (shared by both paths).
             var rms: Float = 0
             vDSP_rmsqv(samples, 1, &rms, vDSP_Length(samples.count))
             let energetic = rms >= Self.playingRMS
+            let isOnset = energetic && !self.wasEnergetic   // rising edge = a strum onset
+            self.wasEnergetic = energetic
 
             // Monophonic: pitch → smoother. Only confident frames count; the rest are
             // absorbed by the smoother's hold so a stable note doesn't blink out.
@@ -141,6 +154,10 @@ final class AudioEngine: ObservableObject {
                 if let finalized = update.finalized {
                     self.attemptCounter += 1
                     self.finalizedAttempt = FinalizedAttempt(id: self.attemptCounter, result: finalized)
+                }
+                if isOnset {
+                    self.onsetCounter += 1
+                    self.onset = Onset(id: self.onsetCounter, time: rawTime)
                 }
             }
         }

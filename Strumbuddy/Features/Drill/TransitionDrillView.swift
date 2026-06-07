@@ -6,10 +6,12 @@ import SwiftUI
 struct TransitionDrillView: View {
     @StateObject private var session: DrillSession
     private let engine: AudioEngine
+    private let metronome: Metronome
 
     init(metronome: Metronome, engine: AudioEngine, coach: Coach,
          from: Chord = .c, to: Chord = .g, bpm: Int = 60) {
         self.engine = engine
+        self.metronome = metronome
         _session = StateObject(wrappedValue: DrillSession(metronome: metronome, engine: engine,
                                                           coach: coach, from: from, to: to, bpm: bpm))
     }
@@ -57,6 +59,13 @@ struct TransitionDrillView: View {
 
                 Button("Start") { session.start() }
                     .buttonStyle(.borderedProminent)
+
+                NavigationLink {
+                    CalibrationView(engine: engine, metronome: metronome)
+                } label: {
+                    Label("Calibrate timing", systemImage: "slider.horizontal.3").font(.subheadline)
+                }
+                .padding(.top, Theme.Spacing.s)
             }
             .padding(.bottom, Theme.Spacing.l)
         }

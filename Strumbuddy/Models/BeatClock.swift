@@ -19,4 +19,14 @@ struct BeatClock {
         let distance = min(phase, beatInterval - phase) / (beatInterval / 2)
         return max(0, 1 - distance)
     }
+
+    /// Signed offset to the nearest beat in seconds, in [-beat/2, +beat/2].
+    /// Positive = after the beat (late), negative = before it (early). For calibration.
+    func signedOffset(elapsed: Double) -> Double {
+        guard beatInterval > 0 else { return 0 }
+        var phase = elapsed.truncatingRemainder(dividingBy: beatInterval)
+        if phase > beatInterval / 2 { phase -= beatInterval }
+        if phase < -beatInterval / 2 { phase += beatInterval }
+        return phase
+    }
 }

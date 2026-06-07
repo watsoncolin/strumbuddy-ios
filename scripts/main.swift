@@ -296,6 +296,16 @@ do {
     let fast = BeatClock(bpm: 120)   // 0.5s per beat
     check("120 bpm → 0.5s beat", abs(fast.beatInterval - 0.5) < 1e-9)
     check("120 bpm on beat → 1.0", abs(fast.alignment(elapsed: 1.0) - 1.0) < 1e-9)
+
+    // Signed offset (for calibration): + = late, - = early.
+    check("on beat → 0 offset", abs(clock.signedOffset(elapsed: 2.0)) < 1e-9)
+    check("100ms late → +0.1", abs(clock.signedOffset(elapsed: 2.1) - 0.1) < 1e-9)
+    check("100ms early → -0.1", abs(clock.signedOffset(elapsed: 1.9) - (-0.1)) < 1e-9)
+
+    // Calibration clamp.
+    check("calibration clamps high", Calibration.clamp(0.9) == 0.30)
+    check("calibration clamps negative", Calibration.clamp(-0.1) == 0)
+    check("calibration passes valid", abs(Calibration.clamp(0.12) - 0.12) < 1e-9)
 }
 
 // MARK: - Transition drill (schedule + observations)

@@ -10,6 +10,7 @@
 		000504DCDCDC6F3FE7FB3837 /* BeatClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0CE0E3D2BCC6632A9D61CF /* BeatClock.swift */; };
 		028B0B9408A8AD05082122E7 /* SkillGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A730DDDCF56671F29DB67E /* SkillGraph.swift */; };
 		043F2FCB8F16F0908325A564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 687BED834466E11EE516FD4B /* Assets.xcassets */; };
+		0748C267B754E447F47AFCAA /* Calibration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F4871F84CBA64C0F4B6C92 /* Calibration.swift */; };
 		1AE7A40D968F2921C17EF659 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB7FC4135B73AEE6CBCE0E6 /* TodayView.swift */; };
 		1F978C34F368EC381C85D222 /* ChordCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598EC9AAF229C96EB1076FF6 /* ChordCheckView.swift */; };
 		249DC2B1DB2E1306FD7E0522 /* MasteryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFCB59418483E2BCCEEA224 /* MasteryStore.swift */; };
@@ -51,6 +52,7 @@
 		C8A3A2333BADF0E753696927 /* StreakCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5CAA5B39BA7AC6629B19A2 /* StreakCalculator.swift */; };
 		CD6492363744F72519B05960 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6FB7762DD6AD4E3A7DC1157 /* Observation.swift */; };
 		D20120E00641DFE5B9FD7DB5 /* SessionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6AA62F829D3DCD3C5AB55F /* SessionGenerator.swift */; };
+		D633EBD8A7B6DA9DE5ED7F12 /* CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089BA9EB87E2A2D11BD5D502 /* CalibrationView.swift */; };
 		D9475E2454FB39095ADEAE48 /* PracticeCoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7B561B4260D06526E4D00 /* PracticeCoachView.swift */; };
 		E17CD65EA780775FAF41F368 /* Tip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6BE58B59A9584E89BAD694 /* Tip.swift */; };
 		E1CC326EAEBFBF042F6AEB74 /* ScoreAxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */; };
@@ -62,7 +64,9 @@
 /* Begin PBXFileReference section */
 		068D968F8560E50AEE9583F2 /* ObservationLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationLog.swift; sourceTree = "<group>"; };
 		06A4D9559C3CE8F55E1E8B93 /* TransitionDrillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionDrillView.swift; sourceTree = "<group>"; };
+		089BA9EB87E2A2D11BD5D502 /* CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationView.swift; sourceTree = "<group>"; };
 		140E2E1536E336CEAA1ABD24 /* MasteryState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryState.swift; sourceTree = "<group>"; };
+		16F4871F84CBA64C0F4B6C92 /* Calibration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calibration.swift; sourceTree = "<group>"; };
 		1AB2D76F090D9BC096241C3B /* SongsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongsView.swift; sourceTree = "<group>"; };
 		1C6BE58B59A9584E89BAD694 /* Tip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tip.swift; sourceTree = "<group>"; };
 		25074E52CA474B9B27DB5B35 /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
@@ -119,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				CE0CE0E3D2BCC6632A9D61CF /* BeatClock.swift */,
+				16F4871F84CBA64C0F4B6C92 /* Calibration.swift */,
 				56B7EA871950B14503B18847 /* Chord.swift */,
 				402FD93D5C22C0687A40C468 /* ChordShape.swift */,
 				140E2E1536E336CEAA1ABD24 /* MasteryState.swift */,
@@ -168,6 +173,14 @@
 			path = Today;
 			sourceTree = "<group>";
 		};
+		2636A103F48A45EB7B09017D /* Calibration */ = {
+			isa = PBXGroup;
+			children = (
+				089BA9EB87E2A2D11BD5D502 /* CalibrationView.swift */,
+			);
+			path = Calibration;
+			sourceTree = "<group>";
+		};
 		34B4A24E5BFAF550344C6567 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -213,6 +226,7 @@
 		594AEF54A982BE57DAFF04D5 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				2636A103F48A45EB7B09017D /* Calibration */,
 				5360A731AECEC98CFB0D8BBA /* Drill */,
 				6CF3C1D59A901327EFADCC7B /* FreePlay */,
 				8CF592120260E98C6E8C0C32 /* Onboarding */,
@@ -398,6 +412,8 @@
 			files = (
 				B697ED23D79EC162181F016D /* AudioEngine.swift in Sources */,
 				000504DCDCDC6F3FE7FB3837 /* BeatClock.swift in Sources */,
+				0748C267B754E447F47AFCAA /* Calibration.swift in Sources */,
+				D633EBD8A7B6DA9DE5ED7F12 /* CalibrationView.swift in Sources */,
 				46F066DE40A907FB457C7F87 /* Chord.swift in Sources */,
 				1F978C34F368EC381C85D222 /* ChordCheckView.swift in Sources */,
 				9B00727E6F7FFE43CFAF718E /* ChordDetailView.swift in Sources */,
