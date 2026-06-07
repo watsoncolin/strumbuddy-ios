@@ -40,7 +40,9 @@
 		B697ED23D79EC162181F016D /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92EFEA2ED450CA40625CA0A /* AudioEngine.swift */; };
 		B782763469CD8C762BF4CCE3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7162E19E87FECBAD4027A767 /* ContentView.swift */; };
 		C0BBC4B53E7EC92E77500E9A /* TunerReading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8C192C9B707E0CBB7781B0 /* TunerReading.swift */; };
+		C8A3A2333BADF0E753696927 /* StreakCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5CAA5B39BA7AC6629B19A2 /* StreakCalculator.swift */; };
 		CD6492363744F72519B05960 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6FB7762DD6AD4E3A7DC1157 /* Observation.swift */; };
+		D20120E00641DFE5B9FD7DB5 /* SessionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6AA62F829D3DCD3C5AB55F /* SessionGenerator.swift */; };
 		D9475E2454FB39095ADEAE48 /* PracticeCoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7B561B4260D06526E4D00 /* PracticeCoachView.swift */; };
 		E1CC326EAEBFBF042F6AEB74 /* ScoreAxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */; };
 		E2B6D0FE80B16D30D119D3E0 /* Chromagram.swift in Sources */ = {isa = PBXBuildFile; fileRef = C751EDCE5F489A1C43E94A5E /* Chromagram.swift */; };
@@ -77,6 +79,8 @@
 		B92EFEA2ED450CA40625CA0A /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
 		C052F56AE6FB5BE845C5F46E /* Metronome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metronome.swift; sourceTree = "<group>"; };
 		C751EDCE5F489A1C43E94A5E /* Chromagram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chromagram.swift; sourceTree = "<group>"; };
+		CA5CAA5B39BA7AC6629B19A2 /* StreakCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakCalculator.swift; sourceTree = "<group>"; };
+		CC6AA62F829D3DCD3C5AB55F /* SessionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionGenerator.swift; sourceTree = "<group>"; };
 		CE0CE0E3D2BCC6632A9D61CF /* BeatClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatClock.swift; sourceTree = "<group>"; };
 		CF72318A025078438E7D14DF /* TransitionDrill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionDrill.swift; sourceTree = "<group>"; };
 		D9EDBF96308E46028E444DA3 /* ScoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringService.swift; sourceTree = "<group>"; };
@@ -102,6 +106,7 @@
 				F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */,
 				548B91A02E8B955BFD942C83 /* Skill.swift */,
 				A3EE0B351D82DF78140B362C /* SkillDetail.swift */,
+				CA5CAA5B39BA7AC6629B19A2 /* StreakCalculator.swift */,
 				CF72318A025078438E7D14DF /* TransitionDrill.swift */,
 			);
 			path = Models;
@@ -115,6 +120,7 @@
 				8CFCB59418483E2BCCEEA224 /* MasteryStore.swift */,
 				068D968F8560E50AEE9583F2 /* ObservationLog.swift */,
 				97D51C737AC21FCD52FA1BB8 /* SelectionPolicy.swift */,
+				CC6AA62F829D3DCD3C5AB55F /* SessionGenerator.swift */,
 				F7A730DDDCF56671F29DB67E /* SkillGraph.swift */,
 			);
 			path = Coach;
@@ -355,9 +361,11 @@
 				E1CC326EAEBFBF042F6AEB74 /* ScoreAxes.swift in Sources */,
 				8D9A9E661FDD6B69F892E512 /* ScoringService.swift in Sources */,
 				9D5D4DC69903B14A62FB90D1 /* SelectionPolicy.swift in Sources */,
+				D20120E00641DFE5B9FD7DB5 /* SessionGenerator.swift in Sources */,
 				8E173847DD37E4E39B626942 /* Skill.swift in Sources */,
 				593D64FCEC0D51A0455F130F /* SkillDetail.swift in Sources */,
 				028B0B9408A8AD05082122E7 /* SkillGraph.swift in Sources */,
+				C8A3A2333BADF0E753696927 /* StreakCalculator.swift in Sources */,
 				4B950ADDB3531B5F1CBCBE5C /* StructuredPathView.swift in Sources */,
 				72E251FBD8B4F2B46EAAD60F /* StrumbuddyApp.swift in Sources */,
 				3954D76D35B9B926CF88705A /* Theme.swift in Sources */,

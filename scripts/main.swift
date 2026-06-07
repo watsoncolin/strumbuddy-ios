@@ -354,6 +354,49 @@ do {
         mastered: false, masteryThreshold: 0.75, now: Date(timeIntervalSince1970: 200)).hasTiming == false)
 }
 
+// MARK: - Streak (forgiveness)
+
+print("\n== Streak ==")
+check("no days → 0", StreakCalculator.current(days: [], today: 10) == 0)
+check("today done → 1", StreakCalculator.current(days: [10], today: 10) == 1)
+check("three in a row → 3", StreakCalculator.current(days: [8, 9, 10], today: 10) == 3)
+check("today not done, alive from yesterday", StreakCalculator.current(days: [9], today: 10) == 1)
+check("one-day gap bridged by freeze", StreakCalculator.current(days: [8, 10], today: 10) == 2)
+check("two-day gap breaks", StreakCalculator.current(days: [7, 10], today: 10) == 1)
+check("freeze covers yesterday when today undone",
+      StreakCalculator.current(days: [8], today: 10) == 1)
+
+// MARK: - Session generator
+
+print("\n== Session generator ==")
+do {
+    let gen = SessionGenerator()
+    let graph = SkillGraph.beginnerGraph()
+    let store = MasteryStore()
+
+    // Cold start: no observations.
+    let cold = gen.plan(graph: graph, states: [:], store: store, now: Date(timeIntervalSince1970: 0))
+    check("session starts with tune", cold.first?.kind == .tune)
+    check("session ends on a win", cold.last?.kind == .win)
+    check("cold-start win is an easy chord", cold.last?.activity == .chord(.em))
+    check("cold start has a focus block", cold.contains { $0.kind == .focus })
+
+    // After mastering C, the win targets it.
+    var obs: [Observation] = []
+    var t = 5_000_000.0
+    for _ in 0..<3 {
+        obs.append(Observation(timestamp: Date(timeIntervalSince1970: t),
+            implicatedSkills: [.chord(.c)],
+            context: .init(isolation: .isolated, bpm: nil, source: .practice),
+            scores: ScoreAxes(accuracy: 0.95, cleanliness: 0.95, timing: 0.95)))
+        t += 60
+    }
+    let now = Date(timeIntervalSince1970: t)
+    let states = store.project(obs, graph: graph, now: now)
+    let warm = gen.plan(graph: graph, states: states, store: store, now: now)
+    check("win targets a mastered chord", warm.last?.activity == .chord(.c))
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")
