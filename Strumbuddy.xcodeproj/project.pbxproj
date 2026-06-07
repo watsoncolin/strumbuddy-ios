@@ -48,6 +48,7 @@
 		D9475E2454FB39095ADEAE48 /* PracticeCoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7B561B4260D06526E4D00 /* PracticeCoachView.swift */; };
 		E1CC326EAEBFBF042F6AEB74 /* ScoreAxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */; };
 		E2B6D0FE80B16D30D119D3E0 /* Chromagram.swift in Sources */ = {isa = PBXBuildFile; fileRef = C751EDCE5F489A1C43E94A5E /* Chromagram.swift */; };
+		E872995B125771C3582B86CC /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E542502A17F704180E65233 /* OnboardingView.swift */; };
 		FEC16499436E409048855D6B /* ChordDiagramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F27543EE781A340A864F0A23 /* ChordDiagramView.swift */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +66,7 @@
 		5593203B04F73D5DF4901DD6 /* ChordDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordDetailView.swift; sourceTree = "<group>"; };
 		56B7EA871950B14503B18847 /* Chord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chord.swift; sourceTree = "<group>"; };
 		598EC9AAF229C96EB1076FF6 /* ChordCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordCheckView.swift; sourceTree = "<group>"; };
+		5E542502A17F704180E65233 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		66FEE6F70220F34A3ED92F60 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		687BED834466E11EE516FD4B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6BA970FA59414C54252A73ED /* CreditAssignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditAssignment.swift; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 			children = (
 				5360A731AECEC98CFB0D8BBA /* Drill */,
 				6CF3C1D59A901327EFADCC7B /* FreePlay */,
+				8CF592120260E98C6E8C0C32 /* Onboarding */,
 				CFDE155AE3D26B421417838B /* PracticeCoach */,
 				A21BA8A936975B6D18318342 /* Shared */,
 				47FF94833C253E625A393689 /* StructuredPath */,
@@ -209,6 +212,14 @@
 				429DFA35521BF75AB948E6B9 /* FreePlayView.swift */,
 			);
 			path = FreePlay;
+			sourceTree = "<group>";
+		};
+		8CF592120260E98C6E8C0C32 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				5E542502A17F704180E65233 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		958BB47E280A431CD4420323 /* Audio */ = {
@@ -369,6 +380,7 @@
 				73C5A7354148916F02D13AD3 /* MetronomeView.swift in Sources */,
 				CD6492363744F72519B05960 /* Observation.swift in Sources */,
 				46F50497F8262558641269ED /* ObservationLog.swift in Sources */,
+				E872995B125771C3582B86CC /* OnboardingView.swift in Sources */,
 				311CE8ECCBD9ECD3A60CC871 /* PitchDetector.swift in Sources */,
 				D9475E2454FB39095ADEAE48 /* PracticeCoachView.swift in Sources */,
 				A40FF2D1AC106619B0D96B12 /* PracticeTracker.swift in Sources */,

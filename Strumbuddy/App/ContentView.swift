@@ -5,9 +5,20 @@ struct ContentView: View {
     enum Tab: Hashable { case today, path, practice, freePlay }
 
     @EnvironmentObject private var env: AppEnvironment
+    @AppStorage("onboardingComplete") private var onboardingComplete = false
     @State private var selection: Tab = .today
 
     var body: some View {
+        tabs
+            .fullScreenCover(isPresented: Binding(
+                get: { !onboardingComplete },
+                set: { presented in onboardingComplete = !presented })
+            ) {
+                OnboardingView(engine: env.audioEngine) { onboardingComplete = true }
+            }
+    }
+
+    private var tabs: some View {
         TabView(selection: $selection) {
             TodayView(coach: env.coach, tracker: env.tracker)
                 .tabItem { Label("Today", systemImage: "sun.max") }
