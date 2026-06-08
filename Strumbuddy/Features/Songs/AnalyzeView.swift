@@ -8,6 +8,7 @@ struct AnalyzeView: View {
     @State private var phase: Phase = .idle
     @State private var picking = false
     @State private var tier: DifficultyTier = .campfire
+    @State private var loop = false
     @StateObject private var recorder = AudioRecorder()
     @StateObject private var synth = SynthPlayer()
 
@@ -90,14 +91,18 @@ struct AnalyzeView: View {
             }
 
             Section {
+                Toggle("Loop (backing track)", isOn: $loop)
                 Button {
-                    if synth.isPlaying { synth.stop() } else { playback(outcome.timeline) }
+                    if synth.isPlaying { synth.stop() } else { playback(tierTimeline(outcome)) }
                 } label: {
                     Label(synth.isPlaying ? "Stop" : "Hear it (synth guitar)",
                           systemImage: synth.isPlaying ? "stop.fill" : "play.fill")
                 }
-                Text("Plays back the chords it detected, so you can check by ear.")
+                Text("Plays the \(tier.rawValue) arrangement — check by ear, or loop it and jam along.")
                     .font(.caption).foregroundStyle(.secondary)
+            }
+            .onChange(of: tier) { _ in
+                if synth.isPlaying { playback(tierTimeline(outcome)) }  // restart with new tier
             }
             Section("Chords found (\(outcome.chords.count))") {
                 Text(outcome.chords.map(\.displayName).joined(separator: " · "))
@@ -176,13 +181,24 @@ struct AnalyzeView: View {
         Task { await runRecognition(samples: samples, sampleRate: sampleRate) }
     }
 
-    /// Synthesize and play back the detected timeline (off-main render).
+    /// The detected timeline remapped to how the chosen tier actually sounds.
+    private func tierTimeline(_ outcome: Outcome) -> [TimedChord] {
+        let sounding = SongSimplifier().soundingChords(outcome.chords, tier: tier)
+        var map: [ChordSymbol: ChordSymbol] = [:]
+        for (i, chord) in outcome.chords.enumerated() where i < sounding.count { map[chord] = sounding[i] }
+        return outcome.timeline.map {
+            TimedChord(symbol: map[$0.symbol] ?? $0.symbol, start: $0.start, end: $0.end)
+        }
+    }
+
+    /// Synthesize and play back a timeline (off-main render); loops if the toggle is on.
     private func playback(_ timeline: [TimedChord]) {
+        let shouldLoop = loop
         Task {
             let samples = await Task.detached(priority: .userInitiated) {
                 ChordSynth().render(timeline, sampleRate: 44_100)
             }.value
-            synth.play(samples, sampleRate: 44_100)
+            synth.play(samples, sampleRate: 44_100, loop: shouldLoop)
         }
     }
 

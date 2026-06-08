@@ -56,6 +56,17 @@ struct SongSimplifier {
         }
     }
 
+    /// What each input chord actually SOUNDS as in this tier's arrangement. A capo
+    /// shifts the fingered shape back up to concert pitch, so full/capo sound the same
+    /// as the detected chords; campfire substitutions genuinely change the harmony.
+    /// Used for tier-aware playback.
+    func soundingChords(_ chords: [ChordSymbol], tier: DifficultyTier) -> [ChordSymbol] {
+        let arrangement = arrange(chords, tier: tier)
+        return arrangement.shapes.map {
+            ChordSymbol(root: $0.root + arrangement.capo, quality: $0.quality)
+        }
+    }
+
     /// The easy open chord closest to `shape` — by circular root distance, preferring
     /// the same quality. Used to replace a chord that no capo can make open.
     private func nearestEasy(_ shape: ChordSymbol) -> ChordSymbol {

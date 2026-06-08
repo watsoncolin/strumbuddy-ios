@@ -11,7 +11,7 @@ final class SynthPlayer: ObservableObject {
     private let player = AVAudioPlayerNode()
     private var attached = false
 
-    func play(_ samples: [Float], sampleRate: Double) {
+    func play(_ samples: [Float], sampleRate: Double, loop: Bool = false) {
         stop()
         guard !samples.isEmpty,
               let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1),
@@ -32,8 +32,8 @@ final class SynthPlayer: ObservableObject {
         engine.connect(player, to: engine.mainMixerNode, format: format)
 
         do { try engine.start() } catch { return }
-        player.scheduleBuffer(buffer, at: nil, options: []) { [weak self] in
-            Task { @MainActor in self?.isPlaying = false }
+        player.scheduleBuffer(buffer, at: nil, options: loop ? [.loops] : []) { [weak self] in
+            Task { @MainActor in if !loop { self?.isPlaying = false } }
         }
         player.play()
         isPlaying = true

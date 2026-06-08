@@ -515,6 +515,12 @@ do {
     check("capo can't cover both adjacent majors", simp.arrange(adjacent, tier: .capo).coverage < 1.0)
     check("campfire substitutes the un-cappable chord",
           simp.arrange(adjacent, tier: .campfire).shapes.allSatisfy { ChordSymbol.openShapes.contains($0) })
+
+    // Tier-aware sounding: full & capo preserve the detected harmony; campfire may not.
+    check("full sounds like the detected chords", simp.soundingChords(cfg, tier: .full) == cfg)
+    check("capo sounds like the detected chords", simp.soundingChords(cfg, tier: .capo) == cfg)
+    let campSound = simp.soundingChords(adjacent, tier: .campfire)
+    check("campfire alters harmony when it substitutes", campSound != adjacent)
 }
 
 // MARK: - Chord recognition spike (BYO-song v2)
