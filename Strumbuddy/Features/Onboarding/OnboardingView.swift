@@ -45,13 +45,13 @@ struct OnboardingView: View {
         switch step {
         case .welcome:
             page(icon: "guitars.fill",
-                 title: "Welcome to Strumbuddy",
+                 title: "Welcome to StrumBuddy",
                  body: "Learn acoustic guitar, five minutes a day. I listen while you play and coach you on what to work on next.")
         case .listen:
             if engine.state == .denied {
                 page(icon: "mic.slash",
                      title: "I need to hear you",
-                     body: "Enable microphone access for Strumbuddy in Settings, then come back.")
+                     body: "Enable microphone access for StrumBuddy in Settings, then come back.")
             } else if heardSomething {
                 page(icon: "waveform",
                      title: "I can hear you! 🎸",

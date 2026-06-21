@@ -47,7 +47,7 @@ struct PracticeCoachView: View {
         VStack(spacing: Theme.Spacing.s) {
             Image(systemName: "waveform").font(.largeTitle).foregroundStyle(.secondary)
             Text("Let's find your starting point").font(.headline)
-            Text("Play a few chords in Chord Check and Strumbuddy will spot what to work on next.")
+            Text("Play a few chords in Chord Check and StrumBuddy will spot what to work on next.")
                 .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)

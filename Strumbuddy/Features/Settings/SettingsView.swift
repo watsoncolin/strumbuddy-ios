@@ -32,7 +32,7 @@ struct SettingsView: View {
                         if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                     }
                 } footer: {
-                    Text("If reminders won't turn on, enable notifications for Strumbuddy in iOS Settings.")
+                    Text("If reminders won't turn on, enable notifications for StrumBuddy in iOS Settings.")
                 }
             }
             .navigationTitle("Settings")

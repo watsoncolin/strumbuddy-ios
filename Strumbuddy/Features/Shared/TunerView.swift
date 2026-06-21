@@ -22,7 +22,7 @@ struct TunerView: View {
             switch engine.state {
             case .denied:
                 message("Microphone access needed", systemImage: "mic.slash",
-                        detail: "Enable the mic for Strumbuddy in Settings.")
+                        detail: "Enable the mic for StrumBuddy in Settings.")
             case .failed(let msg):
                 message("Audio error", systemImage: "exclamationmark.triangle", detail: msg)
             case .idle:

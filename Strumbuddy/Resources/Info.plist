@@ -13,7 +13,7 @@
     <key>CFBundleName</key>
     <string>$(PRODUCT_NAME)</string>
     <key>CFBundleDisplayName</key>
-    <string>Strumbuddy</string>
+    <string>StrumBuddy</string>
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
@@ -25,7 +25,7 @@
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Strumbuddy listens to your guitar so it can tune, follow along, and tell you how cleanly you're playing.</string>
+    <string>StrumBuddy listens to your guitar so it can tune, follow along, and tell you how cleanly you're playing.</string>
     <key>UIApplicationSceneManifest</key>
     <dict>
         <key>UIApplicationSupportsMultipleScenes</key>
