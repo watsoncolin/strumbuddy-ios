@@ -28,6 +28,7 @@ final class AppEnvironment: ObservableObject {
     let coach: Coach
     let metronome: Metronome
     let tracker: PracticeTracker
+    let notifications: NotificationService
 
     init() {
         let log = ObservationLog()
@@ -36,5 +37,6 @@ final class AppEnvironment: ObservableObject {
         self.coach = Coach(graph: graph, log: log)
         self.metronome = Metronome()
         self.tracker = PracticeTracker()
+        self.notifications = NotificationService()
     }
 }

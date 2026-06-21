@@ -5,6 +5,17 @@ import SwiftUI
 /// cents needle, and which guitar string you're nearest to.
 struct TunerView: View {
     @ObservedObject var engine: AudioEngine
+    /// Fired once when **every** string has been confirmed in tune — lets the
+    /// daily session auto-advance on engine-verified success rather than a manual
+    /// "done" tap. When non-nil, the per-string checklist is shown.
+    var onInTune: (() -> Void)? = nil
+    /// When false, a parent (e.g. the daily-session runner) owns the engine's
+    /// start/stop lifecycle, so this view must not tear it down.
+    var ownsEngine = true
+
+    @State private var tuneTask: Task<Void, Never>?
+    @State private var tuneFired = false
+    @State private var tunedStrings: Set<String> = []
 
     var body: some View {
         VStack(spacing: Theme.Spacing.l) {
@@ -20,14 +31,60 @@ struct TunerView: View {
                 if let reading = reading {
                     readout(reading)
                 } else {
-                    message("Play a string", systemImage: "guitars", detail: "Pluck one string to tune.")
+                    message("Play a string", systemImage: "guitars", detail: "Pluck each string to tune.")
                 }
             }
+            if onInTune != nil { tuningChecklist }
         }
         .frame(maxWidth: .infinity)
         .animation(.easeOut(duration: 0.12), value: reading?.cents)
-        .task { await engine.start() }
-        .onDisappear { engine.stop() }
+        .task { if ownsEngine { await engine.start() } }
+        .onDisappear { tuneTask?.cancel(); if ownsEngine { engine.stop() } }
+        .onChange(of: reading?.inTune ?? false) { handleTune($0) }
+    }
+
+    /// Per-string "tune everything" checklist shown when driving a session block.
+    private var tuningChecklist: some View {
+        VStack(spacing: Theme.Spacing.s) {
+            Text("Tune each string — \(tunedStrings.count) of \(TunerReading.stringLabels.count)")
+                .font(.subheadline).foregroundStyle(.secondary)
+            HStack(spacing: Theme.Spacing.m) {
+                ForEach(TunerReading.stringLabels, id: \.self) { label in
+                    let done = tunedStrings.contains(label)
+                    VStack(spacing: 4) {
+                        Image(systemName: done ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(done ? Theme.clean : .secondary)
+                        Text(shortLabel(label)).font(.caption2).foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+        .padding(.top, Theme.Spacing.m)
+    }
+
+    /// "6th (Low E)" → "Low E".
+    private func shortLabel(_ l: String) -> String {
+        guard let open = l.firstIndex(of: "("), let close = l.firstIndex(of: ")") else { return l }
+        return String(l[l.index(after: open)..<close])
+    }
+
+    /// Mark the currently-played string tuned once it holds in tune for ~0.7s (so a
+    /// fleeting frame doesn't count); fire `onInTune` only once all six are done.
+    private func handleTune(_ inTune: Bool) {
+        guard onInTune != nil else { return }
+        tuneTask?.cancel()
+        guard inTune, !tuneFired else { return }
+        tuneTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            guard !Task.isCancelled, !tuneFired,
+                  let r = TunerReading(frequency: engine.fundamental), r.inTune,
+                  let string = r.nearestString else { return }
+            tunedStrings.insert(string)
+            if tunedStrings.count >= TunerReading.stringLabels.count {
+                tuneFired = true
+                onInTune?()
+            }
+        }
     }
 
     // MARK: - Readout

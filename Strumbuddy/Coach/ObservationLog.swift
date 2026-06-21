@@ -14,6 +14,10 @@ final class ObservationLog: ObservableObject {
 
     init(filename: String = "observations.json") {
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        // iOS does NOT create Application Support in the sandbox by default — unlike
+        // Documents. Without this, the atomic write below fails silently (try?) and
+        // nothing ever persists, so mastery resets to zero every launch.
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         self.fileURL = dir.appendingPathComponent(filename)
         load()
     }

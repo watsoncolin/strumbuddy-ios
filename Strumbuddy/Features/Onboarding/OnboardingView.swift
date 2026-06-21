@@ -5,9 +5,10 @@ import SwiftUI
 /// and get celebrated. Low bars + a Skip on every audio step so nobody gets stuck.
 struct OnboardingView: View {
     @ObservedObject var engine: AudioEngine
+    @ObservedObject var notifications: NotificationService
     let onFinish: () -> Void
 
-    enum Step: Int, CaseIterable { case welcome, listen, firstChord, ready }
+    enum Step: Int, CaseIterable { case welcome, listen, firstChord, reminder, ready }
     @State private var step: Step = .welcome
     @State private var heardSomething = false
     @State private var playedChord = false
@@ -71,6 +72,16 @@ struct OnboardingView: View {
                     .font(.subheadline).foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
+        case .reminder:
+            VStack(spacing: Theme.Spacing.m) {
+                Image(systemName: "bell.badge.fill").font(.system(size: 56)).foregroundStyle(Theme.accent)
+                Text("When should I nudge you?").font(.title2).bold().multilineTextAlignment(.center)
+                Text("A daily reminder is the single biggest thing that keeps a habit going. Pick a time you usually have your guitar nearby.")
+                    .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                DatePicker("", selection: $notifications.reminderTime, displayedComponents: .hourAndMinute)
+                    .labelsHidden()
+                    .datePickerStyle(.wheel)
+            }
         case .ready:
             page(icon: "flame.fill",
                  title: "You're all set",
@@ -97,8 +108,13 @@ struct OnboardingView: View {
             if heardSomething { primary("Continue") { step = .firstChord } }
             else { skip("Skip") { step = .firstChord } }
         case .firstChord:
-            if playedChord { primary("Continue") { step = .ready } }
-            else { skip("Skip for now") { step = .ready } }
+            if playedChord { primary("Continue") { step = .reminder } }
+            else { skip("Skip for now") { step = .reminder } }
+        case .reminder:
+            VStack(spacing: Theme.Spacing.s) {
+                primary("Remind me daily") { Task { await notifications.enableReminders(); step = .ready } }
+                skip("Not now") { step = .ready }
+            }
         case .ready:
             primary("Start practicing") { onFinish() }
         }
@@ -131,6 +147,7 @@ struct OnboardingView: View {
         switch s {
         case .listen:     Task { await engine.start() }   // contextual mic prompt
         case .firstChord: engine.setTargetChord(.em)
+        case .reminder:   engine.setTargetChord(nil); engine.stop()
         case .ready:      engine.setTargetChord(nil)
         case .welcome:    break
         }

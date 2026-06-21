@@ -1,13 +1,30 @@
 ---
 tags: [strumbuddy, design, coach, retention]
-updated: 2026-06-07
+updated: 2026-06-21
 ---
 # Daily Practice Loop
 
 The **keystone retention feature** (see [[Learning Philosophy]]): a short daily
 ritual that bundles everything we've built into one repeatable, rewarding session.
-Status: **built** — "Today" home tab (runner + streak) and first-run onboarding.
-Verify on device; reminders/notifications deferred.
+Status: **built** — "Today" home tab (hero → runner → reward), first-run
+onboarding, and daily local-notification reminders. Verify mic-driven auto-advance
+on device.
+
+## UX shape (2026-06 redesign)
+The home tab is now three states rather than a scrolling checklist:
+- **Hero** — the streak is the centerpiece (big count + 7-day dots), today's
+  coaching headline (the focus block's reason), and one prominent *Start* CTA
+  ("N steps · about 5 min"). Tip demoted to a footer link.
+- **Runner** — one block at a time, full-screen, no nav chrome. The block's tool
+  runs inline and **auto-advances on engine-verified success**: the tuner needs
+  all six strings held in tune (per-string checklist); a chord block needs ~10
+  strums at ≥0.6 accuracy (shown as "keep going" → "almost there", no raw counter)
+  → `onClean`; the drill finishes → `onComplete`. A secondary *Skip this step* is
+  the only manual escape — the old
+  self-reported "Done" button is gone (completion is earned, not claimed).
+- **Reward** — celebration + the day's mastery gains (per-skill deltas, the
+  coach's intrinsic reward), milestone messages (3/7/14/30/50/100…), a "tomorrow"
+  preview, and the streak-freeze "welcome back" surfaced when one was used.
 
 ## The session — "Today"
 One tap from launch → a short (~5 min, ~4–5 blocks) guided sequence the app picks
@@ -38,10 +55,13 @@ This both **seeds the coach** (cold-start priors) and delivers the early win.
 ## Habit mechanics
 - **Streak** — consecutive days with a completed session, shown prominently.
 - **Forgiveness** — a limited auto streak-freeze so one missed day doesn't reset;
-  "welcome back," not "you broke it." Decay resurfaces review gently, never as punishment.
+  "welcome back," not "you broke it." `StreakCalculator.freezeUsed` flags the
+  return day so the UI can say "streak saved." Decay resurfaces review gently.
 - **Tiny minimum** — even a 1-block session counts (2-minute rule).
-- **Reminder** — a daily notification at the chosen time (needs notification
-  permission; may be deferred).
+- **Reminder** — ✅ built: `NotificationService` schedules one repeating local
+  notification (`UNCalendarNotificationTrigger`) at the user's chosen time. Time +
+  enabled flag persist in UserDefaults. Collected in onboarding (`.reminder` step,
+  6pm default) and editable from the Today hero / reward screen.
 
 ## Architecture
 - **Session generator** (pure, testable): mastery states + graph → ordered list of
@@ -56,5 +76,7 @@ This both **seeds the coach** (cold-start priors) and delivers the early win.
 2. ✅ "Today" session runner UI (`TodayView`, home tab) + streak persistence
    (`PracticeTracker`). Blocks launch pre-targeted tools; ends on a completion card.
 3. ✅ First-run onboarding (`OnboardingView`) — welcome → hear-you → first chord
-   (Em) win → ready; gated by `@AppStorage("onboardingComplete")`.
-4. Reminders/notifications (later).
+   (Em) win → reminder-time → ready; gated by `@AppStorage("onboardingComplete")`.
+4. ✅ Reminders/notifications (`NotificationService`, local daily).
+5. ✅ Runner redesign — hero → full-screen runner with engine-verified
+   auto-advance → reward with mastery deltas + milestones (2026-06).

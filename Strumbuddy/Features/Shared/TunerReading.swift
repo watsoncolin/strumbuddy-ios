@@ -27,6 +27,9 @@ struct TunerReading: Equatable {
         ("3rd (G)", 55), ("2nd (B)", 59), ("1st (High E)", 64),
     ]
 
+    /// The six string labels low→high — for a "tune every string" checklist.
+    static let stringLabels: [String] = standardTuning.map(\.label)
+
     init?(frequency: Double?) {
         guard let f = frequency, f > 0 else { return nil }
         self.init(frequency: f)

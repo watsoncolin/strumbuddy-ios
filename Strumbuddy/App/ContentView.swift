@@ -2,7 +2,7 @@ import SwiftUI
 
 /// The three modes, one engine (design-doc §3).
 struct ContentView: View {
-    enum Tab: Hashable { case today, path, practice, songs, freePlay }
+    enum Tab: Hashable { case today, path, practice, freePlay }
 
     @EnvironmentObject private var env: AppEnvironment
     @AppStorage("onboardingComplete") private var onboardingComplete = false
@@ -14,13 +14,15 @@ struct ContentView: View {
                 get: { !onboardingComplete },
                 set: { presented in onboardingComplete = !presented })
             ) {
-                OnboardingView(engine: env.audioEngine) { onboardingComplete = true }
+                OnboardingView(engine: env.audioEngine, notifications: env.notifications) {
+                    onboardingComplete = true
+                }
             }
     }
 
     private var tabs: some View {
         TabView(selection: $selection) {
-            TodayView(coach: env.coach, tracker: env.tracker)
+            TodayView(coach: env.coach, tracker: env.tracker, notifications: env.notifications)
                 .tabItem { Label("Today", systemImage: "sun.max") }
                 .tag(Tab.today)
 
@@ -31,10 +33,6 @@ struct ContentView: View {
             PracticeCoachView(coach: env.coach)
                 .tabItem { Label("Practice", systemImage: "figure.strengthtraining.traditional") }
                 .tag(Tab.practice)
-
-            SongsView()
-                .tabItem { Label("Songs", systemImage: "music.note.list") }
-                .tag(Tab.songs)
 
             FreePlayView()
                 .tabItem { Label("Free Play", systemImage: "guitars") }

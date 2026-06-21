@@ -174,11 +174,18 @@ final class ChordScoreSmoother {
     }
 
     /// `energetic` = the buffer actually contains playing (above an RMS floor).
-    /// Quiet buffers hold the best reading; once silence passes `holdFrames` the
-    /// strum is finalized (emitted once) and the hold clears.
-    func push(_ result: ChordDetector.Result?, energetic: Bool) -> Update {
+    /// `onset` = the rising edge of a new strum. Quiet buffers hold the best reading;
+    /// the strum finalizes (emitted once) either when silence passes `holdFrames` OR
+    /// when a new onset arrives — so back-to-back strums each finalize and count,
+    /// rather than merging into one peak-hold that only finalizes after a long pause.
+    func push(_ result: ChordDetector.Result?, energetic: Bool, onset: Bool = false) -> Update {
         if energetic, let result {
             quietFrames = 0
+            // A new strum: finalize the previous strum's peak-hold and seed a fresh one.
+            if onset, let finished = best {
+                best = result
+                return Update(current: result, finalized: finished, improved: true)
+            }
             var improved = false
             if best == nil || quality(result) > quality(best!) {
                 best = result

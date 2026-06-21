@@ -27,4 +27,13 @@ enum StreakCalculator {
         }
         return streak
     }
+
+    /// Whether returning *today* was saved by a freeze: you played today, missed
+    /// yesterday, yet the streak spans the gap. Drives the "welcome back — streak
+    /// saved" message (forgiveness, not punishment). True only on the return day.
+    static func freezeUsed(days: Set<Int>, today: Int, freezes: Int = 1) -> Bool {
+        days.contains(today)
+            && !days.contains(today - 1)
+            && current(days: days, today: today, freezes: freezes) > 1
+    }
 }

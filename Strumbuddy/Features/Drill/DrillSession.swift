@@ -24,6 +24,10 @@ final class DrillSession: ObservableObject {
     private let engine: AudioEngine
     private let coach: Coach
     private let scoring = ScoringService()
+    /// When false, the engine's target chord is owned by a parent (the daily-session
+    /// runner), so this session won't clear it on stop/finish — otherwise a stop
+    /// racing the next session block would wipe that block's freshly-set target.
+    private let ownsEngineTarget: Bool
 
     private var sequence: [Chord] = []
     private var schedule = DrillSchedule(totalReps: 0)
@@ -31,13 +35,14 @@ final class DrillSession: ObservableObject {
     private var cancellable: AnyCancellable?
 
     init(metronome: Metronome, engine: AudioEngine, coach: Coach,
-         from: Chord = .c, to: Chord = .g, bpm: Int = 60) {
+         from: Chord = .c, to: Chord = .g, bpm: Int = 60, ownsEngineTarget: Bool = true) {
         self.metronome = metronome
         self.engine = engine
         self.coach = coach
         self.fromChord = from
         self.toChord = to
         self.bpm = bpm
+        self.ownsEngineTarget = ownsEngineTarget
     }
 
     /// Average per-axis score across recorded reps, for the summary.
@@ -70,7 +75,7 @@ final class DrillSession: ObservableObject {
     func stop() {
         cancellable = nil
         metronome.stop()
-        engine.setTargetChord(nil)
+        if ownsEngineTarget { engine.setTargetChord(nil) }
         if phase != .finished { phase = .setup }
     }
 
@@ -113,7 +118,7 @@ final class DrillSession: ObservableObject {
     private func finish() {
         cancellable = nil
         metronome.stop()
-        engine.setTargetChord(nil)
+        if ownsEngineTarget { engine.setTargetChord(nil) }
         currentChord = nil
         phase = .finished
     }

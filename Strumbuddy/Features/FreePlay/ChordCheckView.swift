@@ -11,23 +11,38 @@ struct ChordCheckView: View {
     @ObservedObject var coach: Coach
     /// Optional starting chord (e.g. when launched from a daily-session block).
     var initialChord: Chord? = nil
+    /// Fired once when a strum lands clean enough to "count" — lets the daily
+    /// session auto-advance on engine-verified success.
+    var onClean: (() -> Void)? = nil
+    /// When false, a parent (the daily-session runner) owns the engine's start/stop
+    /// and target chord, so this view leaves them alone and hides the chord picker.
+    var ownsEngine = true
     @State private var target: Chord = .em
+    @State private var cleanFired = false
+    @State private var goodStrums = 0
+
+    /// A guided session completes a chord block only after this many solid strums
+    /// land — one lucky strum shouldn't count it off. The bar is the accuracy axis.
+    private let goodStrumThreshold = 0.6
+    private let requiredGoodStrums = 10
 
     var body: some View {
         VStack(spacing: Theme.Spacing.l) {
-            chordPicker
+            if ownsEngine { chordPicker }
             ChordDiagramView(chord: target)
                 .frame(width: 130, height: 168)
             scoreDisplay
             Spacer()
         }
-        .task { await engine.start() }
+        .task { if ownsEngine { await engine.start() } }
         .onAppear {
             if let initialChord { target = initialChord }
-            engine.setTargetChord(initialChord ?? target)
+            // When embedded, the runner owns the engine target (avoids cross-block
+            // races where a disappearing view clobbers the next block's target).
+            if ownsEngine { engine.setTargetChord(initialChord ?? target) }
         }
-        .onChange(of: target) { engine.setTargetChord($0) }
-        .onDisappear { engine.setTargetChord(nil); engine.stop() }
+        .onChange(of: target) { if ownsEngine { engine.setTargetChord($0) } }
+        .onDisappear { if ownsEngine { engine.setTargetChord(nil); engine.stop() } }
         // Each completed strum becomes one observation the coach learns from.
         .onChange(of: engine.finalizedAttempt?.id) { _ in recordAttempt() }
     }
@@ -42,6 +57,35 @@ struct ChordCheckView: View {
             context: .init(isolation: .isolated, bpm: nil, source: .practice),
             scores: axes)
         coach.record(observation)
+
+        // Engine-verified success for the daily session: count solid strums on the
+        // targeted chord and complete the block once enough land (no lucky one-offs).
+        if let onClean, !cleanFired, r.chord == target, r.confidence >= goodStrumThreshold {
+            withAnimation { goodStrums += 1 }
+            if goodStrums >= requiredGoodStrums {
+                cleanFired = true
+                onClean()
+            }
+        }
+    }
+
+    /// Progress toward completing the block: a strum counter plus encouragement.
+    @ViewBuilder
+    private var sessionProgress: some View {
+        if onClean != nil, !cleanFired {
+            VStack(spacing: 2) {
+                Text("\(goodStrums) / \(requiredGoodStrums)")
+                    .font(.title3).bold().monospacedDigit()
+                    .foregroundStyle(Theme.accent)
+                    .contentTransition(.numericText())
+                Text(goodStrums == 0
+                     ? "Strum \(target.displayName) — good strums count"
+                     : (Double(goodStrums) / Double(requiredGoodStrums) >= 0.6
+                        ? "Almost there…" : "Nice — keep going!"))
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            .transition(.opacity)
+        }
     }
 
     private var chordPicker: some View {
@@ -68,6 +112,8 @@ struct ChordCheckView: View {
         VStack(spacing: Theme.Spacing.m) {
             Text("Play \(target.displayName)")
                 .font(.title2).bold()
+
+            sessionProgress
 
             if let score = engine.targetScore {
                 axisBar("Accuracy", score.confidence)

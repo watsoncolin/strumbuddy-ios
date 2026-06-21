@@ -7,13 +7,21 @@ struct TransitionDrillView: View {
     @StateObject private var session: DrillSession
     private let engine: AudioEngine
     private let metronome: Metronome
+    /// Fired once when the drill finishes — lets the daily session auto-advance.
+    private let onComplete: (() -> Void)?
+    /// When false, a parent (the daily-session runner) owns the engine start/stop.
+    private let ownsEngine: Bool
 
     init(metronome: Metronome, engine: AudioEngine, coach: Coach,
-         from: Chord = .c, to: Chord = .g, bpm: Int = 60) {
+         from: Chord = .c, to: Chord = .g, bpm: Int = 60,
+         ownsEngine: Bool = true, onComplete: (() -> Void)? = nil) {
         self.engine = engine
         self.metronome = metronome
+        self.onComplete = onComplete
+        self.ownsEngine = ownsEngine
         _session = StateObject(wrappedValue: DrillSession(metronome: metronome, engine: engine,
-                                                          coach: coach, from: from, to: to, bpm: bpm))
+                                                          coach: coach, from: from, to: to, bpm: bpm,
+                                                          ownsEngineTarget: ownsEngine))
     }
 
     var body: some View {
@@ -27,8 +35,9 @@ struct TransitionDrillView: View {
         .padding()
         .navigationTitle("Transition Drill")
         .navigationBarTitleDisplayMode(.inline)
-        .task { await engine.start() }
-        .onDisappear { session.stop(); engine.stop() }
+        .task { if ownsEngine { await engine.start() } }
+        .onDisappear { session.stop(); if ownsEngine { engine.stop() } }
+        .onChange(of: session.phase) { if $0 == .finished { onComplete?() } }
     }
 
     // MARK: Setup

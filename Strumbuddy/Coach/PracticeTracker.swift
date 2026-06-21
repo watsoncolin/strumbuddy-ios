@@ -7,6 +7,9 @@ import Foundation
 final class PracticeTracker: ObservableObject {
     @Published private(set) var streak = 0
     @Published private(set) var completedToday = false
+    /// True only on a day you returned after a missed day that a freeze bridged —
+    /// surfaced as "welcome back, streak saved" rather than a broken-streak reset.
+    @Published private(set) var freezeUsed = false
 
     private let defaultsKey = "completedSessionDays"
     private let calendar = Calendar.current
@@ -30,6 +33,15 @@ final class PracticeTracker: ObservableObject {
         let today = ordinal(now)
         streak = StreakCalculator.current(days: days, today: today)
         completedToday = days.contains(today)
+        freezeUsed = StreakCalculator.freezeUsed(days: days, today: today)
+    }
+
+    /// Completion of the last `n` days, oldest → newest (today last) — for the
+    /// week-at-a-glance dots on the home screen.
+    func recentCompletions(days n: Int = 7, now: Date = Date()) -> [Bool] {
+        let set = loadDays()
+        let today = ordinal(now)
+        return (0..<n).reversed().map { set.contains(today - $0) }
     }
 
     private func loadDays() -> Set<Int> {

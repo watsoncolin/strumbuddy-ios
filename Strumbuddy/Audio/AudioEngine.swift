@@ -142,7 +142,7 @@ final class AudioEngine: ObservableObject {
             let rawScore = self.targetChord.map {
                 self.chordDetector.score($0, spectrum.chroma, spectrum: spectrum)
             }
-            let update = self.chordScoreSmoother.push(rawScore, energetic: energetic)
+            let update = self.chordScoreSmoother.push(rawScore, energetic: energetic, onset: isOnset)
 
             Task { @MainActor in
                 self.fundamental = smoothedPitch
