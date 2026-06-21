@@ -39,6 +39,29 @@ swiftc -O Strumbuddy/Models/Chord.swift Strumbuddy/Models/ScoreAxes.swift \
 `scripts/` is intentionally outside the app target. Keep DSP logic in pure types
 (no AVFoundation) so it stays testable this way.
 
+## Release assets (icons, screenshots, demo data)
+
+App-icon and App Store screenshot generation live in a **separate shared repo**,
+`~/app-utils` (github.com/watsoncolin/app-utils), reused across all the apps. It's
+Node + Playwright: per-app config under `apps/strumbuddy/`, captions composed onto a
+brand gradient with a device frame at store sizes. The Runware API key lives in that
+repo's gitignored `.env` (never commit it; app-utils is public). To (re)generate
+Strumbuddy's store screenshots: `cd ~/app-utils && npm run shots:compose
+apps/strumbuddy/config.mjs` (compose from `raw/`), or `shots:capture` to grab raws
+from a simulator. The shipped app icon is the pick + equalizer-waveform mark on
+brand coral.
+
+For screenshots that aren't empty, seed a realistic practice history first:
+
+```sh
+scripts/seed_demo.sh <simulator-udid|booted>   # 12-day streak, mastered+learning skills, a focus
+```
+
+`scripts/seed_observations.swift` builds the history with the app's real model types
+(so the JSON always matches `ObservationLog`); `seed_demo.sh` compiles it, drops
+`observations.json` into the sim app's container, and sets the streak/onboarding
+defaults. Capture on an **iPhone 16 Pro Max** sim for native 6.9" (1320×2868).
+
 ## Conventions
 
 - SwiftUI, iOS 16+, MVVM-lite. `@MainActor` on the stateful services
