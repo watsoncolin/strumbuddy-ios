@@ -3,11 +3,12 @@ options:
   bundleIdPrefix: me.colinwatson
   deploymentTarget:
     iOS: "16.0"
-  xcodeVersion: "26.0"
+  xcodeVersion: "26.5"
 settings:
   SWIFT_VERSION: "5.10"
   MARKETING_VERSION: "0.1.0"
   CURRENT_PROJECT_VERSION: "1"
+  STRING_CATALOG_GENERATE_SYMBOLS: YES
 targets:
   Strumbuddy:
     type: application
