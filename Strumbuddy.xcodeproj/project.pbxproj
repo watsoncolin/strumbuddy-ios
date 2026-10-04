@@ -60,6 +60,7 @@
 		A26E3E6CAA52E24792CD60DE /* RadarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF102D0DE9EBF3613D7088AE /* RadarChartView.swift */; };
 		A40FF2D1AC106619B0D96B12 /* PracticeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E82CD4AA1037EFA30471DE /* PracticeTracker.swift */; };
 		A5E1B598B3BE2A4037BEF378 /* demo_gcd.wav in Resources */ = {isa = PBXBuildFile; fileRef = 69EE1B336E08E3D99CBFE578 /* demo_gcd.wav */; };
+		AC395C427983E55E79B7C6F1 /* Placement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E30C79766F775A6FBA60043 /* Placement.swift */; };
 		AC928A0110B9AA344A4F33A4 /* CapoSimplifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C949092189AC4B6D5DD8E71C /* CapoSimplifier.swift */; };
 		AD0BC500205ED4ABD5444041 /* AudioFileLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BB7CC2952C2A4E1556F7215 /* AudioFileLoader.swift */; };
 		B697ED23D79EC162181F016D /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92EFEA2ED450CA40625CA0A /* AudioEngine.swift */; };
@@ -112,6 +113,7 @@
 		56B7EA871950B14503B18847 /* Chord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chord.swift; sourceTree = "<group>"; };
 		598EC9AAF229C96EB1076FF6 /* ChordCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChordCheckView.swift; sourceTree = "<group>"; };
 		59FD529290AB4F2467000F48 /* OneMinuteChangesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneMinuteChangesView.swift; sourceTree = "<group>"; };
+		5E30C79766F775A6FBA60043 /* Placement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placement.swift; sourceTree = "<group>"; };
 		5E542502A17F704180E65233 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		656AA1BAE0CAE75FC8152911 /* YourProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourProgressView.swift; sourceTree = "<group>"; };
 		66FEE6F70220F34A3ED92F60 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 				140E2E1536E336CEAA1ABD24 /* MasteryState.swift */,
 				E6FB7762DD6AD4E3A7DC1157 /* Observation.swift */,
 				540D239F4C4EE7636CA964EE /* OneMinuteChanges.swift */,
+				5E30C79766F775A6FBA60043 /* Placement.swift */,
 				F1DEEC7AC39F02F65404165D /* ScoreAxes.swift */,
 				548B91A02E8B955BFD942C83 /* Skill.swift */,
 				A3EE0B351D82DF78140B362C /* SkillDetail.swift */,
@@ -548,6 +551,7 @@
 				72CB967506C5C20692EB97DE /* OneMinuteChangesView.swift in Sources */,
 				01065CCD68EAEF398486A840 /* OneMinuteStore.swift in Sources */,
 				311CE8ECCBD9ECD3A60CC871 /* PitchDetector.swift in Sources */,
+				AC395C427983E55E79B7C6F1 /* Placement.swift in Sources */,
 				D9475E2454FB39095ADEAE48 /* PracticeCoachView.swift in Sources */,
 				A40FF2D1AC106619B0D96B12 /* PracticeTracker.swift in Sources */,
 				BA0A03202569DB8E367A84BA /* ProgressCharts.swift in Sources */,

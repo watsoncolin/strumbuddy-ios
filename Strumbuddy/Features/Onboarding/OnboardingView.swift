@@ -6,12 +6,15 @@ import SwiftUI
 struct OnboardingView: View {
     @ObservedObject var engine: AudioEngine
     @ObservedObject var notifications: NotificationService
+    let coach: Coach
     let onFinish: () -> Void
 
-    enum Step: Int, CaseIterable { case welcome, listen, firstChord, reminder, ready }
+    enum Step: Int, CaseIterable { case welcome, experience, listen, firstChord, reminder, ready }
     @State private var step: Step = .welcome
     @State private var heardSomething = false
     @State private var playedChord = false
+    @State private var playedBefore = false
+    @State private var knownChords: Set<Chord> = []
 
     /// A modest bar so a beginner's first (buzzy) Em still counts as a win.
     private let chordWinThreshold = 0.55
@@ -47,6 +50,8 @@ struct OnboardingView: View {
             page(icon: "guitars.fill",
                  title: "Welcome to StrumBuddy",
                  body: "Learn acoustic guitar, five minutes a day. I listen while you play and coach you on what to work on next.")
+        case .experience:
+            experience
         case .listen:
             if engine.state == .denied {
                 page(icon: "mic.slash",
@@ -90,6 +95,41 @@ struct OnboardingView: View {
         }
     }
 
+    /// Placement: brand new, or "I know some chords" → pick them. Picked chords start
+    /// as mastered (see `Placement`), so the path skips what you already have.
+    private var experience: some View {
+        VStack(spacing: Theme.Spacing.m) {
+            Image(systemName: "hand.wave.fill").font(.system(size: 56)).foregroundStyle(Theme.accent)
+            Text("Have you played before?").font(.title2).bold().multilineTextAlignment(.center)
+            Picker("Experience", selection: $playedBefore) {
+                Text("I'm brand new").tag(false)
+                Text("I know some chords").tag(true)
+            }
+            .pickerStyle(.segmented)
+            if playedBefore {
+                Text("Tap the chords you can already play cleanly. I'll check them in your first few sessions.")
+                    .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: Theme.Spacing.s) {
+                    ForEach(Chord.allCases) { chord in
+                        let on = knownChords.contains(chord)
+                        Button {
+                            if on { knownChords.remove(chord) } else { knownChords.insert(chord) }
+                        } label: {
+                            Text(chord.displayName).font(.headline)
+                                .frame(maxWidth: .infinity).padding(.vertical, Theme.Spacing.s)
+                                .background(on ? Theme.accent : Color.secondary.opacity(0.15), in: Capsule())
+                                .foregroundStyle(on ? .white : .primary)
+                        }
+                        .accessibilityAddTraits(on ? .isSelected : [])
+                    }
+                }
+            } else {
+                Text("Perfect — we'll start from your very first chord.")
+                    .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
+            }
+        }
+    }
+
     private func page(icon: String, title: String, body: String) -> some View {
         VStack(spacing: Theme.Spacing.m) {
             Image(systemName: icon).font(.system(size: 56)).foregroundStyle(Theme.accent)
@@ -104,7 +144,12 @@ struct OnboardingView: View {
     private var footer: some View {
         switch step {
         case .welcome:
-            primary("Get started") { step = .listen }
+            primary("Get started") { step = .experience }
+        case .experience:
+            primary("Continue") {
+                if playedBefore { coach.place(knownChords: Chord.allCases.filter(knownChords.contains)) }
+                step = .listen
+            }
         case .listen:
             if heardSomething { primary("Continue") { step = .firstChord } }
             else { skip("Skip") { step = .firstChord } }
@@ -150,7 +195,7 @@ struct OnboardingView: View {
         case .firstChord: engine.setTargetChord(.em)
         case .reminder:   engine.setTargetChord(nil); engine.stop()
         case .ready:      engine.setTargetChord(nil)
-        case .welcome:    break
+        case .welcome, .experience: break
         }
     }
 }

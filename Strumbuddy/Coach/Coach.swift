@@ -28,6 +28,14 @@ final class Coach: ObservableObject {
         refresh()
     }
 
+    /// Seed self-reported known chords from onboarding (see `Placement`), then
+    /// re-project once.
+    func place(knownChords: [Chord], now: Date = Date()) {
+        guard !knownChords.isEmpty else { return }
+        Placement.observations(for: knownChords, now: now).forEach(log.append)
+        refresh(now: now)
+    }
+
     /// Skills tied to a user goal (v2 BYO-song feeds this).
     func setGoalSkills(_ skills: Set<SkillID>) {
         policy.goalSkills = skills

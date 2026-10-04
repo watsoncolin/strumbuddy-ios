@@ -729,6 +729,32 @@ do {
     check("empty session still says 1 min", SessionGenerator.estimatedMinutes([]) == 1)
 }
 
+// MARK: - Placement
+
+print("\n== Placement ==")
+do {
+    let now = Date(timeIntervalSince1970: 1_000_000)
+    let obs = Placement.observations(for: [.em, .c, .g], now: now)
+    let states = MasteryStore().project(obs, graph: SkillGraph.beginnerGraph(), now: now)
+    let store = MasteryStore()
+    check("placed chords count as mastered",
+          [Chord.em, .c, .g].allSatisfy { store.isMastered(.chord($0), in: states, now: now) })
+    check("unplaced chords aren't", !store.isMastered(.chord(.d), in: states, now: now))
+    check("changes are never seeded", !states.keys.contains { $0.rawValue.hasPrefix("transition.") })
+    let plans = computeStagePlans(Stage.beginnerStages,
+                                  isMastered: { store.isMastered($0, in: states, now: now) },
+                                  proficiency: { states[$0]?.retrievability(at: now) ?? 0 })
+    check("knowing Em, C, G starts you on First changes",
+          plans[0].state == .complete && plans[1].state == .active)
+    // Two real fumbles un-master an overclaimed chord.
+    let fumbles = (1...2).map { i in
+        Observation(timestamp: now.addingTimeInterval(Double(i)), implicatedSkills: [.chord(.g)],
+                    context: .init(isolation: .isolated, bpm: nil, source: .practice), scores: .zero)
+    }
+    let after = MasteryStore().project(obs + fumbles, graph: SkillGraph.beginnerGraph(), now: now + 3)
+    check("fumbles un-master an overclaimed chord", !store.isMastered(.chord(.g), in: after, now: now + 3))
+}
+
 // MARK: - One-minute changes
 
 print("\n== One-minute changes ==")

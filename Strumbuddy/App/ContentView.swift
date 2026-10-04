@@ -14,7 +14,7 @@ struct ContentView: View {
                 get: { !onboardingComplete },
                 set: { presented in onboardingComplete = !presented })
             ) {
-                OnboardingView(engine: env.audioEngine, notifications: env.notifications) {
+                OnboardingView(engine: env.audioEngine, notifications: env.notifications, coach: env.coach) {
                     onboardingComplete = true
                 }
             }
