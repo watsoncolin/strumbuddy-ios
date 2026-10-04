@@ -34,7 +34,7 @@ struct CreditAssignment {
 
         // Are the component chords already solid on their own?
         let chordsSolid = chordSkills.allSatisfy { beliefs($0) >= 0.7 }
-        let poorAttempt = obs.scores.overall < 0.6
+        let poorAttempt = obs.score < 0.6
 
         if poorAttempt, chordsSolid, !structural.isEmpty {
             // The chords aren't the problem — blame the structural skill.

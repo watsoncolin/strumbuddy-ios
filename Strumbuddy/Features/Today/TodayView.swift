@@ -132,7 +132,7 @@ struct TodayView: View {
             VStack(spacing: 2) {
                 Text(tracker.completedToday ? "Practice again" : "Start today's session")
                     .font(.headline)
-                Text("\(blocks.count) steps · about 5 min")
+                Text("\(blocks.count) steps · about \(SessionGenerator.estimatedMinutes(blocks)) min")
                     .font(.caption).foregroundStyle(.white.opacity(0.85))
             }
             .frame(maxWidth: .infinity)

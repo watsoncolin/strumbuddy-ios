@@ -75,6 +75,20 @@ struct SessionGenerator {
         return out
     }
 
+    /// A realistic length for the session, for the start button. Rough per-block
+    /// costs for a beginner: tuning ~1 min, a chord block (10 good strums) ~1 min, a
+    /// drill (count-in + 8 bars at ~60 bpm, plus finding the shapes) ~1.5 min.
+    static func estimatedMinutes(_ blocks: [SessionBlock]) -> Int {
+        let seconds = blocks.reduce(0.0) { total, block in
+            switch block.activity {
+            case .tune:       return total + 60
+            case .chord:      return total + 60
+            case .transition: return total + 90
+            }
+        }
+        return max(1, Int((seconds / 60).rounded(.up)))
+    }
+
     /// Map a skill to the activity that practices it (chords → Chord Check, transitions
     /// → the drill). Returns nil for skills with no direct activity (e.g. tempo holds).
     func activity(for id: SkillID, graph: SkillGraph) -> PracticeActivity? {

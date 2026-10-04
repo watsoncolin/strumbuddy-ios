@@ -25,7 +25,7 @@ enum TempoLadder {
     static func cleared(_ bpm: Int, in observations: [Observation]) -> Bool {
         let recent = observations.filter { $0.context.bpm == bpm }.prefix(window)
         guard recent.count == window else { return false }
-        return recent.map(\.scores.overall).reduce(0, +) / Double(window) >= clearScore
+        return recent.map(\.score).reduce(0, +) / Double(window) >= clearScore
     }
 
     /// The highest tempo cleared so far, if any.

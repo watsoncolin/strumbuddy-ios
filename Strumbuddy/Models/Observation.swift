@@ -27,6 +27,13 @@ struct Observation: Identifiable, Codable, Hashable {
         enum Source: String, Codable { case structuredPath, practice, freePlay, calibration, song }
     }
 
+    /// The single blended score the coach learns from. Untimed attempts (no tempo,
+    /// e.g. Chord Check) have no real timing axis, so it's left out rather than
+    /// filled with a stand-in — otherwise accuracy would count twice.
+    var score: Double {
+        context.bpm == nil ? (scores.accuracy + scores.cleanliness) / 2 : scores.overall
+    }
+
     init(id: UUID = UUID(),
          timestamp: Date,
          implicatedSkills: [SkillID],

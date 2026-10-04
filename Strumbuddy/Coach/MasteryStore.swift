@@ -41,7 +41,7 @@ struct MasteryStore {
     /// Proficiency moves toward the observed score (weighted EMA); stability grows on
     /// success and shrinks on failure; confidence rises with observation count.
     private func update(_ state: inout MasteryState, with obs: Observation, weight: Double, at now: Date) {
-        let score = obs.scores.overall
+        let score = obs.score
         let alpha = 0.3 * weight   // learning rate scaled by attribution weight
 
         // Decay current proficiency to now before blending in new evidence.

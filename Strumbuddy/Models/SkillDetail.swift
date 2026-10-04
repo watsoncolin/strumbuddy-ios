@@ -27,7 +27,7 @@ struct SkillDetail {
         func avg(_ xs: [Double]) -> Double { xs.isEmpty ? 0 : xs.reduce(0, +) / Double(xs.count) }
 
         let timed = recent.filter { $0.context.isolation == .inSequence }
-        let cleanCount = recent.filter { $0.scores.overall >= masteryThreshold }.count
+        let cleanCount = recent.filter { $0.score >= masteryThreshold }.count
 
         return SkillDetail(
             attempts: observations.count,

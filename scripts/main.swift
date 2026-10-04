@@ -703,6 +703,32 @@ do {
     check("change message names both chords", note.contains("G is solid") && note.contains("from C"))
 }
 
+// MARK: - Observation score
+
+print("\n== Observation score ==")
+do {
+    let axes = ScoreAxes(accuracy: 0.9, cleanliness: 0.5, timing: 0.9)
+    let untimed = Observation(timestamp: Date(), implicatedSkills: [.chord(.c)],
+        context: .init(isolation: .isolated, bpm: nil, source: .practice), scores: axes)
+    let timed = Observation(timestamp: Date(), implicatedSkills: [.chord(.c)],
+        context: .init(isolation: .inSequence, bpm: 60, source: .practice), scores: axes)
+    check("untimed score ignores the timing axis", abs(untimed.score - 0.7) < 1e-9, "\(untimed.score)")
+    check("timed score uses all three axes", abs(timed.score - axes.overall) < 1e-9)
+}
+
+// MARK: - Session length
+
+print("\n== Session length ==")
+do {
+    func block(_ i: Int, _ a: PracticeActivity) -> SessionBlock {
+        SessionBlock(id: i, kind: .focus, activity: a, title: "", detail: "")
+    }
+    let blocks = [block(0, .tune), block(1, .chord(.c)), block(2, .transition(from: .c, to: .g)), block(3, .chord(.em))]
+    check("estimate sums block costs, rounded up", SessionGenerator.estimatedMinutes(blocks) == 5,
+          "\(SessionGenerator.estimatedMinutes(blocks))")
+    check("empty session still says 1 min", SessionGenerator.estimatedMinutes([]) == 1)
+}
+
 // MARK: - One-minute changes
 
 print("\n== One-minute changes ==")
