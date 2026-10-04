@@ -1,6 +1,6 @@
 ---
 tags: [strumbuddy, audio, engine]
-updated: 2026-06-07
+updated: 2026-10-04
 ---
 # Audio Engine
 
@@ -23,6 +23,12 @@ mic via `AVAudioEngine`, extracts **one** sample buffer, and fans it to two path
 Every observation is graded on **accuracy, cleanliness, timing, consistency**.
 These feed both milestone tests and [[The Coach]]. Cleanliness is the
 differentiator — see [[Cleanliness Scoring]].
+
+## Output
+The engine only listens. App sounds play on separate engines: the metronome click
+([[Rhythm Mode]]) and [[Chord Preview]]. While a preview rings,
+`suppressInput(for:)` pauses analysis and drops the in-progress strum so the app
+never grades its own sound.
 
 ## Tuning knobs
 `presenceThreshold`, `buzzThreshold`, `mutedRingThreshold` (in `ChordDetector`),

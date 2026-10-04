@@ -1,6 +1,6 @@
 ---
 tags: [strumbuddy, reference]
-updated: 2026-06-07
+updated: 2026-10-04
 ---
 # Glossary
 
@@ -19,3 +19,11 @@ updated: 2026-06-07
 - **Peak-hold** — keep the best instant of a strum (see [[Cleanliness Scoring]]).
 - **AIR id** — Runware's model identifier format (e.g. `google:4@1`); from the
   [[Decisions|AI-image experiment]].
+- **Karplus-Strong** — plucked-string synthesis: a delay line one period long with a
+  loss filter. Basis of [[Chord Preview]].
+- **Tempo ladder** — drills open +6 bpm above a change's best clean tempo
+  ([[Rhythm Mode]]).
+- **One-minute changes** — clean chord switches in 60 s; the [[Progress]] benchmark.
+- **Placement** — onboarding's self-reported known chords, seeded as `.calibration`
+  evidence ([[The Coach]]).
+- **Coach's note** — the one-line diagnosis after a run (`DrillDiagnosis`).

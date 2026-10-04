@@ -42,3 +42,9 @@ recent attempts there average ≥ 0.75. The drill opens at the next rung — bes
 cleared + 6 bpm (≈10%), starting at 60, capped at 160 — and the setup shows "Clean
 at X bpm so far". A clean run ends on "Cleared X bpm!" with a **Next rung** button;
 otherwise it encourages more reps at the current tempo.
+
+## Coach's note
+The drill summary shows a rep strip (per-rep score, late/early marks) and the
+coach's one-line diagnosis — see [[The Coach]]. A song play-along is the same
+`DrillSession` with a fixed sequence ([[Songs]]); [[Progress|one-minute changes]] is
+the untimed speed benchmark.

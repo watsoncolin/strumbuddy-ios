@@ -1,6 +1,6 @@
 ---
 tags: [strumbuddy, moc]
-updated: 2026-06-07
+updated: 2026-10-04
 ---
 # Strumbuddy — Wiki
 
@@ -11,7 +11,7 @@ rationale lives in the [design doc](../design-doc.md).
 ## Start here
 - [[Vision and Strategy]] — what we're building and why
 - [[Learning Philosophy]] — 0 → consistent practice; retention-first
-- [[Daily Practice Loop]] — the keystone habit feature (next build)
+- [[Daily Practice Loop]] — the keystone habit feature
 - [[Architecture]] — three modes, one engine
 - [[Roadmap]] — v0.1 scope and what's deferred
 - [[BYO-Song (v2)]] — the v2 headline feature (scoping)
@@ -22,19 +22,24 @@ rationale lives in the [design doc](../design-doc.md).
     - [[Chord Detection]]
     - [[Cleanliness Scoring]]
     - [[Muted-String Detection]]
-- [[Rhythm Mode]] — metronome + transition drill
+- [[Rhythm Mode]] — metronome, transition drill, tempo ladder
 - [[Chord Library]]
+- [[Chord Preview]] — "Hear it": physically-modelled guitar strum
 
-## The coach — loop closed for chords
-- [[The Coach]]
+## The coach & the journey
+- [[The Coach]] — mastery, credit assignment, diagnosis, placement
+- [[Structured Path]] — 8-stage ladder
+- [[Songs]] — graded play-along + goal song
+- [[Progress]] — one-minute changes + progress screen
 
 ## Reference
 - [[Decisions]] — running decision log
 - [[Glossary]]
 
-## Status — June 2026
-Engine validated on a real guitar (tuner, chord identity, cleanliness, muted-string
-detection) and wired into [[The Coach]]. [[Rhythm Mode]] (metronome + transition
-drill) built. The **[[Daily Practice Loop]]** is now live — a "Today" home tab that
-runs a coach-built session and tracks a streak. **Next:** first-session onboarding
-(manufacture the session-one win), then the [[Structured Path]] as a ladder.
+## Status — October 2026
+Engine validated on a real guitar and wired into [[The Coach]];
+[[Daily Practice Loop]], onboarding and reminders live. October round (all built, harness-tested,
+**not yet verified on device**): [[Chord Preview]], graded [[Songs]] with a goal
+song, an 8-stage [[Structured Path]] + [[Rhythm Mode|tempo ladder]], the coach's
+diagnosis after every run, [[Progress]] (one-minute changes + charts), and
+onboarding placement. **Next:** device pass on the mic-driven flows; see [[Roadmap]].

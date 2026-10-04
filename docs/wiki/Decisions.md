@@ -1,11 +1,42 @@
 ---
 tags: [strumbuddy, decisions]
-updated: 2026-06-07
+updated: 2026-10-04
 ---
 # Decisions
 
 Running log of choices and *why*, newest first.
 
+- **2026-10-04 — Onboarding placement is self-reported, but self-correcting.**
+  Returning players tap known chords; each gets 3 just-clean (0.8) `.calibration`
+  observations → mastered, so the path starts where they are. Trusting the claim is
+  OK because seeded chords come due within days and mastery reads the last 4 real
+  attempts (two fumbles un-master). Changes are never seeded. Implements the design
+  doc's "calibration seeds priors". See [[The Coach]].
+- **2026-10-04 — Untimed attempts leave timing out of the score.** Chord Check
+  stored `timing = accuracy`, so the blended score double-counted accuracy and
+  inflated mastery. `Observation.score` = (accuracy + cleanliness)/2 when there's no
+  bpm. Mastery is a projection, so old logs re-score on replay.
+- **2026-10-04 — Tempo evidence lands on graph hold levels.** Any drill/song at or
+  above 60/80/100 bpm counts toward that hold (`TempoLadder.holdLevel`) instead of
+  creating orphan `tempo.N` skills (songs at 65 bpm were never helping "hold 60").
+- **2026-10-04 — Tempo ladder: +6 bpm once a change is clean.** Cleared = last 4
+  attempts at that tempo average ≥ 0.75; ~10% steps feel achievable. See [[Rhythm Mode]].
+- **2026-10-04 — Diagnosis blames chord vs. change using the coach's standalone
+  belief** (≥ 0.7 → "the chord is solid, it's the change"), mirroring credit
+  assignment — so the note and the mastery model agree. See [[The Coach]].
+- **2026-10-04 — No strumming-pattern stage yet.** The engine can't grade strum
+  patterns; a stage nobody can pass is worse than none.
+- **2026-10-04 — Songs restored, graded, as a fifth tab.** June removed the
+  guided-only tab as deferred; songs are the "real song ASAP" payoff, and grading
+  reuses `DrillSession` (fixed sequence) rather than a second grader. Goal skills
+  only pull while unmastered. See [[Songs]].
+- **2026-10-04 — Chord preview by physical modelling, not samples or additive.**
+  The additive synth sounded like an organ; recorded samples raise licensing/asset
+  questions; Karplus-Strong with real voicings is dependency-free and testable.
+  Sound was tuned by *physics* (triangle pluck, bridge-force derivative), with our
+  own tuner/detector as checks — not by fitting the detector. See [[Chord Preview]].
+- **2026-10-04 — The app pauses its own ears while it makes sound.**
+  `AudioEngine.suppressInput` during previews, so "Hear it" can't count as a strum.
 - **Retention-first reprioritization.** Next build is the habit engine
   ([[Daily Practice Loop]] + first-win onboarding), not more teaching — the thesis is
   retention (~90% quit) and the behavior layer is under-built. Grounded in
@@ -53,3 +84,9 @@ Running log of choices and *why*, newest first.
 `presenceThreshold 0.28` · `buzzThreshold 0.5` · `mutedRingThreshold 0.3` ·
 `playingRMS 0.006` · `minClarity 0.5` · `PitchDetector.minRMS 0.003`. All dialed by
 ear on device.
+
+Added 2026-10 (not yet tuned on device): **tempo ladder** start 60 · step 6 · ceiling
+160 · window 4 · clear 0.75 · hold levels 60/80/100. **Diagnosis** clean bar 0.75 ·
+off-beat 0.08 s · solid chord 0.7. **Songs** practice tempo ≈70% (min 50, nearest 5)
+· stars ≥0.85/0.7/0.5. **One-minute** landing ≥0.6 accuracy. **Placement** 3 × 0.8.
+**GuitarSynth** pick 0.12 · high-pass 110 Hz · strum spread 13 ms.

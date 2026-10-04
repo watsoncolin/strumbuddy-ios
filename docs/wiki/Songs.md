@@ -26,7 +26,8 @@ Recognizable hits come via v2 bring-your-own-song.
   to [[The Coach]] with source `.song`, `inSequence`. A held chord (G→G) is evidence
   about the chord only, not a "change".
 - Summary (`SongReport`, pure + tested): score, 0–3 stars, personal best, the graded
-  bar grid, and the **trickiest change** with a one-tap drill on exactly that change.
+  bar grid, the coach's note ([[The Coach]]), and the **trickiest change** with a
+  one-tap drill on exactly that change (opens at its [[Rhythm Mode|tempo-ladder]] rung).
 
 ## Goal song → the coach
 `SongProgressStore` persists bests and the goal song, and feeds the song's chords +

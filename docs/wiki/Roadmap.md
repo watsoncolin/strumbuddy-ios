@@ -1,6 +1,6 @@
 ---
 tags: [strumbuddy, roadmap]
-updated: 2026-06-07
+updated: 2026-10-04
 ---
 # Roadmap
 
@@ -18,13 +18,24 @@ loop for chords** (observations → consistency mastery → live recommendations
 - ✅ **[[Structured Path]]** — Couch-to-5K-style gated, actionable ladder.
 
 - ✅ **Beginner tips** + contextual hints (sore fingers etc.).
-- ✅ **[[Songs]]** — first play-along songs (chords-only, guided by the metronome).
+- ✅ **[[Songs]]** — graded bar-by-bar play-along, practice/full speed, goal song
+  feeding the coach (restored Oct 2026 after the June removal).
+- ✅ **[[Chord Preview]]** — "Hear it" physically-modelled strum.
+- ✅ **[[Structured Path]] to 8 stages** + **tempo ladder** ([[Rhythm Mode]]).
+- ✅ **Coach's diagnosis** after drills/songs/sessions ([[The Coach]]).
+- ✅ **[[Progress]]** — one-minute changes + progress screen.
+- ✅ **Onboarding placement** for returning players ([[The Coach]]).
 
 - ✅ **Timing calibration** — user-calibrated `inputLatency` (drill setup → Calibrate timing).
 
+✅ Reminders/notifications (June). ✅ Per-chord grading in songs (Oct).
+
 **Next:**
-1. **Reminders/notifications** — the deferred habit cue.
-2. **Per-chord grading in songs**, then v2 bring-your-own-song.
+1. **Device pass** on the October features (song play-along, tempo ladder,
+   one-minute counting, preview-doesn't-score).
+2. **Strumming patterns** — needs an engine signal first; deliberately not on the
+   path until it can be graded.
+3. v2 bring-your-own-song.
 
 _Recital mode: dropped — the consistency-based practice grading covers that ground._
 

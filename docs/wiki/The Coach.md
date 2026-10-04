@@ -1,12 +1,12 @@
 ---
 tags: [strumbuddy, coach]
-updated: 2026-06-07
+updated: 2026-10-04
 ---
 # The Coach
 
-The brain (`Coach/`). Status: **wired to the engine for chords** — Chord Check now
-records each completed strum as an `Observation` and the Practice tab shows live
-recommendations + per-chord mastery. Transitions/timing come with the metronome.
+The brain (`Coach/`). Status: **wired end to end** — Chord Check, the transition drill and song
+play-alongs all record observations; the Practice tab shows live recommendations
+and per-chord mastery, and every run ends with the coach's diagnosis.
 
 Three stacked ideas: **knowledge tracing** (infer skill from noisy attempts),
 **spaced repetition** (skills decay), and a **prerequisite graph**.
@@ -30,10 +30,31 @@ Three stacked ideas: **knowledge tracing** (infer skill from noisy attempts),
 Append-only `ObservationLog`; mastery is a **projection** over it (event-sourcing),
 so inference can be re-tuned and replayed. On-device SQLite planned (JSON for now).
 
-## Done & next
-Chord observations now flow (`ChordCheckView` → `coach.record(...)`). Next: the
-**metronome + transition drill** generate timing/transition observations, which is
-what makes **credit assignment** real ("your C is fine; it's the *change* under
-tempo"). Then **recital mode** — a deliberate assessment posture that gates
-structured-path milestones (high-signal observations vs. forgiving practice). See
-[[Roadmap]]. Open questions tracked in the [design doc §8](../design-doc.md).
+## Diagnosis — the coach shows its work
+`Coach/DrillDiagnosis.swift` (pure, tested) turns a graded run into one verdict,
+shown as a **Coach's note** on drill and song summaries: clean / landing late on X /
+rushing into X / unsteady timing / *"your X is solid on its own — it's the change
+from Y"* / X itself needs work. Late vs. early comes from each bar's signed beat
+offset (`RepResult.timingOffset`); chord-vs-change uses the coach's standalone
+belief (≥0.7), mirroring credit assignment. The daily reward screen explains
+tomorrow's pick ("Next up: X, because …"). Drill summaries add a rep strip.
+
+## Evidence rules (Oct 2026)
+- `Observation.score` — the one blended score everything learns from; **untimed
+  attempts (no bpm) leave timing out** instead of a stand-in.
+- Tempo evidence lands on the graph's hold levels (60/80/100); see [[Rhythm Mode]].
+- A held chord in a song (G→G) is evidence about the chord only, never a "change".
+- Song bars log with source `.song` ([[Songs]]).
+
+## Goal song
+`SongProgressStore` feeds the goal song's chords + changes to `setGoalSkills`
+(previously never called). The goal signal only applies while a skill is unmastered.
+
+## Placement (cold start)
+Onboarding's "Have you played before?" step seeds known chords via
+`Models/Placement.swift` (3 × 0.8 `.calibration` observations → mastered).
+Self-correcting by design; changes are never seeded. See [[Decisions]].
+
+## Open questions
+Credit-assignment mechanism and selection-policy weights remain open — see the
+[design doc §8](../design-doc.md). Diagnosis thresholds are untuned guesses.

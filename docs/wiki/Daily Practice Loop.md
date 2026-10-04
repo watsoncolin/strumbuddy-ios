@@ -1,6 +1,6 @@
 ---
 tags: [strumbuddy, design, coach, retention]
-updated: 2026-06-21
+updated: 2026-10-04
 ---
 # Daily Practice Loop
 
@@ -14,7 +14,9 @@ on device.
 The home tab is now three states rather than a scrolling checklist:
 - **Hero** — the streak is the centerpiece (big count + 7-day dots), today's
   coaching headline (the focus block's reason), and one prominent *Start* CTA
-  ("N steps · about 5 min"). Tip demoted to a footer link.
+  ("N steps · about M min", estimated from the blocks by
+  `SessionGenerator.estimatedMinutes`: tune/chord ~1 min, drill ~1.5). Tip demoted
+  to a footer link; a "Your progress" row links to [[Progress]].
 - **Runner** — one block at a time, full-screen, no nav chrome. The block's tool
   runs inline and **auto-advances on engine-verified success**: the tuner needs
   all six strings held in tune (per-string checklist); a chord block needs ~10
@@ -23,8 +25,9 @@ The home tab is now three states rather than a scrolling checklist:
   the only manual escape — the old
   self-reported "Done" button is gone (completion is earned, not claimed).
 - **Reward** — celebration + the day's mastery gains (per-skill deltas, the
-  coach's intrinsic reward), milestone messages (3/7/14/30/50/100…), a "tomorrow"
-  preview, and the streak-freeze "welcome back" surfaced when one was used.
+  coach's intrinsic reward), milestone messages (3/7/14/30/50/100…), a **Coach's
+  note** for tomorrow with the reason it was picked, and the streak-freeze
+  "welcome back" surfaced when one was used.
 
 ## The session — "Today"
 One tap from launch → a short (~5 min, ~4–5 blocks) guided sequence the app picks
@@ -75,8 +78,10 @@ This both **seeds the coach** (cold-start priors) and delivers the early win.
 1. ✅ Session generator + streak logic (pure) — harness-tested.
 2. ✅ "Today" session runner UI (`TodayView`, home tab) + streak persistence
    (`PracticeTracker`). Blocks launch pre-targeted tools; ends on a completion card.
-3. ✅ First-run onboarding (`OnboardingView`) — welcome → hear-you → first chord
-   (Em) win → reminder-time → ready; gated by `@AppStorage("onboardingComplete")`.
+3. ✅ First-run onboarding (`OnboardingView`) — welcome → **played before?**
+   (placement, Oct 2026 — see [[The Coach]]) → hear-you → first chord (Em, with
+   [[Chord Preview|Hear it]]) win → reminder-time → ready; gated by
+   `@AppStorage("onboardingComplete")`.
 4. ✅ Reminders/notifications (`NotificationService`, local daily).
 5. ✅ Runner redesign — hero → full-screen runner with engine-verified
    auto-advance → reward with mastery deltas + milestones (2026-06).
