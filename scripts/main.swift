@@ -829,6 +829,33 @@ do {
     check("synth normalized (<= 1)", (a.map(abs).max() ?? 0) <= 1)
 }
 
+// MARK: - Song renderer ("Listen")
+
+print("\n== Song renderer ==")
+do {
+    let sr = 44_100.0
+    let song = Song.library.first { $0.title == "When the Saints Go Marching In" }!
+    let r = SongRenderer()
+    let audio = r.render(song.flatChords, bpm: song.bpm)
+    let bar = 4 * 60 / Double(song.bpm)
+    let expected = r.leadIn(bpm: song.bpm) + Double(song.flatChords.count) * bar + r.tail
+    check("length = count-in + bars + tail", abs(Double(audio.count) / sr - expected) < 0.01,
+          String(format: "%.2fs", Double(audio.count) / sr))
+    check("count-in is one bar", abs(r.leadIn(bpm: song.bpm) - bar) < 1e-9)
+    check("normalized", (audio.map(abs).max() ?? 0) <= 1)
+
+    // Every bar should read as its chord where the highlight says it is: analyze a
+    // window mid-bar (after beat 1, before the up-strums).
+    var hits = 0
+    for (i, chord) in song.flatChords.enumerated() {
+        let t = r.leadIn(bpm: song.bpm) + (Double(i) + 0.3) * bar
+        let frame = Array(audio[Int(t * sr) ..< Int(t * sr) + frameCount])
+        if chordDetector.detect(Chromagram().compute(frame, sampleRate: Float(sr)).chroma)?.chord == chord { hits += 1 }
+    }
+    check("bars are their chords at the highlighted time", hits * 4 >= song.flatChords.count * 3,
+          "\(hits)/\(song.flatChords.count)")
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

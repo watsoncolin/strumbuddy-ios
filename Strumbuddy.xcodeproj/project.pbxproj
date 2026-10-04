@@ -46,6 +46,7 @@
 		72CB967506C5C20692EB97DE /* OneMinuteChangesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59FD529290AB4F2467000F48 /* OneMinuteChangesView.swift */; };
 		72E251FBD8B4F2B46EAAD60F /* StrumbuddyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCA79382C833EA8C856F88B /* StrumbuddyApp.swift */; };
 		73C5A7354148916F02D13AD3 /* MetronomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52584A027A05E2AEBBDE71D8 /* MetronomeView.swift */; };
+		7E9F06241674C4CA99931797 /* SongRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D1B8B2317719765D0495B2 /* SongRenderer.swift */; };
 		842CF29DE5D74881E758D1AF /* TunerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4455F25CBCC2DA58094A1A /* TunerView.swift */; };
 		8D9A9E661FDD6B69F892E512 /* ScoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EDBF96308E46028E444DA3 /* ScoringService.swift */; };
 		8E173847DD37E4E39B626942 /* Skill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548B91A02E8B955BFD942C83 /* Skill.swift */; };
@@ -133,6 +134,7 @@
 		7BB7FC4135B73AEE6CBCE0E6 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		7C48BAA7BABD8F6A1B1C3E2B /* PitchDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchDetector.swift; sourceTree = "<group>"; };
 		873DCA8F4881AFB1CED1DEC8 /* StructuredPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructuredPathView.swift; sourceTree = "<group>"; };
+		89D1B8B2317719765D0495B2 /* SongRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongRenderer.swift; sourceTree = "<group>"; };
 		8CFCB59418483E2BCCEEA224 /* MasteryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryStore.swift; sourceTree = "<group>"; };
 		8FF9BAD26BE6A80DAA69117E /* Stage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stage.swift; sourceTree = "<group>"; };
 		97D51C737AC21FCD52FA1BB8 /* SelectionPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionPolicy.swift; sourceTree = "<group>"; };
@@ -361,6 +363,7 @@
 				C052F56AE6FB5BE845C5F46E /* Metronome.swift */,
 				7C48BAA7BABD8F6A1B1C3E2B /* PitchDetector.swift */,
 				D9EDBF96308E46028E444DA3 /* ScoringService.swift */,
+				89D1B8B2317719765D0495B2 /* SongRenderer.swift */,
 				516647ECFAB1333232722625 /* SynthPlayer.swift */,
 			);
 			path = Audio;
@@ -567,6 +570,7 @@
 				4B4AD80786C17BA85BE1E777 /* Song.swift in Sources */,
 				9A97F96748A0156658C36820 /* SongDetailView.swift in Sources */,
 				278B4B0839D05C0EB41FAF91 /* SongProgressStore.swift in Sources */,
+				7E9F06241674C4CA99931797 /* SongRenderer.swift in Sources */,
 				90197BE24A9A9020E9376508 /* SongReport.swift in Sources */,
 				995D585C2660556D502BDF17 /* SongSimplifier.swift in Sources */,
 				5F724454D97873598E047482 /* SongsView.swift in Sources */,

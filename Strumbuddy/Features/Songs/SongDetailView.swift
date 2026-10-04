@@ -8,7 +8,7 @@ struct SongDetailView: View {
 
     var body: some View {
         SongPlayAlongView(song: song, engine: env.audioEngine, metronome: env.metronome,
-                          coach: env.coach, progress: env.songProgress)
+                          coach: env.coach, progress: env.songProgress, listen: env.chordPreview)
     }
 }
 
@@ -21,14 +21,17 @@ private struct SongPlayAlongView: View {
     @ObservedObject private var engine: AudioEngine
     @ObservedObject private var coach: Coach
     @ObservedObject private var progress: SongProgressStore
+    /// Plays the whole song strummed at tempo ("Listen").
+    @ObservedObject private var listen: ChordPreviewPlayer
     private let metronome: Metronome
 
     @State private var fullSpeed = false
     @State private var newBest = false
 
     init(song: Song, engine: AudioEngine, metronome: Metronome, coach: Coach,
-         progress: SongProgressStore) {
+         progress: SongProgressStore, listen: ChordPreviewPlayer) {
         self.song = song
+        self.listen = listen
         self.engine = engine
         self.metronome = metronome
         self.coach = coach
@@ -56,7 +59,11 @@ private struct SongPlayAlongView: View {
         }
         .navigationTitle(song.title)
         .navigationBarTitleDisplayMode(.inline)
-        .onDisappear { session.stop(); engine.stop() }
+        .onDisappear {
+            session.stop()
+            engine.stop()
+            if isListening { listen.stop() }
+        }
         .onChange(of: session.phase) { phase in
             guard phase == .finished else { return }
             engine.stop()
@@ -64,7 +71,10 @@ private struct SongPlayAlongView: View {
         }
     }
 
+    private var isListening: Bool { listen.playingSong == song.id }
+
     private func play() {
+        if isListening { listen.stop() }
         session.bpm = bpm
         newBest = false
         Task {
@@ -96,10 +106,18 @@ private struct SongPlayAlongView: View {
                     }
                 }
 
-                ForEach(song.sections) { section in
-                    VStack(alignment: .leading, spacing: Theme.Spacing.s) {
-                        Text(section.name).font(.headline)
-                        barGrid(section.chords.map { ($0, nil) })
+                // While listening, the playing bar is outlined as the song moves.
+                TimelineView(.periodic(from: .now, by: 0.05)) { context in
+                    let playingBar = listeningBar(at: context.date)
+                    VStack(alignment: .leading, spacing: Theme.Spacing.l) {
+                        ForEach(song.sections) { section in
+                            let offset = barOffset(of: section)
+                            VStack(alignment: .leading, spacing: Theme.Spacing.s) {
+                                Text(section.name).font(.headline)
+                                barGrid(section.chords.map { ($0, nil) },
+                                        highlight: playingBar.map { $0 - offset })
+                            }
+                        }
                     }
                 }
 
@@ -109,6 +127,17 @@ private struct SongPlayAlongView: View {
                         Text("Full · \(song.bpm) bpm").tag(true)
                     }
                     .pickerStyle(.segmented)
+
+                    Button {
+                        if isListening { listen.stop() } else { listen.playSong(song, bpm: bpm) }
+                    } label: {
+                        Label(isListening ? "Stop listening" : "Listen first",
+                              systemImage: isListening ? "stop.fill" : "headphones")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .accessibilityHint("Plays the whole song strummed at the selected speed.")
 
                     Button(action: play) {
                         Label("Play along", systemImage: "play.fill").frame(maxWidth: .infinity)
@@ -121,6 +150,20 @@ private struct SongPlayAlongView: View {
             }
             .padding()
         }
+    }
+
+    /// Which bar of the song the "Listen" playback is on, if it's playing.
+    private func listeningBar(at date: Date) -> Int? {
+        guard isListening, let start = listen.songBarsStart, let bpm = listen.songBPM else { return nil }
+        let elapsed = date.timeIntervalSince(start)
+        guard elapsed >= 0 else { return nil }
+        let bar = Int(elapsed / (4 * 60 / Double(bpm)))
+        return bar < song.flatChords.count ? bar : nil
+    }
+
+    /// Bars before this section, to map a song-wide bar index into the section grid.
+    private func barOffset(of section: Song.Section) -> Int {
+        song.sections.prefix { $0.id != section.id }.map(\.chords.count).reduce(0, +)
     }
 
     private func chordCard(_ chord: Chord) -> some View {
