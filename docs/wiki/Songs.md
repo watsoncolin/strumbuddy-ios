@@ -11,10 +11,29 @@ grading).
 
 ## Model & licensing
 `Song` = sections of **one chord per bar**, using only the supported [[Chord Library|chords]].
-**Chords only, no lyrics, no recordings** ([[Licensing]]). Built-in library is
-**public-domain / traditional only**: Tom Dooley (G/D, the 2-chord starter), When the
+**Lyrics only where the words are public domain; no recordings** ([[Licensing]] has
+the song-by-song check). Built-in library is **public-domain / traditional only**: Tom Dooley (G/D, the 2-chord starter), When the
 Saints Go Marching In, Drunken Sailor (Em/D), Swing Low Sweet Chariot, Oh! Susanna.
-Recognizable hits come via v2 bring-your-own-song.
+Recognizable hits come via v2 bring-your-own-song, which stays chords-only — a
+user's song's lyrics are someone else's copyright.
+
+## Lyrics
+`Song.Section.lyrics` — **line-level**: each line starts at a bar of its section.
+That's how a beginner reads a chord chart, and it doesn't claim syllable timing we
+haven't verified (a line can start up to a beat before its bar, where a song has a
+pickup).
+- Chart: one row of chord chips per lyric line, words underneath, so the Listen
+  highlight follows the words.
+- Play-along: the line being sung and the next line under the big chord; the first
+  line during the count-in. `Song.lyrics(atBar:)` (tested) maps a song-wide bar to
+  its line, across sections.
+- Which songs have words: Saints, Drunken Sailor (verse, chorus, verse 2), Swing Low
+  (chorus + "I looked over Jordan"), Oh! Susanna (verse 1 + chorus). **Tom Dooley is
+  chords-only** — see [[Licensing]].
+- Adding words fixed three charts: Saints is now the standard 16 bars
+  (I I I I I I V V I I IV IV I V I I), Swing Low's second "carry me home" changes on
+  D, Oh! Susanna has its 16-bar verse + chorus. Old bests on those were set on the
+  previous charts.
 
 ## Listen first
 Hear the whole song before playing it: **Listen first** on the song screen strums it

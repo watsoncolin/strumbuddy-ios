@@ -6,6 +6,14 @@ updated: 2026-10-04
 
 Running log of choices and *why*, newest first.
 
+- **2026-10-04 — Lyrics for public-domain words only, line-level.** Reverses the
+  June "chords only, no lyrics" rule for the built-in songs: the words to Saints,
+  Drunken Sailor, Swing Low and Oh! Susanna are public domain and make the songs far
+  more playable. Checked song by song, because a PD tune doesn't make every version
+  of its words free: **Tom Dooley stays chords-only** (1947 Warner/Lomax adaptation
+  copyright), and Foster's second Oh! Susanna verse is left out for its slur.
+  Line-level alignment rather than per word, since syllable timing isn't verified.
+  BYO-song stays chords-only. See [[Licensing]], [[Songs]].
 - **2026-10-04 — "Listen first" renders the whole song offline, not live.** One
   buffer from `SongRenderer` (~150 ms) through the existing preview player keeps
   playback sample-accurate and the bar highlight a simple clock off `songBarsStart`,
