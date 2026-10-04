@@ -26,4 +26,5 @@ updated: 2026-10-04
 - **One-minute changes** — clean chord switches in 60 s; the [[Progress]] benchmark.
 - **Placement** — onboarding's self-reported known chords, seeded as `.calibration`
   evidence ([[The Coach]]).
+- **Listen first** — a song strummed at tempo before you play it ([[Songs]]).
 - **Coach's note** — the one-line diagnosis after a run (`DrillDiagnosis`).

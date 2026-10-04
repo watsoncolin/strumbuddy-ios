@@ -30,7 +30,9 @@ chord. **Never downgrades the mic's `.playAndRecord` session** (only sets
 `.playback` when the mic is idle) — `SynthPlayer` sets `.playback` unconditionally
 and would cut capture. While a preview rings, `AudioEngine.suppressInput(for:)`
 skips analysis and drops any in-progress strum so the phone's own strum isn't
-graded. Button: `Features/Shared/ChordPreviewButton.swift` — in Chord Check, drill
+graded. `playSong` plays a whole song from `SongRenderer` and publishes when bar 1
+starts so the chart can follow — see [[Songs#Listen first]]. Button:
+`Features/Shared/ChordPreviewButton.swift` — in Chord Check, drill
 setup, onboarding's first chord, chord detail, and [[Songs]] chord cards.
 
 ## Verified off-device (`scripts/main.swift`)

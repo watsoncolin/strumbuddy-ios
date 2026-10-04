@@ -6,6 +6,11 @@ updated: 2026-10-04
 
 Running log of choices and *why*, newest first.
 
+- **2026-10-04 — "Listen first" renders the whole song offline, not live.** One
+  buffer from `SongRenderer` (~150 ms) through the existing preview player keeps
+  playback sample-accurate and the bar highlight a simple clock off `songBarsStart`,
+  with no real-time scheduling. Listen-only, not a backing track: the mic would hear
+  it during the play-along. See [[Songs]].
 - **2026-10-04 — Onboarding placement is self-reported, but self-correcting.**
   Returning players tap known chords; each gets 3 just-clean (0.8) `.calibration`
   observations → mastered, so the path starts where they are. Trusting the claim is
@@ -89,4 +94,5 @@ Added 2026-10 (not yet tuned on device): **tempo ladder** start 60 · step 6 · 
 160 · window 4 · clear 0.75 · hold levels 60/80/100. **Diagnosis** clean bar 0.75 ·
 off-beat 0.08 s · solid chord 0.7. **Songs** practice tempo ≈70% (min 50, nearest 5)
 · stars ≥0.85/0.7/0.5. **One-minute** landing ≥0.6 accuracy. **Placement** 3 × 0.8.
-**GuitarSynth** pick 0.12 · high-pass 110 Hz · strum spread 13 ms.
+**GuitarSynth** pick 0.12 · high-pass 110 Hz · strum spread 13 ms. **SongRenderer**
+pattern D·DU·UDU (gains 1.0 / 0.75 / 0.5) · damping 25 ms · tail 2.5 s · 3 takes.

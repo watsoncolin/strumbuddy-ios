@@ -16,6 +16,21 @@ grading).
 Saints Go Marching In, Drunken Sailor (Em/D), Swing Low Sweet Chariot, Oh! Susanna.
 Recognizable hits come via v2 bring-your-own-song.
 
+## Listen first
+Hear the whole song before playing it: **Listen first** on the song screen strums it
+at the selected speed (Practice/Full) with a one-bar click count-in, and outlines
+the playing bar in the chart. Rendered by `Audio/SongRenderer.swift` from
+[[Chord Preview]] strums (~150 ms per song) and played through `ChordPreviewPlayer`
+(mic scoring paused). Starting Play along or leaving the screen stops it.
+- **Pattern:** the beginner D · DU · UDU, accented downbeat, lighter ups; each new
+  strum damps the last over 25 ms (the strumming hand); 3 seeded takes per
+  chord/direction so repeats don't sound pasted.
+- **Tested:** render length = count-in + bars + tail, and every bar of *When the
+  Saints* reads as its chord at the moment the highlight shows it (8/8).
+- Listen-only — not a backing track under the play-along (the mic would hear it;
+  that would need headphones and different scoring). One pass of the 8-bar
+  progression, ~20–30 s.
+
 ## Play-along (graded)
 - `SongsView`: list with best stars and readiness ("Ready" when every chord is
   mastered, else which chords you're still learning). The goal song is pinned on top.
