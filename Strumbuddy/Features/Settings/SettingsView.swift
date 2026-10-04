@@ -25,6 +25,16 @@ struct SettingsView: View {
                          : "A daily reminder is the single biggest thing that keeps a habit going.")
                 }
 
+                Section {
+                    NavigationLink { StrumLabView() } label: {
+                        Label("Strum lab (beta)", systemImage: "waveform.path.ecg")
+                    }
+                } header: {
+                    Text("Labs")
+                } footer: {
+                    Text("Helps tune strum detection for upcoming strumming lessons.")
+                }
+
                 // Escape hatch when permission was denied at the OS level — the in-app
                 // toggle can't re-prompt, so send the user to the system settings.
                 Section {

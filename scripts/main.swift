@@ -875,6 +875,45 @@ do {
           "\(hits)/\(song.flatChords.count)")
 }
 
+// MARK: - Strum onsets (Strumming spike)
+
+print("\n== Strum onsets ==")
+do {
+    // Held-out conditions: the direction split was tuned at 60/80/100/120 bpm with
+    // light noise; test at other tempos, louder noise, damped and ringing strums.
+    let sr = 44_100.0
+    var found = 0, total = 0, extra = 0, dirOK = 0
+    for bpm in [70, 90, 110] { for ring in [false, true] {
+        var r = SongRenderer(); r.countIn = false; r.damping = ring ? 1.5 : 0.025
+        var audio = r.render([.g, .em, .c, .d], bpm: bpm)
+        var x: UInt64 = UInt64(bpm)
+        for i in 0..<audio.count {
+            x = x &* 6364136223846793005 &+ 1442695040888963407
+            audio[i] += 0.006 * (Float(x >> 40) / Float(1 << 24) * 2 - 1)
+        }
+        let beat = 60 / Double(bpm)
+        let truth = (0..<4).flatMap { bar in r.pattern.map { s in
+            (sample: Int((Double(bar * 4) + s.beat) * beat * sr), down: s.direction == .down) } }
+        let det = StrumOnsetDetector(sampleRate: sr)
+        var onsets: [StrumOnsetDetector.Onset] = []
+        var i = 0
+        while i < audio.count { onsets += det.process(Array(audio[i ..< min(i + 4096, audio.count)])); i += 4096 }
+        var used = Set<Int>()
+        for t in truth {
+            if let j = onsets.indices.first(where: { !used.contains($0) && abs(onsets[$0].sample - t.sample) <= Int(0.04 * sr) }) {
+                used.insert(j); found += 1
+                if (onsets[j].direction == .down) == t.down { dirOK += 1 }
+            }
+        }
+        total += truth.count
+        extra += onsets.count - used.count
+    } }
+    check("finds strums in continuous strumming (≥95%)", found * 100 >= total * 95, "\(found)/\(total)")
+    check("no phantom strums (≤2%)", extra * 50 <= total, "\(extra) extra")
+    check("direction on synth (≥80%, held-out)", dirOK * 100 >= found * 80, "\(dirOK)/\(found)")
+    print("  note: synth-only — the real-guitar gate (≥85%) is still to run on device")
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

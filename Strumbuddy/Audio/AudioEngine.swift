@@ -71,6 +71,28 @@ final class AudioEngine: ObservableObject {
     }
 
     private var attemptCounter = 0
+
+    // MARK: Strum onsets (Strumming spike — opt-in, Strum lab only for now)
+
+    /// Run `StrumOnsetDetector` on the live stream. Off by default: it's the phase-1
+    /// spike, measured in the Strum lab before anything is graded with it.
+    var detectStrums = false {
+        didSet { if detectStrums { strumResetRequested = true } }
+    }
+    /// The latest detected strum; `id` lets observers react exactly once.
+    @Published private(set) var strum: DetectedStrum?
+
+    struct DetectedStrum: Equatable {
+        let id: Int
+        let time: Date
+        let onset: StrumOnsetDetector.Onset
+    }
+
+    private var strumDetector: StrumOnsetDetector?
+    private var strumResetRequested = false
+    private var strumCounter = 0
+    /// Wall-clock time of the detector's sample 0, to timestamp onsets.
+    private var strumEpoch = Date()
     /// Capture→callback latency subtracted from landing timestamps. Calibrated by the
     /// user (persisted via `Calibration`); the calibration screen updates this live.
     var inputLatency: TimeInterval = Calibration.inputLatency
@@ -151,6 +173,19 @@ final class AudioEngine: ObservableObject {
 
             // Monophonic: pitch → smoother. Only confident frames count; the rest are
             // absorbed by the smoother's hold so a stable note doesn't blink out.
+            // Strum onsets: sub-buffer spectral flux, so continuous strumming separates.
+            var strums: [StrumOnsetDetector.Onset] = []
+            if self.detectStrums {
+                if self.strumResetRequested || self.strumDetector?.sampleRate != sampleRate {
+                    self.strumDetector = StrumOnsetDetector(sampleRate: sampleRate)
+                    // Sample 0 is the start of this buffer, not its arrival.
+                    self.strumEpoch = captureTime.addingTimeInterval(-Double(samples.count) / sampleRate)
+                    self.strumResetRequested = false
+                }
+                strums = self.strumDetector?.process(samples) ?? []
+            }
+            let epoch = self.strumEpoch
+
             let pitch = PitchDetector(sampleRate: sampleRate).detect(samples)
             let confident = (pitch?.clarity ?? 0) >= Self.minClarity ? pitch : nil
             let smoothedPitch = self.pitchSmoother.push(confident?.frequency)
@@ -173,6 +208,12 @@ final class AudioEngine: ObservableObject {
                 if let finalized = update.finalized {
                     self.attemptCounter += 1
                     self.finalizedAttempt = FinalizedAttempt(id: self.attemptCounter, result: finalized)
+                }
+                for s in strums {
+                    self.strumCounter += 1
+                    self.strum = DetectedStrum(id: self.strumCounter,
+                                               time: epoch.addingTimeInterval(Double(s.sample) / sampleRate),
+                                               onset: s)
                 }
                 if isOnset {
                     self.onsetCounter += 1

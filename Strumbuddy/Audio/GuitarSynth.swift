@@ -52,7 +52,10 @@ struct GuitarSynth {
             // down-strum digs into the bass, an up-strum catches the trebles lighter.
             let jitter = rng.uniform(-0.002, 0.002)
             let start = Int(max(0, onset + jitter) * sampleRate)
-            let accent = direction == .down ? 1.0 - 0.06 * Double(position) : 0.75
+            // A real up-strum mostly catches the treble strings and runs out before the
+            // bass: low E barely, A lightly.
+            let upReach: [Double] = [0.15, 0.45, 0.75, 0.8, 0.8, 0.8]
+            let accent = direction == .down ? 1.0 - 0.06 * Double(position) : upReach[string]
             let velocity = accent * rng.uniform(0.88, 1.0)
 
             let note: [Double]
