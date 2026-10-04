@@ -12,6 +12,7 @@ struct ChordDetailView: View {
             Section {
                 VStack(spacing: Theme.Spacing.l) {
                     ChordDiagramView(chord: chord).frame(width: 116, height: 150)
+                    ChordPreviewButton(chord: chord)
                     RadarChartView(axes: radarAxes(detail))
                         .frame(maxWidth: .infinity)
                         .frame(height: 240)

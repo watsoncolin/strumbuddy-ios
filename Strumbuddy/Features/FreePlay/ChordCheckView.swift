@@ -31,6 +31,7 @@ struct ChordCheckView: View {
             if ownsEngine { chordPicker }
             ChordDiagramView(chord: target)
                 .frame(width: 130, height: 168)
+            ChordPreviewButton(chord: target)
             scoreDisplay
             Spacer()
         }

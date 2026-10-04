@@ -58,6 +58,18 @@ final class AudioEngine: ObservableObject {
         targetScoreTime = nil
     }
 
+    /// Ignore the mic until this time — set while the app itself is making sound
+    /// (a chord preview) so it isn't heard and scored as the player's strum.
+    private var suppressedUntil = Date.distantPast
+
+    /// Pause scoring for `duration` seconds and drop any in-progress strum.
+    func suppressInput(for duration: TimeInterval) {
+        suppressedUntil = Date().addingTimeInterval(duration)
+        chordScoreSmoother.reset()
+        targetScore = nil
+        targetScoreTime = nil
+    }
+
     private var attemptCounter = 0
     /// Capture→callback latency subtracted from landing timestamps. Calibrated by the
     /// user (persisted via `Calibration`); the calibration screen updates this live.
@@ -122,6 +134,13 @@ final class AudioEngine: ObservableObject {
 
             let rawTime = Date()
             let captureTime = rawTime.addingTimeInterval(-self.inputLatency)
+
+            // Our own preview is playing: hear nothing, and treat the first strum
+            // afterwards as a fresh onset.
+            if rawTime < self.suppressedUntil {
+                self.wasEnergetic = false
+                return
+            }
 
             // Energy gate (shared by both paths).
             var rms: Float = 0

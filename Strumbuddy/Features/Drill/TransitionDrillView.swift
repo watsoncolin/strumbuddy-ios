@@ -91,6 +91,7 @@ struct TransitionDrillView: View {
             .font(.title3).bold()
             ChordDiagramView(chord: selection.wrappedValue)
                 .frame(width: 110, height: 150)
+            ChordPreviewButton(chord: selection.wrappedValue)
         }
     }
 

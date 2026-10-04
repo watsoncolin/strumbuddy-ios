@@ -588,6 +588,54 @@ do {
     check("empty timeline → no audio", ChordSynth().render([], sampleRate: sr).isEmpty)
 }
 
+// MARK: - Guitar synth (chord preview)
+
+print("\n== Guitar synth ==")
+do {
+    let sr = 44_100.0
+    let synth = GuitarSynth()
+    // Tuning: each plucked open string must read in tune on our own tuner, measured
+    // after the attack (0.3 s in) where a real player would read it too.
+    for (i, f) in GuitarSynth.openStrings.enumerated() {
+        let audio = synth.pluck(frequency: f, duration: 1.0)
+        let frame = Array(audio[Int(0.3 * sr) ..< Int(0.3 * sr) + frameCount])
+        if let r = detector.detect(frame) {
+            let err = centsError(detected: r.frequency, expected: f)
+            check("synth string \(i + 1) in tune", abs(err) <= 3,
+                  String(format: "%.2f Hz (%+.2f¢)", r.frequency, err))
+        } else {
+            check("synth string \(i + 1) in tune", false, "no pitch detected")
+        }
+    }
+    // Legibility: strummed shapes should read as themselves on the same detector that
+    // grades the player. The detector is octave-folded power chroma, so a harmonic-
+    // rich strum misses some windows (a real guitar does too) — assert a rate across
+    // seeds and moments in the ring, not every single frame.
+    var recognized = 0, frames = 0
+    for chord in Chord.allCases {
+        var hits = 0
+        for seed in 1...6 {
+            var s = GuitarSynth(); s.seed = UInt64(seed * 7919)
+            let audio = s.strum(chord, duration: 1.2)
+            for t in [0.1, 0.3, 0.6, 0.9] {
+                let frame = Array(audio[Int(t * sr) ..< Int(t * sr) + frameCount])
+                let spec = Chromagram().compute(frame, sampleRate: Float(sr))
+                let r = chordDetector.score(chord, spec.chroma, spectrum: spec)
+                if chordDetector.detect(spec.chroma)?.chord == chord, r.cleanliness >= 0.8,
+                   r.ringingMutedStrings.isEmpty { hits += 1 }
+                frames += 1
+            }
+        }
+        recognized += hits
+        check("synth \(chord.displayName) legible", hits >= 14, "\(hits)/24 frames recognized clean")
+    }
+    check("synth overall legibility >= 80%", Double(recognized) / Double(frames) >= 0.8,
+          "\(recognized)/\(frames)")
+    let a = synth.strum(.g, duration: 0.5), b = synth.strum(.g, duration: 0.5)
+    check("synth deterministic for a seed", a == b)
+    check("synth normalized (<= 1)", (a.map(abs).max() ?? 0) <= 1)
+}
+
 // MARK: - Summary
 
 print("\n\(failures == 0 ? "ALL PASSED" : "\(failures) FAILED")")

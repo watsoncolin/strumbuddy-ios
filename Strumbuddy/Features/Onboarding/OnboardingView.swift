@@ -66,6 +66,7 @@ struct OnboardingView: View {
                 Text(playedChord ? "You played E minor! 🎉" : "Your first chord: E minor")
                     .font(.title2).bold().multilineTextAlignment(.center)
                 ChordDiagramView(chord: .em).frame(width: 130, height: 168)
+                ChordPreviewButton(chord: .em)
                 Text(playedChord
                      ? "That's a real chord. This is how every session works."
                      : "Two fingers on the 2nd fret (A and D strings), then strum.")

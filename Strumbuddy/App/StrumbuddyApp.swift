@@ -29,6 +29,7 @@ final class AppEnvironment: ObservableObject {
     let metronome: Metronome
     let tracker: PracticeTracker
     let notifications: NotificationService
+    let chordPreview: ChordPreviewPlayer
 
     init() {
         let log = ObservationLog()
@@ -38,5 +39,6 @@ final class AppEnvironment: ObservableObject {
         self.metronome = Metronome()
         self.tracker = PracticeTracker()
         self.notifications = NotificationService()
+        self.chordPreview = ChordPreviewPlayer(micEngine: audioEngine)
     }
 }
