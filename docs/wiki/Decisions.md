@@ -6,6 +6,12 @@ updated: 2026-10-04
 
 Running log of choices and *why*, newest first.
 
+- **2026-10-04 — Strumming plan: engine spike first, direction gated.** Patterns
+  can't be graded with today's RMS onsets (continuous strumming merges strums), so
+  phase 1 builds sub-buffer spectral-flux onsets + a down/up classifier before any
+  UI. Direction is only scored if it's ≥ ~85% accurate on a real guitar; otherwise
+  rhythm-only. Also decided: 4/4 only for v1, grid before hand animation,
+  coach-picked song patterns with override. See [[Strumming]].
 - **2026-10-04 — Lyrics for public-domain words only, line-level.** Reverses the
   June "chords only, no lyrics" rule for the built-in songs: the words to Saints,
   Drunken Sailor, Swing Low and Oh! Susanna are public domain and make the songs far

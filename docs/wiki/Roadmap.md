@@ -33,8 +33,8 @@ loop for chords** (observations → consistency mastery → live recommendations
 **Next:**
 1. **Device pass** on the October features (song play-along, tempo ladder,
    one-minute counting, preview-doesn't-score).
-2. **Strumming patterns** — needs an engine signal first; deliberately not on the
-   path until it can be graded.
+2. **[[Strumming]]** — planned in phases; phase 1 is an engine spike (onsets +
+   down/up), gated on real-guitar accuracy before anything is graded.
 3. v2 bring-your-own-song.
 
 _Recital mode: dropped — the consistency-based practice grading covers that ground._

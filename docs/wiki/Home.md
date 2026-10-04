@@ -31,6 +31,7 @@ rationale lives in the [design doc](../design-doc.md).
 - [[Structured Path]] — 8-stage ladder
 - [[Songs]] — graded play-along + goal song
 - [[Progress]] — one-minute changes + progress screen
+- [[Strumming]] — strum patterns: lessons + coach (**planned**)
 
 ## Reference
 - [[Decisions]] — running decision log
