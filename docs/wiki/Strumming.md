@@ -4,8 +4,8 @@ updated: 2026-10-04
 ---
 # Strumming
 
-Strum patterns as a taught, graded, coached skill. Status: **planned** — phase 1
-(engine spike) in progress. Strumming was deliberately kept off the
+Strum patterns as a taught, graded, coached skill. Status: **phase 1 spike built** —
+synth results in, **real-guitar gate pending** (Strum lab). Strumming was deliberately kept off the
 [[Structured Path]] until the engine can grade it ([[Decisions]]).
 
 ## The basics we teach
@@ -39,6 +39,29 @@ Strum patterns as a taught, graded, coached skill. Status: **planned** — phase
 4. **Decision gate:** direction < ~85% accurate on a real guitar → ship
    **rhythm-only grading** (direction taught and shown, not scored). A wrong "that
    was an up-strum" is worse than none.
+
+## Spike results (2026-10-04)
+`Audio/StrumOnsetDetector.swift` (pure, Accelerate), opt-in via
+`AudioEngine.detectStrums`.
+- **Onsets:** spectral flux (log-magnitude, 2048 frame / 256 hop ≈ 6 ms) inside the
+  existing tap buffer; adaptive threshold (1.8 × 0.4 s mean, floor 0.6); 70 ms min gap.
+- **Direction:** per-bin bass (70–170 Hz) vs treble (180–1200 Hz) log-flux —
+  *does the bass re-attack?* — plus whether any new bass energy arrived. Split
+  `bassAttackSplit 0.42`, `bassShareFloor 0.02`, tuned on synth.
+- **Dropped:** arrival order (bass-first vs treble-first). The 46 ms frame smears a
+  ~60 ms strum, so it measured as noise.
+- **Synth, held-out tempos/noise (harness):** strums found **144/144**, phantom
+  **0**; direction **120/144 (83%)** — below the 85% gate even on clean synth. So
+  **rhythm-only grading is the likely outcome**; the device run decides.
+- Why that may be fine: with the pendulum, a strum on an "&" *is* an up-strum
+  unless the hand broke its swing — which already shows as a timing error.
+- `GuitarSynth` up-strums now mostly miss the bass strings (low E 0.15, A 0.45),
+  like a real hand — better test audio, and Listen sounds more natural.
+
+**Strum lab** (Settings → Labs, `Features/Settings/StrumLabView.swift`): hold Em,
+8 downs then 8 ups; reports found counts and direction accuracy against the gate,
+and shares the raw cues as CSV (`seconds,label,detected,confidence,bass_share,
+bass_attack,strength`) for re-tuning on real playing.
 
 ## Lessons — "Strumming 101"
 | Lesson | Focus | Graded on |
@@ -80,7 +103,10 @@ accents, palm mutes, 3/4, swing.
 coach-picked song pattern with override.
 
 ## Open questions
-- Direction accuracy on real guitars — the gate above.
+- Direction accuracy on real guitars — the gate above. Run the Strum lab and re-tune
+  from its CSV; synth says ~83%.
+- Phone-mic onsets: the synth has no room, handling noise or pick scrape — does
+  144/144 hold on a real guitar?
 - Does continuous strumming break the current chord scoring (peak-hold finalizes on
   each onset)? Better onsets may change how many attempts Chord Check logs.
 - Pattern + change failures: blame the pattern or the change? Needs the isolated

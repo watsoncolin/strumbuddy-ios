@@ -6,6 +6,12 @@ updated: 2026-10-04
 
 Running log of choices and *why*, newest first.
 
+- **2026-10-04 — Strum onsets via sub-buffer spectral flux; direction from bass
+  re-attack, not arrival order.** RMS rising edges can't separate continuous
+  strums; flux on 6 ms hops found 144/144 on held-out synth. Arrival order was
+  dropped as noise at a 46 ms frame. Direction sits at 83% on synth, below the gate,
+  so lessons are planned rhythm-first. Measured on device via the opt-in Strum lab
+  before any grading uses it. See [[Strumming]].
 - **2026-10-04 — Strumming plan: engine spike first, direction gated.** Patterns
   can't be graded with today's RMS onsets (continuous strumming merges strums), so
   phase 1 builds sub-buffer spectral-flux onsets + a down/up classifier before any
@@ -110,3 +116,5 @@ off-beat 0.08 s · solid chord 0.7. **Songs** practice tempo ≈70% (min 50, nea
 · stars ≥0.85/0.7/0.5. **One-minute** landing ≥0.6 accuracy. **Placement** 3 × 0.8.
 **GuitarSynth** pick 0.12 · high-pass 110 Hz · strum spread 13 ms. **SongRenderer**
 pattern D·DU·UDU (gains 1.0 / 0.75 / 0.5) · damping 25 ms · tail 2.5 s · 3 takes.
+**StrumOnsetDetector** frame 2048 · hop 256 · min gap 70 ms · threshold 1.8× (0.4 s)
+· floor 0.6 · bassAttackSplit 0.42 · bassShareFloor 0.02 (synth-tuned).

@@ -33,8 +33,9 @@ loop for chords** (observations → consistency mastery → live recommendations
 **Next:**
 1. **Device pass** on the October features (song play-along, tempo ladder,
    one-minute counting, preview-doesn't-score).
-2. **[[Strumming]]** — planned in phases; phase 1 is an engine spike (onsets +
-   down/up), gated on real-guitar accuracy before anything is graded.
+2. **[[Strumming]]** — phase 1 spike built (onsets 144/144 on synth; direction
+   83%, below gate). Next: run the Strum lab on a real guitar, then phase 2 lessons
+   (likely rhythm-only).
 3. v2 bring-your-own-song.
 
 _Recital mode: dropped — the consistency-based practice grading covers that ground._
