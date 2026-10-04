@@ -230,6 +230,10 @@ private struct SongPlayAlongView: View {
 
                 barGrid(gradedBars)
 
+                if let diagnosis = session.diagnosis, diagnosis.kind != .clean {
+                    CoachNoteView(title: "Coach's note", message: diagnosis.message)
+                }
+
                 if let change = report.trickiestChange {
                     trickiestCard(change)
                 } else if !report.bars.isEmpty {

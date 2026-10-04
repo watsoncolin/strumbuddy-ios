@@ -136,16 +136,18 @@ struct TransitionDrillView: View {
     // MARK: Summary
 
     private var summaryView: some View {
+        ScrollView {
         VStack(spacing: Theme.Spacing.l) {
             Text(cleared ? "Cleared \(session.bpm) bpm!" : "Nice work!").font(.title).bold()
+            RepStripView(results: session.results)
             if let s = session.summary {
                 summaryBar("Accuracy", s.accuracy)
                 summaryBar("Cleanliness", s.cleanliness)
                 summaryBar("Timing", s.timing)
             }
-            Text(cleared ? "That change is clean at this tempo. Ready for the next rung?"
-                         : "Clean it up here before speeding up — reps at a tempo you can manage build it fastest.")
-                .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
+            if let diagnosis = session.diagnosis {
+                CoachNoteView(title: "Coach's note", message: diagnosis.message)
+            }
             HStack(spacing: Theme.Spacing.l) {
                 if cleared {
                     Button("Again") { session.start() }.buttonStyle(.bordered)
@@ -158,7 +160,8 @@ struct TransitionDrillView: View {
                     Button("Again") { session.start() }.buttonStyle(.borderedProminent)
                 }
             }
-            Spacer()
+        }
+        .padding(.bottom, Theme.Spacing.l)
         }
     }
 

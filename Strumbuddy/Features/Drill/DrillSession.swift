@@ -123,7 +123,8 @@ final class DrillSession: ObservableObject {
             accuracy: best?.confidence ?? 0,
             cleanliness: best?.cleanliness ?? 0,
             timing: timingScore())
-        results.append(RepResult(id: index, chord: chord, previous: previous, axes: axes))
+        results.append(RepResult(id: index, chord: chord, previous: previous, axes: axes,
+                                 timingOffset: landingOffset()))
 
         let observation = scoring.observation(
             for: chord, previous: previous, axes: axes,
@@ -135,6 +136,16 @@ final class DrillSession: ObservableObject {
     private func timingScore() -> Double {
         guard let landed = engine.targetScoreTime, let start = metronome.startTime else { return 0 }
         return metronome.clock.alignment(elapsed: landed.timeIntervalSince(start))
+    }
+
+    private func landingOffset() -> Double? {
+        guard let landed = engine.targetScoreTime, let start = metronome.startTime else { return nil }
+        return metronome.clock.signedOffset(elapsed: landed.timeIntervalSince(start))
+    }
+
+    /// The coach's verdict on this run, using its standalone belief about each chord.
+    var diagnosis: DrillDiagnosis? {
+        DrillDiagnosis.make(results) { coach.proficiency(.chord($0)) }
     }
 
     private func finish() {

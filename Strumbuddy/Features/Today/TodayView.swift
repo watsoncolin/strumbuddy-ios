@@ -327,17 +327,14 @@ struct TodayView: View {
         .background(Theme.clean.opacity(0.08), in: RoundedRectangle(cornerRadius: Theme.Radius.card))
     }
 
+    /// Tomorrow's focus *with the coach's reasoning* — the graph-derived "why" that
+    /// makes the coach explainable rather than a black-box pick.
     @ViewBuilder
     private var tomorrowCard: some View {
         if let next = coach.recommendations.first {
-            VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-                Label("Tomorrow", systemImage: "arrow.right.circle")
-                    .font(.caption).foregroundStyle(.secondary)
-                Text("Next up: \(next.skill.displayName)").font(.subheadline)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.Spacing.m)
-            .background(Color.secondary.opacity(0.06), in: RoundedRectangle(cornerRadius: Theme.Radius.card))
+            CoachNoteView(title: "Coach's note · tomorrow",
+                          message: "Next up: \(next.skill.displayName), because \(next.reason).",
+                          icon: "arrow.right.circle")
         }
     }
 

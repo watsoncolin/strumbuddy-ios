@@ -38,4 +38,7 @@ struct RepResult: Identifiable {
     let chord: Chord
     let previous: Chord?
     let axes: ScoreAxes
+    /// Seconds from the nearest beat to when the bar's best strum landed
+    /// (+ late, - early); nil when untimed. Feeds the coach's late/rushing note.
+    var timingOffset: Double? = nil
 }

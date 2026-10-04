@@ -664,6 +664,45 @@ do {
     check("empty report scores 0", SongReport(bars: []).score == 0)
 }
 
+// MARK: - Drill diagnosis
+
+print("\n== Drill diagnosis ==")
+do {
+    func rep(_ i: Int, _ c: Chord, _ prev: Chord?, acc: Double, clean: Double, timing: Double,
+             offset: Double? = nil) -> RepResult {
+        RepResult(id: i, chord: c, previous: prev,
+                  axes: ScoreAxes(accuracy: acc, cleanliness: clean, timing: timing), timingOffset: offset)
+    }
+    let solid: (Chord) -> Double = { _ in 0.9 }
+    let shaky: (Chord) -> Double = { $0 == .g ? 0.3 : 0.9 }
+
+    let clean = (0..<4).map { rep($0, $0 % 2 == 0 ? .c : .g, nil, acc: 0.9, clean: 0.9, timing: 0.85) }
+    check("all good → clean", DrillDiagnosis.make(clean, chordBelief: solid)?.kind == .clean)
+    check("no reps → no diagnosis", DrillDiagnosis.make([], chordBelief: solid) == nil)
+
+    // Shapes fine, landing late mostly on G.
+    let late = [rep(0, .c, nil, acc: 0.9, clean: 0.9, timing: 0.8, offset: 0.0),
+                rep(1, .g, .c, acc: 0.9, clean: 0.9, timing: 0.3, offset: 0.2),
+                rep(2, .c, .g, acc: 0.9, clean: 0.9, timing: 0.5, offset: 0.1),
+                rep(3, .g, .c, acc: 0.9, clean: 0.9, timing: 0.3, offset: 0.2)]
+    check("late on G", DrillDiagnosis.make(late, chordBelief: solid)?.kind == .late(.g))
+    let early = late.map { rep($0.id, $0.chord, $0.previous, acc: 0.9, clean: 0.9,
+                               timing: $0.axes.timing, offset: -($0.timingOffset ?? 0)) }
+    check("rushing into G", DrillDiagnosis.make(early, chordBelief: solid)?.kind == .rushing(.g))
+
+    // G lands muddy in the run.
+    let muddyG = [rep(0, .c, nil, acc: 0.9, clean: 0.9, timing: 0.9),
+                  rep(1, .g, .c, acc: 0.5, clean: 0.4, timing: 0.9),
+                  rep(2, .c, .g, acc: 0.9, clean: 0.9, timing: 0.9),
+                  rep(3, .g, .c, acc: 0.5, clean: 0.4, timing: 0.9)]
+    check("solid G alone → blame the change C→G",
+          DrillDiagnosis.make(muddyG, chordBelief: solid)?.kind == .change(from: .c, to: .g))
+    check("shaky G alone → blame the chord",
+          DrillDiagnosis.make(muddyG, chordBelief: shaky)?.kind == .chord(.g))
+    let note = DrillDiagnosis(kind: .change(from: .c, to: .g)).message
+    check("change message names both chords", note.contains("G is solid") && note.contains("from C"))
+}
+
 // MARK: - Guitar synth (chord preview)
 
 print("\n== Guitar synth ==")
