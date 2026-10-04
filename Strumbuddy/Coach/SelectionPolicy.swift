@@ -52,7 +52,7 @@ struct SelectionPolicy {
                 reasons.append("it's due for review")
             }
             // 3. Goal-relevant.
-            if goalSkills.contains(id) {
+            if goalSkills.contains(id), !mastered {
                 score += weights.goalRelevant
                 reasons.append("it's in a song you want to play")
             }

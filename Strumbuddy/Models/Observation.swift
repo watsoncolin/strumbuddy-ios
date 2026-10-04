@@ -24,7 +24,7 @@ struct Observation: Identifiable, Codable, Hashable {
         var source: Source
 
         enum Isolation: String, Codable { case isolated, inSequence }
-        enum Source: String, Codable { case structuredPath, practice, freePlay, calibration }
+        enum Source: String, Codable { case structuredPath, practice, freePlay, calibration, song }
     }
 
     init(id: UUID = UUID(),

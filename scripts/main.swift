@@ -588,6 +588,29 @@ do {
     check("empty timeline → no audio", ChordSynth().render([], sampleRate: sr).isEmpty)
 }
 
+// MARK: - Song report
+
+print("\n== Song report ==")
+do {
+    func bar(_ i: Int, _ c: Chord, _ prev: Chord?, _ v: Double) -> RepResult {
+        RepResult(id: i, chord: c, previous: prev, axes: ScoreAxes(accuracy: v, cleanliness: v, timing: v))
+    }
+    // G G C C G D G G — the G→C change is weak, G→D weaker, holds don't count.
+    let bars = [bar(0, .g, nil, 0.9), bar(1, .g, .g, 0.2), bar(2, .c, .g, 0.6), bar(3, .c, .c, 0.9),
+                bar(4, .g, .c, 0.9), bar(5, .d, .g, 0.4), bar(6, .g, .d, 0.8), bar(7, .g, .g, 0.9)]
+    let r = SongReport(bars: bars)
+    check("song score is the bar mean", abs(r.score - 0.7) < 1e-9, String(format: "%.3f", r.score))
+    check("0.70 → 2 stars", r.stars == 2)
+    check("stars thresholds", SongReport.stars(for: 0.85) == 3 && SongReport.stars(for: 0.5) == 1
+          && SongReport.stars(for: 0.49) == 0)
+    check("trickiest change ignores held chords",
+          r.trickiestChange.map { $0.from == .g && $0.to == .d && abs($0.score - 0.4) < 1e-9 } == true,
+          "\(String(describing: r.trickiestChange))")
+    let clean = SongReport(bars: [bar(0, .g, nil, 0.9), bar(1, .c, .g, 0.8)])
+    check("no trickiest change when all clean", clean.trickiestChange == nil)
+    check("empty report scores 0", SongReport(bars: []).score == 0)
+}
+
 // MARK: - Guitar synth (chord preview)
 
 print("\n== Guitar synth ==")

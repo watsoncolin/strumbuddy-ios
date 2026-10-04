@@ -30,6 +30,7 @@ final class AppEnvironment: ObservableObject {
     let tracker: PracticeTracker
     let notifications: NotificationService
     let chordPreview: ChordPreviewPlayer
+    let songProgress: SongProgressStore
 
     init() {
         let log = ObservationLog()
@@ -40,5 +41,6 @@ final class AppEnvironment: ObservableObject {
         self.tracker = PracticeTracker()
         self.notifications = NotificationService()
         self.chordPreview = ChordPreviewPlayer(micEngine: audioEngine)
+        self.songProgress = SongProgressStore(coach: coach)
     }
 }

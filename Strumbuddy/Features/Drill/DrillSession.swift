@@ -1,10 +1,11 @@
 import Foundation
 import Combine
 
-/// Drives the transition drill in real time: subscribes to the metronome, switches
+/// Drives a graded chord sequence in real time: subscribes to the metronome, switches
 /// the target chord each bar (via the pure `DrillSchedule`), grades each bar's best
 /// strum (accuracy + cleanliness from the engine, timing from `BeatClock`), and
-/// records a transition observation to the coach.
+/// records observations to the coach. The transition drill alternates two chords;
+/// a song play-along passes its whole progression as `fixedSequence`.
 @MainActor
 final class DrillSession: ObservableObject {
     enum Phase: Equatable { case setup, countIn, playing, finished }
@@ -28,6 +29,9 @@ final class DrillSession: ObservableObject {
     /// runner), so this session won't clear it on stop/finish — otherwise a stop
     /// racing the next session block would wipe that block's freshly-set target.
     private let ownsEngineTarget: Bool
+    /// When set (a song), played once through instead of the from/to alternation.
+    private let fixedSequence: [Chord]?
+    private let source: Observation.Context.Source
 
     private var sequence: [Chord] = []
     private var schedule = DrillSchedule(totalReps: 0)
@@ -35,7 +39,8 @@ final class DrillSession: ObservableObject {
     private var cancellable: AnyCancellable?
 
     init(metronome: Metronome, engine: AudioEngine, coach: Coach,
-         from: Chord = .c, to: Chord = .g, bpm: Int = 60, ownsEngineTarget: Bool = true) {
+         from: Chord = .c, to: Chord = .g, bpm: Int = 60, ownsEngineTarget: Bool = true,
+         fixedSequence: [Chord]? = nil, source: Observation.Context.Source = .practice) {
         self.metronome = metronome
         self.engine = engine
         self.coach = coach
@@ -43,6 +48,16 @@ final class DrillSession: ObservableObject {
         self.toChord = to
         self.bpm = bpm
         self.ownsEngineTarget = ownsEngineTarget
+        self.fixedSequence = fixedSequence
+        self.source = source
+        if let fixedSequence { totalReps = fixedSequence.count }
+    }
+
+    /// The chord the bar after the current one asks for (song "next up").
+    var nextChord: Chord? {
+        guard phase == .playing || phase == .countIn else { return nil }
+        let i = phase == .countIn ? 0 : currentRep + 1
+        return sequence.indices.contains(i) ? sequence[i] : nil
     }
 
     /// Average per-axis score across recorded reps, for the summary.
@@ -55,7 +70,7 @@ final class DrillSession: ObservableObject {
     }
 
     func start() {
-        sequence = transitionSequence(from: fromChord, to: toChord, reps: totalReps)
+        sequence = fixedSequence ?? transitionSequence(from: fromChord, to: toChord, reps: totalReps)
         schedule = DrillSchedule(totalReps: totalReps)
         results = []
         currentRep = 0
@@ -79,6 +94,12 @@ final class DrillSession: ObservableObject {
         if phase != .finished { phase = .setup }
     }
 
+    /// Stop and return to setup, even from the finished summary.
+    func reset() {
+        stop()
+        phase = .setup
+    }
+
     private func onDownbeat() {
         downbeat += 1
         let step = schedule.step(downbeat: downbeat)
@@ -95,7 +116,8 @@ final class DrillSession: ObservableObject {
     /// Grade the bar that just ended from the engine's peak-hold best + landing time.
     private func recordRep(_ index: Int) {
         let chord = sequence[index]
-        let previous = index > 0 ? sequence[index - 1] : nil
+        // A held chord (G then G) isn't a change, so it's evidence about the chord only.
+        let previous = index > 0 && sequence[index - 1] != chord ? sequence[index - 1] : nil
         let best = engine.targetScore
         let axes = ScoreAxes(
             accuracy: best?.confidence ?? 0,
@@ -105,7 +127,7 @@ final class DrillSession: ObservableObject {
 
         let observation = scoring.observation(
             for: chord, previous: previous, axes: axes,
-            context: .init(isolation: .inSequence, bpm: bpm, source: .practice),
+            context: .init(isolation: .inSequence, bpm: bpm, source: source),
             now: Date())
         coach.record(observation)
     }
