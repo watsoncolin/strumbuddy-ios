@@ -332,6 +332,59 @@ do {
     check("rep implicates the C→G transition", ids.contains("transition.C-G"))
     check("rep implicates both chords", ids.contains("chord.G") && ids.contains("chord.C"))
     check("rep implicates the tempo hold", ids.contains("tempo.60"))
+
+    // Off-grid tempos land on the graph's hold level, never an orphan skill.
+    let at65 = svc.observation(for: .g, previous: .c, axes: .zero,
+        context: .init(isolation: .inSequence, bpm: 65, source: .song), now: Date())
+    check("65 bpm counts toward hold 60",
+          at65.implicatedSkills.contains(.tempoHold(60)) && !at65.implicatedSkills.contains(.tempoHold(65)))
+    let at50 = svc.observation(for: .g, previous: .c, axes: .zero,
+        context: .init(isolation: .inSequence, bpm: 50, source: .practice), now: Date())
+    check("below 60 bpm → no tempo hold", !at50.implicatedSkills.contains { $0.rawValue.hasPrefix("tempo.") })
+}
+
+// MARK: - Tempo ladder
+
+print("\n== Tempo ladder ==")
+do {
+    var t = 0.0
+    func reps(_ bpm: Int, _ score: Double, _ n: Int) -> [Observation] {
+        (0..<n).map { _ in
+            t += 1
+            return Observation(timestamp: Date(timeIntervalSince1970: t),
+                implicatedSkills: [.transition(from: .c, to: .g)],
+                context: .init(isolation: .inSequence, bpm: bpm, source: .practice),
+                scores: ScoreAxes(accuracy: score, cleanliness: score, timing: score))
+        }
+    }
+    func newestFirst(_ o: [Observation]) -> [Observation] { o.reversed() }
+
+    check("no history → start at 60", TempoLadder.suggestedBPM([]) == 60)
+    check("clean at 60 → next rung 66", TempoLadder.suggestedBPM(newestFirst(reps(60, 0.9, 4))) == 66)
+    check("too few reps don't clear", TempoLadder.suggestedBPM(newestFirst(reps(60, 0.9, 3))) == 60)
+    check("shaky at 60 → stay at 60", TempoLadder.suggestedBPM(newestFirst(reps(60, 0.5, 8))) == 60)
+    // Old clean reps don't count once recent ones fall apart.
+    check("recent reps decide", TempoLadder.suggestedBPM(newestFirst(reps(60, 0.9, 4) + reps(60, 0.4, 4))) == 60)
+    // Cleared 66, then struggled at 72 → keep offering 72.
+    let climb = reps(60, 0.9, 4) + reps(66, 0.85, 4) + reps(72, 0.4, 4)
+    check("climbs from best cleared", TempoLadder.suggestedBPM(newestFirst(climb)) == 72)
+    check("ceiling", TempoLadder.suggestedBPM(newestFirst(reps(158, 0.9, 4))) == 160)
+    check("hold levels", TempoLadder.holdLevel(for: 59) == nil && TempoLadder.holdLevel(for: 79) == 60
+          && TempoLadder.holdLevel(for: 85) == 80 && TempoLadder.holdLevel(for: 140) == 100)
+}
+
+// MARK: - Structured path covers the graph
+
+print("\n== Path coverage ==")
+do {
+    let graph = SkillGraph.beginnerGraph()
+    let missing = Stage.beginnerStages.flatMap(\.skills).filter { graph.skill($0) == nil }
+    check("every stage skill exists in the graph", missing.isEmpty, missing.map(\.rawValue).joined(separator: ", "))
+    let staged = Set(Stage.beginnerStages.flatMap(\.skills))
+    let unstagedChords = Chord.allCases.filter { !staged.contains(.chord($0)) }
+    check("every chord is on the path", unstagedChords.isEmpty, unstagedChords.map(\.rawValue).joined(separator: ", "))
+    check("hold levels match the graph",
+          TempoLadder.holdLevels.allSatisfy { graph.skill(.tempoHold($0)) != nil })
 }
 
 // MARK: - SkillDetail (four-axis breakdown)

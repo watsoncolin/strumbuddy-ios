@@ -50,7 +50,8 @@ struct SkillGraph {
         // The classic early transitions beginners drill.
         let pairs: [(Chord, Chord)] = [
             (.em, .c), (.c, .g), (.g, .d), (.d, .a), (.a, .e),
-            (.em, .g), (.c, .d), (.am, .c), (.g, .c), (.d, .g)
+            (.em, .g), (.c, .d), (.am, .c), (.g, .c), (.d, .g),
+            (.c, .am), (.e, .am), (.am, .e), (.c, .f), (.f, .c)
         ]
         for (a, b) in pairs {
             skills.append(Skill(id: .transition(from: a, to: b),
@@ -63,6 +64,8 @@ struct SkillGraph {
                             prerequisites: [.transition(from: .c, to: .g)]))
         skills.append(Skill(id: .tempoHold(80), kind: .tempoHold(bpm: 80),
                             prerequisites: [.tempoHold(60)]))
+        skills.append(Skill(id: .tempoHold(100), kind: .tempoHold(bpm: 100),
+                            prerequisites: [.tempoHold(80)]))
 
         return SkillGraph(skills)
     }

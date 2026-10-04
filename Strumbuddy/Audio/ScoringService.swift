@@ -30,8 +30,9 @@ struct ScoringService {
             skills.append(.transition(from: previous, to: chord))
             skills.append(.chord(previous))
         }
-        if let bpm = context.bpm {
-            skills.append(.tempoHold(bpm))
+        // Tempo evidence lands on the graph's hold level (≥60 → "hold 60", …).
+        if let bpm = context.bpm, let level = TempoLadder.holdLevel(for: bpm) {
+            skills.append(.tempoHold(level))
         }
         return Observation(timestamp: now,
                            implicatedSkills: skills,

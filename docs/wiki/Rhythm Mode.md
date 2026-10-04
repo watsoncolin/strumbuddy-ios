@@ -1,6 +1,6 @@
 ---
 tags: [strumbuddy, audio, coach]
-updated: 2026-06-07
+updated: 2026-10-04
 ---
 # Rhythm Mode
 
@@ -35,3 +35,10 @@ the metronome runs, you strum on the beat, and a live "X ms early/late" readout
 (strum onset vs nearest beat) updates while a slider adjusts latency — saved via
 `Calibration` (UserDefaults). Onset resolution is limited by the analysis buffer
 (~93 ms), so it's a feel-based dial more than a precise meter.
+
+## Tempo ladder
+`TempoLadder` (pure, tested): a change is **cleared** at a tempo when its 4 most
+recent attempts there average ≥ 0.75. The drill opens at the next rung — best
+cleared + 6 bpm (≈10%), starting at 60, capped at 160 — and the setup shows "Clean
+at X bpm so far". A clean run ends on "Cleared X bpm!" with a **Next rung** button;
+otherwise it encourages more reps at the current tempo.

@@ -78,8 +78,10 @@ private struct StageRow: View {
             TransitionDrillView(metronome: env.metronome, engine: env.audioEngine,
                                 coach: env.coach, from: a, to: b)
         case .tempoHold(let bpm):
+            // Hold *your* weakest known change at the milestone tempo, not always C→G.
+            let change = coach.transitionForTempoHold()
             TransitionDrillView(metronome: env.metronome, engine: env.audioEngine,
-                                coach: env.coach, bpm: bpm)
+                                coach: env.coach, from: change.from, to: change.to, bpm: bpm)
         default:
             Text("Coming soon")
         }

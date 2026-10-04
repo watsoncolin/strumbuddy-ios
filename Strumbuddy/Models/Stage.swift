@@ -18,6 +18,15 @@ struct Stage: Identifiable {
               skills: [.tempoHold(60)]),
         Stage(id: 4, title: "Widen the vocabulary", blurb: "Add D and A.",
               skills: [.chord(.d), .chord(.a), .transition(from: .g, to: .d)]),
+        Stage(id: 5, title: "Minor moods", blurb: "Am and E — the sad and bright sounds.",
+              skills: [.chord(.am), .chord(.e), .transition(from: .am, to: .c),
+                       .transition(from: .e, to: .am)]),
+        Stage(id: 6, title: "Pick up the pace", blurb: "Hold your changes at 80 bpm.",
+              skills: [.tempoHold(80), .transition(from: .d, to: .a), .transition(from: .a, to: .e)]),
+        Stage(id: 7, title: "The F barre", blurb: "The beginner wall. One finger across all six strings.",
+              skills: [.chord(.f), .transition(from: .c, to: .f), .transition(from: .f, to: .c)]),
+        Stage(id: 8, title: "Song speed", blurb: "Hold a change at 100 bpm — most songs live here.",
+              skills: [.tempoHold(100)]),
     ]
 }
 

@@ -263,7 +263,7 @@ private struct SongPlayAlongView: View {
                 .font(.subheadline)
             NavigationLink {
                 TransitionDrillView(metronome: metronome, engine: engine, coach: coach,
-                                    from: change.from, to: change.to, bpm: min(60, session.bpm))
+                                    from: change.from, to: change.to)
             } label: {
                 Label("Drill \(change.from.displayName) → \(change.to.displayName)", systemImage: "metronome")
             }

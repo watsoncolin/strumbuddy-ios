@@ -62,6 +62,33 @@ final class Coach: ObservableObject {
                           proficiency: { proficiency($0, now: now) })
     }
 
+    /// The tempo-ladder rung for drilling a change: a step above its best clean tempo.
+    func suggestedBPM(from a: Chord, to b: Chord) -> Int {
+        TempoLadder.suggestedBPM(log.observations(for: .transition(from: a, to: b)))
+    }
+
+    /// The fastest tempo this change has been cleared at, if any.
+    func bestClearedBPM(from a: Chord, to b: Chord) -> Int? {
+        TempoLadder.bestCleared(in: log.observations(for: .transition(from: a, to: b)))
+    }
+
+    /// Which change a tempo-hold milestone should drill: the weakest change whose two
+    /// chords you already have (holding tempo is the skill, not new shapes), falling
+    /// back to the classic C→G.
+    func transitionForTempoHold(now: Date = Date()) -> (from: Chord, to: Chord) {
+        let ready = graph.skills.values.compactMap { skill -> (Chord, Chord)? in
+            guard case let .transition(a, b) = skill.kind,
+                  isMastered(.chord(a), now: now), isMastered(.chord(b), now: now) else { return nil }
+            return (a, b)
+        }
+        let weakest = ready.min { lhs, rhs in
+            let l = proficiency(.transition(from: lhs.0, to: lhs.1), now: now)
+            let r = proficiency(.transition(from: rhs.0, to: rhs.1), now: now)
+            return l != r ? l < r : lhs.0.rawValue + lhs.1.rawValue < rhs.0.rawValue + rhs.1.rawValue
+        }
+        return weakest.map { (from: $0.0, to: $0.1) } ?? (from: .c, to: .g)
+    }
+
     /// Per-skill detail (four axes + mastery context) for the detail screen.
     func detail(for id: SkillID, now: Date = Date()) -> SkillDetail {
         SkillDetail.make(

@@ -74,6 +74,7 @@
 		E872995B125771C3582B86CC /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E542502A17F704180E65233 /* OnboardingView.swift */; };
 		EB923185C7F033E920DF9007 /* ChordPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E9690178D40C0ABE2D05A /* ChordPreviewPlayer.swift */; };
 		F6143E7B52237EFA79A0EF4E /* demo_cgamf.wav in Resources */ = {isa = PBXBuildFile; fileRef = BF726F726BC419EF8023BA01 /* demo_cgamf.wav */; };
+		F891C8E8D8997008D2430FD4 /* TempoLadder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CDA8EDF62F344321BBED9E9 /* TempoLadder.swift */; };
 		FEC16499436E409048855D6B /* ChordDiagramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F27543EE781A340A864F0A23 /* ChordDiagramView.swift */; };
 /* End PBXBuildFile section */
 
@@ -108,6 +109,7 @@
 		69EE1B336E08E3D99CBFE578 /* demo_gcd.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = demo_gcd.wav; sourceTree = "<group>"; };
 		6BA970FA59414C54252A73ED /* CreditAssignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditAssignment.swift; sourceTree = "<group>"; };
 		6C8C192C9B707E0CBB7781B0 /* TunerReading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerReading.swift; sourceTree = "<group>"; };
+		6CDA8EDF62F344321BBED9E9 /* TempoLadder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempoLadder.swift; sourceTree = "<group>"; };
 		7162E19E87FECBAD4027A767 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7368139CB3C8E72512284CD2 /* DrillSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrillSession.swift; sourceTree = "<group>"; };
 		765999560A69013AC6EF7FB7 /* SongSimplifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongSimplifier.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				765999560A69013AC6EF7FB7 /* SongSimplifier.swift */,
 				8FF9BAD26BE6A80DAA69117E /* Stage.swift */,
 				CA5CAA5B39BA7AC6629B19A2 /* StreakCalculator.swift */,
+				6CDA8EDF62F344321BBED9E9 /* TempoLadder.swift */,
 				1C6BE58B59A9584E89BAD694 /* Tip.swift */,
 				CF72318A025078438E7D14DF /* TransitionDrill.swift */,
 			);
@@ -533,6 +536,7 @@
 				4B950ADDB3531B5F1CBCBE5C /* StructuredPathView.swift in Sources */,
 				72E251FBD8B4F2B46EAAD60F /* StrumbuddyApp.swift in Sources */,
 				B9A553C469CE23C903B02013 /* SynthPlayer.swift in Sources */,
+				F891C8E8D8997008D2430FD4 /* TempoLadder.swift in Sources */,
 				3954D76D35B9B926CF88705A /* Theme.swift in Sources */,
 				E17CD65EA780775FAF41F368 /* Tip.swift in Sources */,
 				53A52E8CA0EC88B51798D224 /* TipsView.swift in Sources */,
