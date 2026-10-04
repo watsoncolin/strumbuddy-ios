@@ -505,6 +505,25 @@ check("library non-empty", !Song.library.isEmpty)
 check("every song has chords", Song.library.allSatisfy { !$0.flatChords.isEmpty })
 check("no barre chords (beginner-friendly)", Song.library.allSatisfy { !$0.allChords.contains(.f) })
 check("allChords dedupes", Song.library.allSatisfy { $0.allChords.count <= $0.flatChords.count })
+// Lyrics: lines in order, inside their section, the first at bar 0.
+let badLyrics = Song.library.flatMap { song in
+    song.sections.filter { s in
+        guard !s.lyrics.isEmpty else { return false }
+        let bars = s.lyrics.map(\.bar)
+        return bars.first != 0 || bars != bars.sorted() || Set(bars).count != bars.count
+            || bars.contains { $0 < 0 || $0 >= s.chords.count }
+    }.map { "\(song.title)/\($0.name)" }
+}
+check("lyric lines ordered and within their section", badLyrics.isEmpty, badLyrics.joined(separator: ", "))
+check("Tom Dooley stays chords-only (1947 lyric copyright)",
+      Song.library.first { $0.title == "Tom Dooley" }?.hasLyrics == false)
+check("the public-domain songs have lyrics",
+      Song.library.filter { $0.title != "Tom Dooley" }.allSatisfy(\.hasLyrics))
+let sailor = Song.library.first { $0.title == "Drunken Sailor" }!
+check("lyrics(atBar:) finds the line being sung", sailor.lyrics(atBar: 3).current == "What shall we do with a drunken sailor?"
+      && sailor.lyrics(atBar: 3).next == "What shall we do with a drunken sailor,")
+check("lyrics(atBar:) crosses sections", sailor.lyrics(atBar: 8).current == "Way hay and up she rises,")
+check("lyrics(atBar:) last line has no next", sailor.lyrics(atBar: 23).next == nil)
 
 // MARK: - Capo simplifier (BYO-song v2)
 

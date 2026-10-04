@@ -114,8 +114,16 @@ private struct SongPlayAlongView: View {
                             let offset = barOffset(of: section)
                             VStack(alignment: .leading, spacing: Theme.Spacing.s) {
                                 Text(section.name).font(.headline)
-                                barGrid(section.chords.map { ($0, nil) },
-                                        highlight: playingBar.map { $0 - offset })
+                                // One row of chords per lyric line, words underneath.
+                                ForEach(rows(of: section), id: \.start) { row in
+                                    VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                                        barGrid(section.chords[row.start..<row.end].map { ($0, nil) },
+                                                highlight: playingBar.map { $0 - offset - row.start })
+                                        if let text = row.text {
+                                            Text(text).font(.callout).foregroundStyle(.secondary)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -159,6 +167,21 @@ private struct SongPlayAlongView: View {
         guard elapsed >= 0 else { return nil }
         let bar = Int(elapsed / (4 * 60 / Double(bpm)))
         return bar < song.flatChords.count ? bar : nil
+    }
+
+    /// A section split at its lyric lines: each row is the bars a line is sung over.
+    /// Chords-only sections are a single wordless row.
+    private func rows(of section: Song.Section) -> [(start: Int, end: Int, text: String?)] {
+        let starts = section.lyrics.map(\.bar)
+        var out: [(start: Int, end: Int, text: String?)] = []
+        if starts.first.map({ $0 > 0 }) ?? true {
+            out.append((0, starts.first ?? section.chords.count, nil))
+        }
+        for (i, line) in section.lyrics.enumerated() {
+            let end = i + 1 < starts.count ? starts[i + 1] : section.chords.count
+            out.append((line.bar, end, line.text))
+        }
+        return out
     }
 
     /// Bars before this section, to map a song-wide bar index into the section grid.
@@ -220,8 +243,13 @@ private struct SongPlayAlongView: View {
         VStack(spacing: Theme.Spacing.l) {
             beatDots
             if session.phase == .countIn {
-                Text("Get ready…").font(.title2).foregroundStyle(.secondary)
-                    .frame(maxHeight: .infinity)
+                VStack(spacing: Theme.Spacing.s) {
+                    Text("Get ready…").font(.title2).foregroundStyle(.secondary)
+                    if let first = song.lyrics(atBar: 0).current {
+                        Text(first).font(.headline).multilineTextAlignment(.center)
+                    }
+                }
+                .frame(maxHeight: .infinity)
             } else if let chord = session.currentChord {
                 Text("Bar \(session.currentRep + 1) of \(session.totalReps)")
                     .font(.subheadline).foregroundStyle(.secondary)
@@ -230,6 +258,15 @@ private struct SongPlayAlongView: View {
                 if let next = session.nextChord {
                     Text(next == chord ? "Hold it…" : "Next: \(next.displayName)")
                         .font(.title3).foregroundStyle(.secondary)
+                }
+                if song.hasLyrics {
+                    let words = song.lyrics(atBar: session.currentRep)
+                    VStack(spacing: Theme.Spacing.xs) {
+                        Text(words.current ?? " ").font(.title3).bold()
+                        Text(words.next ?? " ").font(.subheadline).foregroundStyle(.secondary)
+                    }
+                    .multilineTextAlignment(.center)
+                    .animation(.easeInOut, value: words.current)
                 }
                 Spacer()
                 barGrid(gradedBars, highlight: session.currentRep)
