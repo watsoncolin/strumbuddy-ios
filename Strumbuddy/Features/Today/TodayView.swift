@@ -55,6 +55,7 @@ struct TodayView: View {
                 }
                 coachingHeadline
                 startButton
+                progressRow
                 reminderRow
                 tipFooter
             }
@@ -139,6 +140,19 @@ struct TodayView: View {
         }
         .buttonStyle(.borderedProminent)
         .controlSize(.large)
+    }
+
+    private var progressRow: some View {
+        NavigationLink { YourProgressView() } label: {
+            HStack {
+                Label("Your progress", systemImage: "chart.line.uptrend.xyaxis").font(.subheadline)
+                Spacer()
+                Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary)
+            }
+            .padding(Theme.Spacing.m)
+            .background(Color.secondary.opacity(0.06), in: RoundedRectangle(cornerRadius: Theme.Radius.card))
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder

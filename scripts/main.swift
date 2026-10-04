@@ -703,6 +703,32 @@ do {
     check("change message names both chords", note.contains("G is solid") && note.contains("from C"))
 }
 
+// MARK: - One-minute changes
+
+print("\n== One-minute changes ==")
+do {
+    var c = OneMinuteCounter(first: .c, second: .g)
+    check("starts targeting the first chord", c.target == .c && !c.started)
+    check("first clean landing starts, no change yet", c.strum(.c, confidence: 0.9) && c.changes == 0 && c.target == .g)
+    check("muddy landing doesn't count", !c.strum(.g, confidence: 0.4) && c.changes == 0 && c.target == .g)
+    check("wrong chord doesn't count", !c.strum(.c, confidence: 0.9) && c.changes == 0)
+    c.strum(.g, confidence: 0.7); c.strum(.c, confidence: 0.8); c.strum(.g, confidence: 0.6)
+    check("each clean switch is one change", c.changes == 3 && c.target == .c)
+
+    check("pair key is order-independent", OneMinuteResult.key(.g, .c) == OneMinuteResult.key(.c, .g))
+
+    var cal = Calendar(identifier: .gregorian); cal.timeZone = TimeZone(identifier: "UTC")!
+    let now = Date(timeIntervalSince1970: 10 * 86_400 + 3_600)   // day 10, 01:00
+    func at(_ day: Double) -> Observation {
+        Observation(timestamp: Date(timeIntervalSince1970: day * 86_400 + 600), implicatedSkills: [.chord(.c)],
+                    context: .init(isolation: .isolated, bpm: nil, source: .practice), scores: .zero)
+    }
+    let days = ProgressStats.dailyAttempts([at(10), at(10), at(8), at(2)], days: 4, now: now, calendar: cal)
+    check("daily attempts zero-filled, oldest first", days.map(\.attempts) == [0, 1, 0, 2],
+          days.map { "\($0.attempts)" }.joined(separator: ","))
+    check("last day is today", cal.isDate(days.last!.date, inSameDayAs: now))
+}
+
 // MARK: - Guitar synth (chord preview)
 
 print("\n== Guitar synth ==")

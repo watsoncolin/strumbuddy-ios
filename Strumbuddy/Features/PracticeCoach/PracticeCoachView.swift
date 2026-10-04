@@ -10,6 +10,12 @@ struct PracticeCoachView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    NavigationLink { YourProgressView() } label: {
+                        Label("Your progress", systemImage: "chart.line.uptrend.xyaxis")
+                    }
+                }
+
                 Section("Work on this next") {
                     if coach.recommendations.isEmpty {
                         emptyState
@@ -25,6 +31,9 @@ struct PracticeCoachView: View {
                                             coach: coach)
                     } label: {
                         Label("Transition drill", systemImage: "metronome")
+                    }
+                    NavigationLink { OneMinuteChangesView() } label: {
+                        Label("One-minute changes", systemImage: "timer")
                     }
                 }
 
